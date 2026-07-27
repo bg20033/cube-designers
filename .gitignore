@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 .codex-preview
+.wrangler
 
 # Editor directories and files
 .vscode/*
