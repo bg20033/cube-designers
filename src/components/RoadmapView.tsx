@@ -426,6 +426,8 @@ function SignalMap({
   reduceMotion: boolean | null
   onNodeClick: (index: number) => void
 }) {
+  const revealWidth = useTransform(lineProgress, [0, 1], [0, 900])
+
   return (
     <div className="rm2-map-shell">
       <div className="rm2-map-copy">
@@ -460,6 +462,19 @@ function SignalMap({
             Brand, Print, Digital dhe E-commerce ndahen pas auditit dhe
             bashkohen përsëri në ditën 90.
           </desc>
+          <defs aria-hidden="true">
+            <clipPath
+              id="rm2-route-reveal"
+              clipPathUnits="userSpaceOnUse"
+            >
+              <motion.rect
+                x="0"
+                y="0"
+                width={reduceMotion ? 900 : revealWidth}
+                height="500"
+              />
+            </clipPath>
+          </defs>
 
           <g className="rm2-phase-zones" aria-hidden="true">
             {phaseGeometry.map((phase, index) => (
@@ -502,15 +517,23 @@ function SignalMap({
                 key={route.id}
               >
                 <path className="rm2-route-base" d={route.path} />
-                <motion.path
-                  className="rm2-route-progress"
-                  d={route.path}
-                  pathLength="1"
-                  style={{ pathLength: reduceMotion ? 1 : lineProgress }}
-                />
               </g>
             )
           })}
+          <g clipPath="url(#rm2-route-reveal)" aria-hidden="true">
+            {routes.map((route) => {
+              const muted = activeRoute !== "all" && activeRoute !== route.id
+              return (
+                <g
+                  className={muted ? "is-muted" : ""}
+                  style={{ "--route-color": route.color } as CSSProperties}
+                  key={`progress-${route.id}`}
+                >
+                  <path className="rm2-route-progress" d={route.path} />
+                </g>
+              )
+            })}
+          </g>
         </svg>
 
         <div className="rm2-route-markers" aria-hidden="true">
@@ -648,15 +671,16 @@ export default function RoadmapView() {
   )
 
   useMotionValueEvent(storyProgress, "change", (value) => {
-    const nextPhase = Math.min(
-      milestones.length - 1,
-      Math.max(0, Math.floor(value * milestones.length)),
+    const rawDay = Math.min(90, Math.max(0, Math.round(value * 90)))
+    const nextPhase = Math.max(
+      0,
+      milestones.findIndex((milestone) => rawDay <= milestone.endDay),
     )
     setActivePhase(nextPhase)
     setCurrentDay(
       reduceMotion
         ? milestones[nextPhase].endDay
-        : Math.min(90, Math.max(0, Math.round(value * 90))),
+        : rawDay,
     )
   })
 
