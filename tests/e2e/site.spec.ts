@@ -75,3 +75,51 @@ test("roadmap respects reduced-motion preference", async ({ page }) => {
   })
   expect(transitionsAreDisabled).toBe(true)
 })
+
+test("landing service story stays pinned while its scroll story advances", async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(isMobile, "Desktop uses the pinned service-story layout")
+  await page.emulateMedia({ reducedMotion: "reduce" })
+  await page.goto("/")
+
+  const story = page.locator(".service-story")
+  const storyTop = await story.evaluate(
+    (element) => window.scrollY + element.getBoundingClientRect().top,
+  )
+  await page.evaluate((top) => window.scrollTo(0, top + 480), storyTop)
+
+  await expect
+    .poll(() =>
+      page.locator(".story-sticky").evaluate((element) =>
+        Math.round(element.getBoundingClientRect().top),
+      ),
+    )
+    .toBe(0)
+  await expect(page.locator(".story-card-shell")).toBeVisible()
+})
+
+test("roadmap remains pinned and updates its day from scroll progress", async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(isMobile, "Mobile uses the linear roadmap journey")
+  await page.emulateMedia({ reducedMotion: "reduce" })
+  await page.goto("/roadmap")
+  await page.waitForTimeout(400)
+  await page.evaluate(() => window.scrollTo(0, 900))
+
+  await expect
+    .poll(() =>
+      page.locator(".rm2-sticky-stage").evaluate((element) =>
+        Math.round(element.getBoundingClientRect().top),
+      ),
+    )
+    .toBe(76)
+  await expect
+    .poll(async () =>
+      Number(await page.locator(".rm2-live-day strong").textContent()),
+    )
+    .toBeGreaterThan(0)
+})

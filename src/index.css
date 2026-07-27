@@ -96,7 +96,6 @@
   html {
     @apply font-sans;
     scroll-behavior: smooth;
-    overflow-x: clip;
     background: var(--ink);
   }
 
@@ -550,9 +549,13 @@
   }
 }
 
-.motion-ticker {
+.motion-ticker-clip {
   position: relative;
   z-index: 2;
+  overflow-x: clip;
+}
+
+.motion-ticker {
   overflow: hidden;
   border-top: 1px solid var(--ink);
   border-bottom: 1px solid var(--ink);

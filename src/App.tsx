@@ -339,16 +339,18 @@ export function HomePage() {
           </div>
         </section>
 
-        <section className="motion-ticker" aria-label="Creative capabilities">
-          <div className="ticker-track">
-            {[...tickerItems, ...tickerItems].map((item, index) => (
-              <span aria-hidden={index >= tickerItems.length} key={`${item}-${index}`}>
-                {item}
-                <i>✦</i>
-              </span>
-            ))}
-          </div>
-        </section>
+        <div className="motion-ticker-clip">
+          <section className="motion-ticker" aria-label="Creative capabilities">
+            <div className="ticker-track">
+              {[...tickerItems, ...tickerItems].map((item, index) => (
+                <span aria-hidden={index >= tickerItems.length} key={`${item}-${index}`}>
+                  {item}
+                  <i>✦</i>
+                </span>
+              ))}
+            </div>
+          </section>
+        </div>
 
         <section className="manifesto">
           <div className="manifesto-display">
