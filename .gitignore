@@ -10,8 +10,12 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+.prerender
+playwright-report
+test-results
 *.local
 .codex-preview
+.wrangler
 
 # Editor directories and files
 .vscode/*
