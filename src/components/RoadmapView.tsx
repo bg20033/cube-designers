@@ -414,19 +414,24 @@ function PhaseDetails({
 function SignalMap({
   activeRoute,
   activePhase,
-  lineProgress,
-  scanPosition,
+  mapProgress,
   reduceMotion,
   onNodeClick,
 }: {
   activeRoute: RouteFilter
   activePhase: number
-  lineProgress: MotionValue<number>
-  scanPosition: MotionValue<string>
+  mapProgress: MotionValue<number>
   reduceMotion: boolean | null
   onNodeClick: (index: number) => void
 }) {
-  const revealWidth = useTransform(lineProgress, [0, 1], [0, 900])
+  const revealRight = useTransform(mapProgress, [0, 1], [62, 838])
+  const scanPosition = useTransform(
+    mapProgress,
+    [0, 1],
+    ["6.889%", "93.111%"],
+  )
+  const reducedRevealRight =
+    phaseGeometry[activePhase].x + phaseGeometry[activePhase].width
 
   return (
     <div className="rm2-map-shell">
@@ -470,7 +475,7 @@ function SignalMap({
               <motion.rect
                 x="0"
                 y="0"
-                width={reduceMotion ? 900 : revealWidth}
+                width={reduceMotion ? reducedRevealRight : revealRight}
                 height="500"
               />
             </clipPath>
@@ -664,12 +669,6 @@ export default function RoadmapView() {
     [0, 0.96],
     [0, 1],
   )
-  const scanPosition = useTransform(
-    smoothProgress,
-    [0, 1],
-    ["6.9%", "93.1%"],
-  )
-
   useMotionValueEvent(storyProgress, "change", (value) => {
     const rawDay = Math.min(90, Math.max(0, Math.round(value * 90)))
     const nextPhase = Math.max(
@@ -732,8 +731,7 @@ export default function RoadmapView() {
             <SignalMap
               activeRoute={activeRoute}
               activePhase={activePhase}
-              lineProgress={lineProgress}
-              scanPosition={scanPosition}
+              mapProgress={smoothProgress}
               reduceMotion={reduceMotion}
               onNodeClick={scrollToPhase}
             />
