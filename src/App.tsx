@@ -1,4 +1,5 @@
-import { lazy, Suspense, useState } from "react"
+import { lazy, Suspense, useEffect, useState } from "react"
+import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 
 import {
   CollaborationProof,
@@ -18,6 +19,7 @@ import {
 } from "@/components/SiteChrome"
 import { matchRoute } from "@/app/routes"
 import { RoutePathProvider } from "@/app/RouteContext"
+import Lanyard from "@/components/layout/Lanyard"
 
 const PixelBlast = lazy(() => import("@/components/PixelBlast"))
 const AboutPage = lazy(() => import("@/components/AboutPage"))
@@ -416,25 +418,99 @@ export function HomePage() {
 }
 
 function App({ pathname }: { pathname?: string }) {
+  const [hasEntered, setHasEntered] = useState(false)
+  const reduceMotion = useReducedMotion()
   const currentPath =
     pathname ??
     (typeof window === "undefined" ? "/" : window.location.pathname)
   const route = matchRoute(currentPath)
 
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow
+    const previousOverscroll = document.body.style.overscrollBehavior
+
+    if (!hasEntered) {
+      document.body.style.overflow = "hidden"
+      document.body.style.overscrollBehavior = "none"
+    } else {
+      document.body.style.overflow = previousOverflow
+      document.body.style.overscrollBehavior = previousOverscroll
+      window.scrollTo({ top: 0, behavior: "instant" })
+    }
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.body.style.overscrollBehavior = previousOverscroll
+    }
+  }, [hasEntered])
+
+  const enterWebsite = () => {
+    if (!hasEntered) setHasEntered(true)
+  }
+
   return (
     <RoutePathProvider pathname={currentPath}>
-      <Suspense fallback={<PageFallback />}>
-        {route?.key === "home" && <HomePage />}
-        {route?.key === "about" && <AboutPage />}
-        {route?.key === "work" && <WorkPage />}
-        {route?.key === "roadmap" && <RoadmapPage />}
-        {route?.key === "shop" && <ShopPage />}
-        {route?.key === "product" && (
-          <ProductDetailPage slug={route.params.slug} />
+      <motion.div
+        className="site-reveal"
+        aria-hidden={!hasEntered}
+        inert={!hasEntered}
+        initial={false}
+        animate={{
+          opacity: hasEntered ? 1 : 0,
+          y: hasEntered ? 0 : reduceMotion ? 0 : 22,
+        }}
+        transition={{
+          duration: reduceMotion ? 0.01 : 0.8,
+          delay: reduceMotion ? 0 : 0.16,
+          ease: [0.22, 1, 0.36, 1],
+        }}
+        style={{
+          visibility: hasEntered ? "visible" : "hidden",
+          pointerEvents: hasEntered ? "auto" : "none",
+        }}
+      >
+        <Suspense fallback={<PageFallback />}>
+          {route?.key === "home" && <HomePage />}
+          {route?.key === "about" && <AboutPage />}
+          {route?.key === "work" && <WorkPage />}
+          {route?.key === "roadmap" && <RoadmapPage />}
+          {route?.key === "shop" && <ShopPage />}
+          {route?.key === "product" && (
+            <ProductDetailPage slug={route.params.slug} />
+          )}
+          {route?.key === "start-project" && <ProjectBriefPage />}
+          {!route && <NotFoundPage />}
+        </Suspense>
+      </motion.div>
+
+      <AnimatePresence>
+        {!hasEntered && (
+          <motion.div
+            className="lanyard-intro"
+            role="button"
+            tabIndex={0}
+            aria-label="Enter the Cube Designers website"
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault()
+                enterWebsite()
+              }
+            }}
+            initial={{ opacity: 1 }}
+            exit={{
+              opacity: 0,
+              scale: reduceMotion ? 1 : 1.035,
+              filter: reduceMotion ? "blur(0px)" : "blur(8px)",
+            }}
+            transition={{
+              duration: reduceMotion ? 0.01 : 0.72,
+              ease: [0.65, 0, 0.35, 1],
+            }}
+          >
+            <Lanyard onActivate={enterWebsite} />
+          </motion.div>
         )}
-        {route?.key === "start-project" && <ProjectBriefPage />}
-        {!route && <NotFoundPage />}
-      </Suspense>
+      </AnimatePresence>
     </RoutePathProvider>
   )
 }

@@ -1,4 +1,4 @@
-import { type CSSProperties, type ElementType } from "react"
+import { type CSSProperties } from "react"
 import {
   ArrowDown,
   ArrowUpRight,
@@ -9,6 +9,7 @@ import {
   ShoppingBag,
   Sparkles,
 } from "lucide-react"
+import type { LucideIcon } from "lucide-react"
 import {
   AnimatePresence,
   motion,
@@ -26,7 +27,7 @@ type RouteDefinition = {
   label: string
   index: string
   color: string
-  icon: ElementType
+  icon: LucideIcon
   path: string
   signalPoints: Array<{ x: number; y: number }>
   mapLabel: string
