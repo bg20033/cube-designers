@@ -291,35 +291,37 @@ const serviceGroups: StoryGroup[] = [
   },
 ]
 
-export function HomePage() {
+export function HomePage({ effectsEnabled = true }: { effectsEnabled?: boolean }) {
   const [headerService, setHeaderService] = useState<string | null>(null)
 
   return (
     <div className="agency-site">
-      <SiteNoise />
+      {effectsEnabled && <SiteNoise />}
       <SiteHeader serviceLabel={headerService} />
 
       <main>
         <section className="blast-hero" id="top">
           <div className="pixel-layer">
-            <Suspense fallback={<div className="pixel-fallback" />}>
-              <PixelBlast
-                variant="square"
-                pixelSize={5}
-                color="#F97316"
-                patternScale={2.1}
-                patternDensity={1.05}
-                pixelSizeJitter={0.45}
-                enableRipples
-                rippleIntensityScale={1.35}
-                rippleThickness={0.13}
-                rippleSpeed={0.35}
-                speed={0.6}
-                edgeFade={0.24}
-                transparent
-                antialias
-              />
-            </Suspense>
+            {effectsEnabled && (
+              <Suspense fallback={<div className="pixel-fallback" />}>
+                <PixelBlast
+                  variant="square"
+                  pixelSize={5}
+                  color="#F97316"
+                  patternScale={2.1}
+                  patternDensity={1.05}
+                  pixelSizeJitter={0.45}
+                  enableRipples
+                  rippleIntensityScale={1.35}
+                  rippleThickness={0.13}
+                  rippleSpeed={0.35}
+                  speed={0.6}
+                  edgeFade={0.24}
+                  transparent
+                  antialias
+                />
+              </Suspense>
+            )}
           </div>
           <div className="hero-vignette" />
           <div className="hero-grid" />
@@ -470,7 +472,7 @@ function App({ pathname }: { pathname?: string }) {
         }}
       >
         <Suspense fallback={<PageFallback />}>
-          {route?.key === "home" && <HomePage />}
+          {route?.key === "home" && <HomePage effectsEnabled={hasEntered} />}
           {route?.key === "about" && <AboutPage />}
           {route?.key === "work" && <WorkPage />}
           {route?.key === "roadmap" && <RoadmapPage />}

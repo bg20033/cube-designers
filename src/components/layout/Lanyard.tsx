@@ -1,4 +1,4 @@
-import { Environment, Lightformer, RoundedBox } from "@react-three/drei"
+import { RoundedBox } from "@react-three/drei"
 import {
   BallCollider,
   CuboidCollider,
@@ -24,6 +24,8 @@ type LanyardBody = RapierRigidBody & { lerped?: THREE.Vector3 }
 
 const CARD_WIDTH = 2.45
 const CARD_HEIGHT = 3.45
+const BAND_WIDTH = 0.115
+const BAND_ACCENT_WIDTH = 0.018
 
 function createBadgeTexture(back = false) {
   const canvas = document.createElement("canvas")
@@ -40,18 +42,18 @@ function createBadgeTexture(back = false) {
     context.fillStyle = "#f97316"
     context.fillRect(0, 0, 72, canvas.height)
     context.fillStyle = "#f4f1ea"
-    context.font = "900 108px Arial, sans-serif"
-    context.fillText("CUBE", 118, 184)
+    context.font = "900 104px Arial, sans-serif"
+    context.fillText("CUBE", 118, 250)
     context.fillStyle = "rgba(244,241,234,.56)"
     context.font = "600 24px Arial, sans-serif"
     context.letterSpacing = "8px"
-    context.fillText("CREATIVE ACCESS", 122, 246)
+    context.fillText("CREATIVE ACCESS", 122, 312)
     context.fillStyle = "#8b5cf6"
-    context.fillRect(122, 850, 510, 5)
+    context.fillRect(122, 842, 510, 5)
     context.fillStyle = "rgba(244,241,234,.68)"
     context.font = "700 26px Arial, sans-serif"
     context.letterSpacing = "4px"
-    context.fillText("DESIGN / PRINT / DIGITAL", 122, 915)
+    context.fillText("DESIGN / PRINT / DIGITAL", 122, 907)
   } else {
     const gradient = context.createLinearGradient(0, 0, 768, 1080)
     gradient.addColorStop(0, "rgba(249,115,22,.16)")
@@ -60,41 +62,41 @@ function createBadgeTexture(back = false) {
     context.fillStyle = gradient
     context.fillRect(0, 0, canvas.width, canvas.height)
     context.fillStyle = "#0b0b0d"
-    context.font = "900 120px Arial, sans-serif"
-    context.fillText("CUBE", 62, 192)
+    context.font = "900 112px Arial, sans-serif"
+    context.fillText("CUBE", 62, 270)
     context.fillStyle = "#f97316"
-    context.fillRect(62, 226, 116, 12)
+    context.fillRect(62, 300, 108, 10)
     context.fillStyle = "#0b0b0d"
-    context.font = "700 27px Arial, sans-serif"
+    context.font = "700 25px Arial, sans-serif"
     context.letterSpacing = "8px"
-    context.fillText("ACCESS PASS", 62, 296)
+    context.fillText("ACCESS PASS", 62, 360)
     context.strokeStyle = "rgba(11,11,13,.13)"
     context.lineWidth = 3
     context.beginPath()
-    context.moveTo(62, 360)
-    context.lineTo(706, 360)
+    context.moveTo(62, 414)
+    context.lineTo(706, 414)
     context.stroke()
     context.fillStyle = "#8b5cf6"
-    context.fillRect(62, 426, 250, 250)
+    context.fillRect(62, 478, 250, 232)
     context.fillStyle = "#d9ff43"
     context.beginPath()
-    context.arc(405, 551, 124, 0, Math.PI * 2)
+    context.arc(405, 594, 116, 0, Math.PI * 2)
     context.fill()
     context.fillStyle = "#f97316"
-    context.fillRect(500, 426, 206, 250)
+    context.fillRect(500, 478, 206, 232)
     context.fillStyle = "#0b0b0d"
     context.font = "900 50px Arial, sans-serif"
-    context.fillText("ALL", 62, 777)
-    context.fillText("FORMATS.", 62, 835)
+    context.fillText("ALL", 62, 810)
+    context.fillText("FORMATS.", 62, 868)
     context.fillStyle = "rgba(11,11,13,.54)"
     context.font = "700 22px Arial, sans-serif"
     context.letterSpacing = "5px"
-    context.fillText("MEMBER  /  0001", 62, 970)
+    context.fillText("MEMBER  /  0001", 62, 994)
   }
 
   const texture = new THREE.CanvasTexture(canvas)
   texture.colorSpace = THREE.SRGBColorSpace
-  texture.anisotropy = 8
+  texture.anisotropy = 4
   return texture
 }
 
@@ -111,13 +113,13 @@ export default function Lanyard({ onActivate }: LanyardProps) {
   return (
     <Canvas
       camera={{
-        position: [0, 0, isMobile ? 17.5 : 15],
-        fov: isMobile ? 36 : 31,
+        position: [0, 0, isMobile ? 17 : 15],
+        fov: isMobile ? 35 : 31,
       }}
-      dpr={[1, isMobile ? 1.35 : 1.8]}
+      dpr={[1, isMobile ? 1.15 : 1.45]}
       gl={{
         alpha: true,
-        antialias: !isMobile,
+        antialias: true,
         powerPreference: "high-performance",
       }}
       onCreated={({ gl }) => {
@@ -125,26 +127,12 @@ export default function Lanyard({ onActivate }: LanyardProps) {
         gl.outputColorSpace = THREE.SRGBColorSpace
       }}
     >
-      <ambientLight intensity={1.6} />
-      <Physics gravity={[0, -32, 0]} timeStep={isMobile ? 1 / 45 : 1 / 60}>
+      <ambientLight intensity={2.15} />
+      <directionalLight color="#fff9f0" intensity={3.2} position={[-4, 5, 7]} />
+      <pointLight color="#ffb078" intensity={14} position={[4, -3, 4]} />
+      <Physics gravity={[0, -30, 0]} timeStep={1 / 60} interpolate>
         <Band isMobile={isMobile} onActivate={onActivate} />
       </Physics>
-      <Environment resolution={128}>
-        <Lightformer
-          intensity={4}
-          color="#ffffff"
-          position={[-4, 2, 6]}
-          rotation={[0, 0, Math.PI / 3]}
-          scale={[12, 4, 1]}
-        />
-        <Lightformer
-          intensity={3}
-          color="#ffb078"
-          position={[5, -2, 3]}
-          rotation={[0, 0, -Math.PI / 4]}
-          scale={[10, 3, 1]}
-        />
-      </Environment>
     </Canvas>
   )
 }
@@ -161,17 +149,40 @@ function Band({ isMobile, onActivate }: BandProps) {
       InstanceType<typeof MeshLineMaterial>
     >
   >(null)
+  const bandAccent = useRef<
+    THREE.Mesh<
+      InstanceType<typeof MeshLineGeometry>,
+      InstanceType<typeof MeshLineMaterial>
+    >
+  >(null)
   const cardVisual = useRef<THREE.Group>(null)
   const pressOrigin = useRef({ x: 0, y: 0 })
   const activationTimer = useRef<number | undefined>(undefined)
   const frontTexture = useMemo(() => createBadgeTexture(), [])
   const backTexture = useMemo(() => createBadgeTexture(true), [])
   const bandGeometry = useMemo(() => new MeshLineGeometry(), [])
+  const bandAccentGeometry = useMemo(() => new MeshLineGeometry(), [])
   const bandMaterial = useMemo(
     () => {
       const material = new MeshLineMaterial({
         color: new THREE.Color("#151317"),
-        lineWidth: 0.72,
+        lineWidth: BAND_WIDTH,
+        resolution: new THREE.Vector2(
+          isMobile ? 800 : 1440,
+          isMobile ? 1200 : 900,
+        ),
+        sizeAttenuation: 1,
+      })
+      material.depthTest = false
+      return material
+    },
+    [isMobile],
+  )
+  const bandAccentMaterial = useMemo(
+    () => {
+      const material = new MeshLineMaterial({
+        color: new THREE.Color("#f97316"),
+        lineWidth: BAND_ACCENT_WIDTH,
         resolution: new THREE.Vector2(
           isMobile ? 800 : 1440,
           isMobile ? 1200 : 900,
@@ -204,8 +215,8 @@ function Band({ isMobile, onActivate }: BandProps) {
     type: "dynamic",
     colliders: false,
     canSleep: true,
-    angularDamping: 4,
-    linearDamping: 4,
+    angularDamping: 5,
+    linearDamping: 4.5,
   }
 
   useRopeJoint(fixed, joint1, [[0, 0, 0], [0, 0, 0], 1.1])
@@ -229,11 +240,13 @@ function Band({ isMobile, onActivate }: BandProps) {
       frontTexture.dispose()
       backTexture.dispose()
       bandGeometry.dispose()
+      bandAccentGeometry.dispose()
     },
-    [backTexture, bandGeometry, frontTexture],
+    [backTexture, bandAccentGeometry, bandGeometry, frontTexture],
   )
 
   useEffect(() => () => bandMaterial.dispose(), [bandMaterial])
+  useEffect(() => () => bandAccentMaterial.dispose(), [bandAccentMaterial])
 
   const getSmoothedPoint = (body: LanyardBody) => {
     if (!body.lerped) {
@@ -266,6 +279,7 @@ function Band({ isMobile, onActivate }: BandProps) {
 
     if (
       band.current &&
+      bandAccent.current &&
       fixed.current &&
       joint1.current &&
       joint2.current &&
@@ -284,7 +298,9 @@ function Band({ isMobile, onActivate }: BandProps) {
       curve.points[1].copy(getSmoothedPoint(joint2.current))
       curve.points[2].copy(getSmoothedPoint(joint1.current))
       curve.points[3].copy(fixed.current.translation())
-      band.current.geometry.setPoints(curve.getPoints(isMobile ? 18 : 32))
+      const curvePoints = curve.getPoints(isMobile ? 20 : 28)
+      band.current.geometry.setPoints(curvePoints)
+      bandAccent.current.geometry.setPoints(curvePoints)
       angularVelocity.copy(card.current.angvel())
       rotation.copy(card.current.rotation())
       card.current.setAngvel(
@@ -341,6 +357,11 @@ function Band({ isMobile, onActivate }: BandProps) {
     }
   }
 
+  const cancelDrag = () => {
+    setDragOffset(false)
+    setPressed(false)
+  }
+
   return (
     <>
       <group position={[0, isMobile ? 4.9 : 5.1, 0]}>
@@ -367,6 +388,8 @@ function Band({ isMobile, onActivate }: BandProps) {
             ref={cardVisual}
             onPointerDown={handlePointerDown}
             onPointerUp={handlePointerUp}
+            onPointerCancel={cancelDrag}
+            onLostPointerCapture={cancelDrag}
             onPointerOver={(event) => {
               event.stopPropagation()
               setHovered(true)
@@ -380,48 +403,69 @@ function Band({ isMobile, onActivate }: BandProps) {
             >
               <meshPhysicalMaterial
                 color="#f4f1ea"
-                roughness={0.24}
-                metalness={0.08}
-                clearcoat={1}
-                clearcoatRoughness={0.22}
+                roughness={0.3}
+                metalness={0.04}
+                clearcoat={0.72}
+                clearcoatRoughness={0.28}
               />
             </RoundedBox>
             <mesh position={[0, 0, 0.086]}>
               <planeGeometry
                 args={[CARD_WIDTH - 0.07, CARD_HEIGHT - 0.07]}
               />
-              <meshBasicMaterial map={frontTexture} toneMapped={false} />
+              <meshStandardMaterial
+                map={frontTexture}
+                roughness={0.38}
+                metalness={0.02}
+              />
             </mesh>
             <mesh position={[0, 0, -0.086]} rotation={[0, Math.PI, 0]}>
               <planeGeometry
                 args={[CARD_WIDTH - 0.07, CARD_HEIGHT - 0.07]}
               />
-              <meshBasicMaterial map={backTexture} toneMapped={false} />
+              <meshStandardMaterial
+                map={backTexture}
+                roughness={0.4}
+                metalness={0.02}
+              />
             </mesh>
             <RoundedBox
-              args={[0.82, 0.18, 0.08]}
-              radius={0.08}
+              args={[0.7, 0.13, 0.065]}
+              radius={0.055}
               smoothness={4}
-              position={[0, 1.36, 0.14]}
+              position={[0, 1.43, 0.135]}
             >
-              <meshStandardMaterial color="#0b0b0d" roughness={0.48} />
+              <meshStandardMaterial color="#171619" roughness={0.58} />
             </RoundedBox>
             <RoundedBox
-              args={[0.55, 0.26, 0.16]}
-              radius={0.06}
+              args={[0.46, 0.23, 0.13]}
+              radius={0.055}
               smoothness={4}
-              position={[0, 1.82, 0]}
+              position={[0, 1.81, -0.005]}
             >
               <meshStandardMaterial
-                color="#bab8b4"
-                metalness={0.92}
-                roughness={0.2}
+                color="#aaa7a1"
+                metalness={0.82}
+                roughness={0.28}
               />
             </RoundedBox>
           </group>
         </RigidBody>
       </group>
-      <mesh ref={band} geometry={bandGeometry} material={bandMaterial} />
+      <mesh
+        ref={band}
+        geometry={bandGeometry}
+        material={bandMaterial}
+        frustumCulled={false}
+        renderOrder={1}
+      />
+      <mesh
+        ref={bandAccent}
+        geometry={bandAccentGeometry}
+        material={bandAccentMaterial}
+        frustumCulled={false}
+        renderOrder={2}
+      />
     </>
   )
 }
