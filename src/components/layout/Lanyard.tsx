@@ -24,8 +24,8 @@ type LanyardBody = RapierRigidBody & { lerped?: THREE.Vector3 }
 
 const CARD_WIDTH = 2.45
 const CARD_HEIGHT = 3.45
-const BAND_WIDTH = 0.115
-const BAND_ACCENT_WIDTH = 0.018
+const BAND_WIDTH = 0.16
+const BAND_ACCENT_WIDTH = 0.024
 
 function createBadgeTexture(back = false) {
   const canvas = document.createElement("canvas")
@@ -130,7 +130,7 @@ export default function Lanyard({ onActivate }: LanyardProps) {
       <ambientLight intensity={2.15} />
       <directionalLight color="#fff9f0" intensity={3.2} position={[-4, 5, 7]} />
       <pointLight color="#ffb078" intensity={14} position={[4, -3, 4]} />
-      <Physics gravity={[0, -30, 0]} timeStep={1 / 60} interpolate>
+      <Physics gravity={[0, -31, 0]} timeStep={1 / 60} interpolate>
         <Band isMobile={isMobile} onActivate={onActivate} />
       </Physics>
     </Canvas>
@@ -173,7 +173,8 @@ function Band({ isMobile, onActivate }: BandProps) {
         ),
         sizeAttenuation: 1,
       })
-      material.depthTest = false
+      material.depthTest = true
+      material.depthWrite = false
       return material
     },
     [isMobile],
@@ -189,7 +190,8 @@ function Band({ isMobile, onActivate }: BandProps) {
         ),
         sizeAttenuation: 1,
       })
-      material.depthTest = false
+      material.depthTest = true
+      material.depthWrite = false
       return material
     },
     [isMobile],
@@ -215,8 +217,8 @@ function Band({ isMobile, onActivate }: BandProps) {
     type: "dynamic",
     colliders: false,
     canSleep: true,
-    angularDamping: 5,
-    linearDamping: 4.5,
+    angularDamping: 2.15,
+    linearDamping: 2.55,
   }
 
   useRopeJoint(fixed, joint1, [[0, 0, 0], [0, 0, 0], 1.1])
@@ -314,11 +316,11 @@ function Band({ isMobile, onActivate }: BandProps) {
     }
 
     if (cardVisual.current) {
-      const target = pressed ? 0.94 : 1
+      const target = pressed ? 0.92 : 1
       const next = THREE.MathUtils.damp(
         cardVisual.current.scale.x,
         target,
-        18,
+        24,
         delta,
       )
       cardVisual.current.scale.setScalar(next)
@@ -353,7 +355,7 @@ function Band({ isMobile, onActivate }: BandProps) {
     )
     if (moved <= 8) {
       setPressed(true)
-      activationTimer.current = window.setTimeout(onActivate, 140)
+      activationTimer.current = window.setTimeout(onActivate, 90)
     }
   }
 
@@ -413,21 +415,13 @@ function Band({ isMobile, onActivate }: BandProps) {
               <planeGeometry
                 args={[CARD_WIDTH - 0.07, CARD_HEIGHT - 0.07]}
               />
-              <meshStandardMaterial
-                map={frontTexture}
-                roughness={0.38}
-                metalness={0.02}
-              />
+              <meshBasicMaterial map={frontTexture} toneMapped={false} />
             </mesh>
             <mesh position={[0, 0, -0.086]} rotation={[0, Math.PI, 0]}>
               <planeGeometry
                 args={[CARD_WIDTH - 0.07, CARD_HEIGHT - 0.07]}
               />
-              <meshStandardMaterial
-                map={backTexture}
-                roughness={0.4}
-                metalness={0.02}
-              />
+              <meshBasicMaterial map={backTexture} toneMapped={false} />
             </mesh>
             <RoundedBox
               args={[0.7, 0.13, 0.065]}
@@ -457,14 +451,14 @@ function Band({ isMobile, onActivate }: BandProps) {
         geometry={bandGeometry}
         material={bandMaterial}
         frustumCulled={false}
-        renderOrder={1}
+        renderOrder={-2}
       />
       <mesh
         ref={bandAccent}
         geometry={bandAccentGeometry}
         material={bandAccentMaterial}
         frustumCulled={false}
-        renderOrder={2}
+        renderOrder={-1}
       />
     </>
   )

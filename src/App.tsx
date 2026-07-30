@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from "react"
+import { lazy, Suspense, useEffect, useLayoutEffect, useState } from "react"
 import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 
 import {
@@ -427,6 +427,12 @@ function App({ pathname }: { pathname?: string }) {
     (typeof window === "undefined" ? "/" : window.location.pathname)
   const route = matchRoute(currentPath)
 
+  useLayoutEffect(() => {
+    if (document.documentElement.dataset.introSeen === "true") {
+      setHasEntered(true)
+    }
+  }, [])
+
   useEffect(() => {
     const previousOverflow = document.body.style.overflow
     const previousOverscroll = document.body.style.overscrollBehavior
@@ -447,7 +453,15 @@ function App({ pathname }: { pathname?: string }) {
   }, [hasEntered])
 
   const enterWebsite = () => {
-    if (!hasEntered) setHasEntered(true)
+    if (hasEntered) return
+
+    try {
+      window.sessionStorage.setItem("cube-intro-entered", "1")
+    } catch {
+      // The intro still works when storage is unavailable.
+    }
+
+    setHasEntered(true)
   }
 
   return (
@@ -462,8 +476,8 @@ function App({ pathname }: { pathname?: string }) {
           y: hasEntered ? 0 : reduceMotion ? 0 : 22,
         }}
         transition={{
-          duration: reduceMotion ? 0.01 : 0.8,
-          delay: reduceMotion ? 0 : 0.16,
+          duration: reduceMotion ? 0.01 : 0.56,
+          delay: reduceMotion ? 0 : 0.06,
           ease: [0.22, 1, 0.36, 1],
         }}
         style={{
@@ -501,11 +515,11 @@ function App({ pathname }: { pathname?: string }) {
             initial={{ opacity: 1 }}
             exit={{
               opacity: 0,
-              scale: reduceMotion ? 1 : 1.035,
-              filter: reduceMotion ? "blur(0px)" : "blur(8px)",
+              scale: reduceMotion ? 1 : 1.022,
+              filter: reduceMotion ? "blur(0px)" : "blur(5px)",
             }}
             transition={{
-              duration: reduceMotion ? 0.01 : 0.72,
+              duration: reduceMotion ? 0.01 : 0.48,
               ease: [0.65, 0, 0.35, 1],
             }}
           >

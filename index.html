@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0b0b0d" />
     <link rel="icon" href="/favicon.svg" />
+    <script>
+      try {
+        if (sessionStorage.getItem("cube-intro-entered") === "1") {
+          document.documentElement.dataset.introSeen = "true"
+        }
+      } catch {}
+    </script>
     <!--app-head-->
   </head>
   <body>

@@ -125,6 +125,17 @@
   min-height: 100vh;
 }
 
+html[data-intro-seen="true"] .site-reveal {
+  visibility: visible !important;
+  opacity: 1 !important;
+  transform: none !important;
+  pointer-events: auto !important;
+}
+
+html[data-intro-seen="true"] .lanyard-intro {
+  display: none;
+}
+
 .lanyard-intro {
   position: fixed;
   inset: 0;
