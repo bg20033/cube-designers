@@ -210,6 +210,8 @@ function Band({ isMobile, onActivate }: BandProps) {
   )
   const point = useMemo(() => new THREE.Vector3(), [])
   const direction = useMemo(() => new THREE.Vector3(), [])
+  const cardAnchor = useMemo(() => new THREE.Vector3(), [])
+  const cardQuaternion = useMemo(() => new THREE.Quaternion(), [])
   const angularVelocity = useMemo(() => new THREE.Vector3(), [])
   const rotation = useMemo(() => new THREE.Vector3(), [])
 
@@ -296,7 +298,18 @@ function Band({ isMobile, onActivate }: BandProps) {
         )
         smoothed.lerp(body.translation(), delta * (4 + distance * 46))
       })
-      curve.points[0].copy(joint3.current.translation())
+      const cardRotation = card.current.rotation()
+      cardQuaternion.set(
+        cardRotation.x,
+        cardRotation.y,
+        cardRotation.z,
+        cardRotation.w,
+      )
+      cardAnchor
+        .set(0, CARD_HEIGHT / 2 + 0.08, 0)
+        .applyQuaternion(cardQuaternion)
+        .add(card.current.translation())
+      curve.points[0].copy(cardAnchor)
       curve.points[1].copy(getSmoothedPoint(joint2.current))
       curve.points[2].copy(getSmoothedPoint(joint1.current))
       curve.points[3].copy(fixed.current.translation())
