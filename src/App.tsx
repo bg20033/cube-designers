@@ -476,8 +476,8 @@ function App({ pathname }: { pathname?: string }) {
           y: hasEntered ? 0 : reduceMotion ? 0 : 22,
         }}
         transition={{
-          duration: reduceMotion ? 0.01 : 0.56,
-          delay: reduceMotion ? 0 : 0.06,
+          duration: reduceMotion ? 0.01 : 0.36,
+          delay: 0,
           ease: [0.22, 1, 0.36, 1],
         }}
         style={{
@@ -519,7 +519,7 @@ function App({ pathname }: { pathname?: string }) {
               filter: reduceMotion ? "blur(0px)" : "blur(5px)",
             }}
             transition={{
-              duration: reduceMotion ? 0.01 : 0.48,
+              duration: reduceMotion ? 0.01 : 0.3,
               ease: [0.65, 0, 0.35, 1],
             }}
           >

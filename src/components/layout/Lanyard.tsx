@@ -130,7 +130,7 @@ export default function Lanyard({ onActivate }: LanyardProps) {
       <ambientLight intensity={2.15} />
       <directionalLight color="#fff9f0" intensity={3.2} position={[-4, 5, 7]} />
       <pointLight color="#ffb078" intensity={14} position={[4, -3, 4]} />
-      <Physics gravity={[0, -31, 0]} timeStep={1 / 60} interpolate>
+      <Physics gravity={[0, -36, 0]} timeStep={1 / 60} interpolate>
         <Band isMobile={isMobile} onActivate={onActivate} />
       </Physics>
     </Canvas>
@@ -217,8 +217,8 @@ function Band({ isMobile, onActivate }: BandProps) {
     type: "dynamic",
     colliders: false,
     canSleep: true,
-    angularDamping: 2.15,
-    linearDamping: 2.55,
+    angularDamping: 1.45,
+    linearDamping: 1.8,
   }
 
   useRopeJoint(fixed, joint1, [[0, 0, 0], [0, 0, 0], 1.1])
@@ -320,7 +320,7 @@ function Band({ isMobile, onActivate }: BandProps) {
       const next = THREE.MathUtils.damp(
         cardVisual.current.scale.x,
         target,
-        24,
+        34,
         delta,
       )
       cardVisual.current.scale.setScalar(next)
@@ -355,7 +355,7 @@ function Band({ isMobile, onActivate }: BandProps) {
     )
     if (moved <= 8) {
       setPressed(true)
-      activationTimer.current = window.setTimeout(onActivate, 90)
+      activationTimer.current = window.setTimeout(onActivate, 35)
     }
   }
 
