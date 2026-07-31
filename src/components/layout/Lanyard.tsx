@@ -14,18 +14,30 @@ import {
   useFrame,
   type ThreeEvent,
 } from "@react-three/fiber"
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { MeshLineGeometry, MeshLineMaterial } from "meshline"
 import * as THREE from "three"
 
 type LanyardProps = { onActivate: () => void }
-type BandProps = LanyardProps & { isMobile: boolean }
+type GyroMotion = { x: number; z: number; active: boolean }
+type BandProps = LanyardProps & {
+  isMobile: boolean
+  gyroMotion: { current: GyroMotion }
+  requestGyroscope: () => void
+}
 type LanyardBody = RapierRigidBody & { lerped?: THREE.Vector3 }
+type OrientationEventWithPermission = typeof DeviceOrientationEvent & {
+  requestPermission?: () => Promise<"granted" | "denied">
+}
 
 const CARD_WIDTH = 2.45
 const CARD_HEIGHT = 3.45
 const BAND_WIDTH = 0.16
 const BAND_ACCENT_WIDTH = 0.024
+const ROPE_LENGTH = 3.3
+const CARD_ANCHOR_OFFSET = CARD_HEIGHT / 2 + 0.08
+const RETURN_STRENGTH = 72
+const RETURN_DAMPING = 15
 
 function createBadgeTexture(back = false) {
   const canvas = document.createElement("canvas")
@@ -102,6 +114,9 @@ function createBadgeTexture(back = false) {
 
 export default function Lanyard({ onActivate }: LanyardProps) {
   const [isMobile, setIsMobile] = useState(false)
+  const gyroMotion = useRef<GyroMotion>({ x: 0, z: 0, active: false })
+  const gyroBaseline = useRef<{ beta: number; gamma: number } | null>(null)
+  const gyroPermissionRequested = useRef(false)
 
   useEffect(() => {
     const updateViewport = () => setIsMobile(window.innerWidth < 720)
@@ -109,6 +124,71 @@ export default function Lanyard({ onActivate }: LanyardProps) {
     window.addEventListener("resize", updateViewport)
     return () => window.removeEventListener("resize", updateViewport)
   }, [])
+
+  useEffect(() => {
+    if (!isMobile || typeof DeviceOrientationEvent === "undefined") return
+
+    const handleOrientation = (event: DeviceOrientationEvent) => {
+      if (event.beta === null || event.gamma === null) return
+
+      if (!gyroBaseline.current) {
+        gyroBaseline.current = { beta: event.beta, gamma: event.gamma }
+      }
+
+      const beta = THREE.MathUtils.clamp(
+        (event.beta - gyroBaseline.current.beta) / 28,
+        -1,
+        1,
+      )
+      const gamma = THREE.MathUtils.clamp(
+        (event.gamma - gyroBaseline.current.gamma) / 24,
+        -1,
+        1,
+      )
+      const angle = window.screen.orientation?.angle ?? 0
+      let x = gamma
+      let z = beta
+
+      if (angle === 90) {
+        x = -beta
+        z = gamma
+      } else if (angle === 270 || angle === -90) {
+        x = beta
+        z = -gamma
+      }
+
+      gyroMotion.current.x = THREE.MathUtils.lerp(gyroMotion.current.x, x, 0.22)
+      gyroMotion.current.z = THREE.MathUtils.lerp(gyroMotion.current.z, z, 0.22)
+      gyroMotion.current.active = true
+    }
+
+    window.addEventListener("deviceorientation", handleOrientation, true)
+    return () => {
+      window.removeEventListener("deviceorientation", handleOrientation, true)
+      gyroBaseline.current = null
+      gyroMotion.current = { x: 0, z: 0, active: false }
+    }
+  }, [isMobile])
+
+  const requestGyroscope = useCallback(() => {
+    if (
+      !isMobile ||
+      gyroPermissionRequested.current ||
+      typeof DeviceOrientationEvent === "undefined"
+    ) {
+      return
+    }
+
+    gyroPermissionRequested.current = true
+    const orientationEvent =
+      DeviceOrientationEvent as OrientationEventWithPermission
+
+    if (orientationEvent.requestPermission) {
+      void orientationEvent.requestPermission().catch(() => {
+        gyroPermissionRequested.current = false
+      })
+    }
+  }, [isMobile])
 
   return (
     <Canvas
@@ -130,14 +210,24 @@ export default function Lanyard({ onActivate }: LanyardProps) {
       <ambientLight intensity={2.15} />
       <directionalLight color="#fff9f0" intensity={3.2} position={[-4, 5, 7]} />
       <pointLight color="#ffb078" intensity={14} position={[4, -3, 4]} />
-      <Physics gravity={[0, -36, 0]} timeStep={1 / 60} interpolate>
-        <Band isMobile={isMobile} onActivate={onActivate} />
+      <Physics gravity={[0, -56, 0]} timeStep={1 / 60} interpolate>
+        <Band
+          isMobile={isMobile}
+          gyroMotion={gyroMotion}
+          requestGyroscope={requestGyroscope}
+          onActivate={onActivate}
+        />
       </Physics>
     </Canvas>
   )
 }
 
-function Band({ isMobile, onActivate }: BandProps) {
+function Band({
+  isMobile,
+  gyroMotion,
+  requestGyroscope,
+  onActivate,
+}: BandProps) {
   const fixed = useRef<RapierRigidBody>(null!)
   const joint1 = useRef<LanyardBody>(null!)
   const joint2 = useRef<LanyardBody>(null!)
@@ -214,13 +304,15 @@ function Band({ isMobile, onActivate }: BandProps) {
   const cardQuaternion = useMemo(() => new THREE.Quaternion(), [])
   const angularVelocity = useMemo(() => new THREE.Vector3(), [])
   const rotation = useMemo(() => new THREE.Vector3(), [])
+  const returnForce = useMemo(() => new THREE.Vector3(), [])
 
   const segmentProps: RigidBodyProps = {
     type: "dynamic",
     colliders: false,
     canSleep: true,
-    angularDamping: 1.45,
-    linearDamping: 1.8,
+    angularDamping: 3.2,
+    linearDamping: 3.6,
+    ccd: true,
   }
 
   useRopeJoint(fixed, joint1, [[0, 0, 0], [0, 0, 0], 1.1])
@@ -318,10 +410,54 @@ function Band({ isMobile, onActivate }: BandProps) {
       bandAccent.current.geometry.setPoints(curvePoints)
       angularVelocity.copy(card.current.angvel())
       rotation.copy(card.current.rotation())
+
+      if (!dragOffset) {
+        const fixedPosition = fixed.current.translation()
+        const cardPosition = card.current.translation()
+        const velocity = card.current.linvel()
+        const gyro = gyroMotion.current
+        const targetY = fixedPosition.y - ROPE_LENGTH - CARD_ANCHOR_OFFSET
+
+        returnForce.set(
+          (fixedPosition.x - cardPosition.x) * RETURN_STRENGTH -
+            velocity.x * RETURN_DAMPING,
+          Math.min(0, targetY - cardPosition.y) * RETURN_STRENGTH,
+          (fixedPosition.z - cardPosition.z) * RETURN_STRENGTH -
+            velocity.z * RETURN_DAMPING,
+        )
+
+        if (isMobile && gyro.active) {
+          returnForce.x += gyro.x * 58
+          returnForce.z += gyro.z * 44
+          card.current.addTorque(
+            {
+              x: gyro.z * 5.5,
+              y: gyro.x * 2.4,
+              z: -gyro.x * 7,
+            },
+            true,
+          )
+          joint1.current.addForce(
+            { x: gyro.x * 8, y: 0, z: gyro.z * 6 },
+            true,
+          )
+          joint2.current.addForce(
+            { x: gyro.x * 13, y: 0, z: gyro.z * 10 },
+            true,
+          )
+          joint3.current.addForce(
+            { x: gyro.x * 18, y: 0, z: gyro.z * 14 },
+            true,
+          )
+        }
+
+        card.current.addForce(returnForce, true)
+      }
+
       card.current.setAngvel(
         {
           x: angularVelocity.x,
-          y: angularVelocity.y - rotation.y * 0.22,
+          y: angularVelocity.y - rotation.y * 0.48,
           z: angularVelocity.z,
         },
         true,
@@ -344,6 +480,7 @@ function Band({ isMobile, onActivate }: BandProps) {
 
   const handlePointerDown = (event: ThreeEvent<PointerEvent>) => {
     event.stopPropagation()
+    requestGyroscope()
     pressOrigin.current = {
       x: event.nativeEvent.clientX,
       y: event.nativeEvent.clientY,
