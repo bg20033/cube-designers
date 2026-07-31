@@ -34,10 +34,7 @@ const CARD_WIDTH = 2.45
 const CARD_HEIGHT = 3.45
 const BAND_WIDTH = 0.16
 const BAND_ACCENT_WIDTH = 0.024
-const ROPE_LENGTH = 3.3
-const CARD_ANCHOR_OFFSET = CARD_HEIGHT / 2 + 0.08
-const RETURN_STRENGTH = 72
-const RETURN_DAMPING = 15
+const RELEASE_RETURN_SPEED = 7
 
 function createBadgeTexture(back = false) {
   const canvas = document.createElement("canvas")
@@ -210,7 +207,7 @@ export default function Lanyard({ onActivate }: LanyardProps) {
       <ambientLight intensity={2.15} />
       <directionalLight color="#fff9f0" intensity={3.2} position={[-4, 5, 7]} />
       <pointLight color="#ffb078" intensity={14} position={[4, -3, 4]} />
-      <Physics gravity={[0, -56, 0]} timeStep={1 / 60} interpolate>
+      <Physics gravity={[0, -44, 0]} timeStep={1 / 60} interpolate>
         <Band
           isMobile={isMobile}
           gyroMotion={gyroMotion}
@@ -248,6 +245,7 @@ function Band({
   const cardVisual = useRef<THREE.Group>(null)
   const pressOrigin = useRef({ x: 0, y: 0 })
   const activationTimer = useRef<number | undefined>(undefined)
+  const wasDragging = useRef(false)
   const frontTexture = useMemo(() => createBadgeTexture(), [])
   const backTexture = useMemo(() => createBadgeTexture(true), [])
   const bandGeometry = useMemo(() => new MeshLineGeometry(), [])
@@ -304,14 +302,14 @@ function Band({
   const cardQuaternion = useMemo(() => new THREE.Quaternion(), [])
   const angularVelocity = useMemo(() => new THREE.Vector3(), [])
   const rotation = useMemo(() => new THREE.Vector3(), [])
-  const returnForce = useMemo(() => new THREE.Vector3(), [])
+  const gyroForce = useMemo(() => new THREE.Vector3(), [])
 
   const segmentProps: RigidBodyProps = {
     type: "dynamic",
     colliders: false,
     canSleep: true,
-    angularDamping: 3.2,
-    linearDamping: 3.6,
+    angularDamping: 3,
+    linearDamping: 2.8,
     ccd: true,
   }
 
@@ -360,6 +358,7 @@ function Band({
       joint3.current &&
       card.current
     ) {
+      wasDragging.current = true
       point.set(state.pointer.x, state.pointer.y, 0.5).unproject(state.camera)
       direction.copy(point).sub(state.camera.position).normalize()
       point.add(direction.multiplyScalar(state.camera.position.length()))
@@ -411,56 +410,68 @@ function Band({
       angularVelocity.copy(card.current.angvel())
       rotation.copy(card.current.rotation())
 
-      if (!dragOffset) {
+      if (!dragOffset && wasDragging.current) {
         const fixedPosition = fixed.current.translation()
         const cardPosition = card.current.translation()
         const velocity = card.current.linvel()
-        const gyro = gyroMotion.current
-        const targetY = fixedPosition.y - ROPE_LENGTH - CARD_ANCHOR_OFFSET
 
-        returnForce.set(
-          (fixedPosition.x - cardPosition.x) * RETURN_STRENGTH -
-            velocity.x * RETURN_DAMPING,
-          Math.min(0, targetY - cardPosition.y) * RETURN_STRENGTH,
-          (fixedPosition.z - cardPosition.z) * RETURN_STRENGTH -
-            velocity.z * RETURN_DAMPING,
+        card.current.setLinvel(
+          {
+            x: THREE.MathUtils.clamp(
+              (fixedPosition.x - cardPosition.x) * RELEASE_RETURN_SPEED,
+              -15,
+              15,
+            ),
+            y: Math.min(velocity.y, -5),
+            z: THREE.MathUtils.clamp(
+              (fixedPosition.z - cardPosition.z) * RELEASE_RETURN_SPEED,
+              -12,
+              12,
+            ),
+          },
+          true,
         )
+        wasDragging.current = false
+      }
 
-        if (isMobile && gyro.active) {
-          returnForce.x += gyro.x * 58
-          returnForce.z += gyro.z * 44
-          card.current.addTorque(
-            {
-              x: gyro.z * 5.5,
-              y: gyro.x * 2.4,
-              z: -gyro.x * 7,
-            },
-            true,
-          )
-          joint1.current.addForce(
-            { x: gyro.x * 8, y: 0, z: gyro.z * 6 },
-            true,
-          )
-          joint2.current.addForce(
-            { x: gyro.x * 13, y: 0, z: gyro.z * 10 },
-            true,
-          )
-          joint3.current.addForce(
-            { x: gyro.x * 18, y: 0, z: gyro.z * 14 },
-            true,
-          )
-        }
-
-        card.current.addForce(returnForce, true)
+      const gyro = gyroMotion.current
+      if (
+        !dragOffset &&
+        isMobile &&
+        gyro.active &&
+        Math.abs(gyro.x) + Math.abs(gyro.z) > 0.015
+      ) {
+        gyroForce.set(gyro.x * 34, 0, gyro.z * 28)
+        card.current.addTorque(
+          {
+            x: gyro.z * 3.4,
+            y: gyro.x * 1.5,
+            z: -gyro.x * 4.2,
+          },
+          true,
+        )
+        joint1.current.addForce(
+          { x: gyro.x * 5, y: 0, z: gyro.z * 4 },
+          true,
+        )
+        joint2.current.addForce(
+          { x: gyro.x * 8, y: 0, z: gyro.z * 6 },
+          true,
+        )
+        joint3.current.addForce(
+          { x: gyro.x * 11, y: 0, z: gyro.z * 9 },
+          true,
+        )
+        card.current.addForce(gyroForce, true)
       }
 
       card.current.setAngvel(
         {
           x: angularVelocity.x,
-          y: angularVelocity.y - rotation.y * 0.48,
+          y: angularVelocity.y - rotation.y * 0.2,
           z: angularVelocity.z,
         },
-        true,
+        false,
       )
     }
 
