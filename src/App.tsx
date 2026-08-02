@@ -20,6 +20,7 @@ import {
 import { matchRoute } from "@/app/routes"
 import { RoutePathProvider } from "@/app/RouteContext"
 import Lanyard from "@/components/layout/Lanyard"
+import DareContact from "@/components/DareContact"
 
 const PixelBlast = lazy(() => import("@/components/PixelBlast"))
 const AboutPage = lazy(() => import("@/components/AboutPage"))
@@ -412,6 +413,7 @@ export function HomePage({ effectsEnabled = true }: { effectsEnabled?: boolean }
         <CollaborationProof />
         <FaqSection />
         <ContactSection />
+        <DareContact />
       </main>
 
       <SiteFooter />

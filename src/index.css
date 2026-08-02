@@ -2338,6 +2338,586 @@ html[data-intro-seen="true"] .lanyard-intro {
   text-decoration: none;
 }
 
+.dare-contact {
+  position: relative;
+  z-index: 1;
+  min-height: 100svh;
+  overflow: hidden;
+  padding: clamp(5rem, 8vw, 8rem) 5vw clamp(5rem, 9vw, 9rem);
+  background:
+    radial-gradient(circle at 50% 36%, rgb(249 115 22 / 13%), transparent 28rem),
+    linear-gradient(115deg, transparent 0 49.8%, rgb(255 255 255 / 3%) 50% 50.2%, transparent 50.3%),
+    #0b0b0d;
+  color: var(--paper);
+}
+
+.dare-contact::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.14;
+  background-image: radial-gradient(rgb(255 255 255 / 45%) 0.6px, transparent 0.6px);
+  background-size: 7px 7px;
+  content: "";
+  pointer-events: none;
+}
+
+.dare-contact__heading {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: start;
+  justify-items: center;
+  padding-bottom: 1.3rem;
+  text-align: center;
+}
+
+.dare-contact__heading > span {
+  grid-column: 1 / -1;
+  margin-bottom: clamp(2.5rem, 6vw, 6rem);
+  color: var(--orange);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.dare-contact__heading h2 {
+  width: 100%;
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: clamp(3.7rem, 9.4vw, 10rem);
+  font-weight: 950;
+  line-height: 0.77;
+  letter-spacing: -0.08em;
+  text-transform: uppercase;
+}
+
+.dare-contact__heading p {
+  width: min(25rem, 100%);
+  margin: 1.5rem 0 0;
+  color: rgb(245 241 231 / 60%);
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.dare-contact__stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: clamp(4rem, 8vw, 8rem);
+}
+
+.danger-switch {
+  display: block;
+  width: 150px;
+  height: 195px;
+  padding: 20px;
+  border-radius: 5px;
+  background-color: black;
+  box-shadow:
+    0 0 10px 2px rgb(0 0 0 / 20%),
+    0 0 1px 2px black,
+    inset 0 2px 2px -2px white,
+    inset 0 0 2px 15px #47434c,
+    inset 0 0 2px 22px black;
+  perspective: 700px;
+}
+
+.danger-switch input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.danger-switch:focus-within {
+  outline: 3px solid var(--orange);
+  outline-offset: 8px;
+}
+
+.danger-switch__button {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  transform: translateZ(20px) rotateX(-25deg);
+  transform-origin: center center -20px;
+  transform-style: preserve-3d;
+  background: linear-gradient(#980000 0%, #6f0000 30%, #6f0000 70%, #980000 100%);
+  transition: all 300ms cubic-bezier(1, 0, 1, 1);
+}
+
+.danger-switch__button::before,
+.danger-switch__button::after {
+  position: absolute;
+  width: 100%;
+  height: 50px;
+  transform-origin: top;
+  content: "";
+}
+
+.danger-switch__button::before {
+  top: 0;
+  transform: rotateX(-90deg);
+  background: linear-gradient(rgb(255 255 255 / 80%) 10%, rgb(255 255 255 / 30%) 30%, #650000 75%, #320000) 50% 50% / 97% 97%, #b10000;
+}
+
+.danger-switch__button::after {
+  bottom: 0;
+  transform: translateY(50px) rotateX(-90deg);
+  background-image: linear-gradient(#650000, #320000);
+  box-shadow: 0 50px 8px black, 0 80px 20px rgb(0 0 0 / 50%);
+}
+
+.danger-switch input:checked + .danger-switch__button {
+  cursor: default;
+  transform: translateZ(20px) rotateX(25deg);
+  box-shadow: 0 -10px 20px #ff1818;
+}
+
+.danger-switch__button > span {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.danger-switch__light {
+  opacity: 0;
+  background-image: radial-gradient(#ffc97e, #ff1818 40%, transparent 70%);
+  animation: danger-light-off 1s;
+}
+
+.danger-switch input:checked + .danger-switch__button .danger-switch__light {
+  animation: danger-flicker 200ms 300ms infinite;
+}
+
+.danger-switch__dots {
+  background-image: radial-gradient(transparent 30%, rgb(101 0 0 / 70%) 70%);
+  background-size: 10px 10px;
+}
+
+.danger-switch__characters {
+  background: linear-gradient(white, white) 50% 20% / 5% 20%, radial-gradient(circle, transparent 50%, white 52%, white 70%, transparent 72%) 50% 80% / 33% 25%;
+  background-repeat: no-repeat;
+}
+
+.danger-switch__shine {
+  opacity: 0.3;
+  background: linear-gradient(white, transparent 3%) 50% 50% / 97% 97%, linear-gradient(rgb(255 255 255 / 50%), transparent 50%, transparent 80%, rgb(255 255 255 / 50%)) 50% 50% / 97% 97%;
+  background-repeat: no-repeat;
+  transition: opacity 300ms cubic-bezier(1, 0, 1, 1);
+}
+
+.danger-switch input:checked + .danger-switch__button .danger-switch__shine {
+  opacity: 1;
+}
+
+.danger-switch__shadow {
+  opacity: 1;
+  background: linear-gradient(transparent 70%, rgb(0 0 0 / 80%));
+  transition: opacity 300ms cubic-bezier(1, 0, 1, 1);
+}
+
+.danger-switch input:checked + .danger-switch__button .danger-switch__shadow {
+  opacity: 0;
+}
+
+.contact-printer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  overflow: hidden;
+  background: rgb(11 11 13 / 20%);
+  animation: contact-overlay-in 260ms ease-out both;
+  transition: background-color 500ms ease;
+}
+
+.contact-printer-overlay--printed {
+  background: rgb(11 11 13 / 82%);
+}
+
+.contact-printer__close {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 7;
+  display: flex;
+  gap: 0.65rem;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid rgb(255 255 255 / 25%);
+  border-radius: 999px;
+  opacity: 0;
+  background: rgb(11 11 13 / 80%);
+  color: white;
+  font: 750 0.62rem/1 var(--font-sans);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  visibility: hidden;
+  cursor: pointer;
+  transition: opacity 250ms ease, background-color 180ms ease;
+}
+
+.contact-printer-overlay--printed .contact-printer__close {
+  opacity: 1;
+  visibility: visible;
+}
+
+.contact-printer__close:hover {
+  background: var(--orange);
+  color: var(--ink);
+}
+
+.contact-printer__close svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.contact-printer__machine {
+  position: absolute;
+  right: 1rem;
+  bottom: 0;
+  left: 1rem;
+  z-index: 6;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  width: min(760px, calc(100vw - 2rem));
+  min-height: 82px;
+  margin-inline: auto;
+  padding: 1.1rem 1.3rem 1.5rem;
+  border: 1px solid #504d52;
+  border-radius: 8px 8px 2px 2px;
+  background: linear-gradient(#353239, #161518 72%);
+  box-shadow: 0 24px 40px rgb(0 0 0 / 65%), inset 0 1px rgb(255 255 255 / 18%);
+  animation: contact-printer-arrive 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.contact-printer__machine::after {
+  position: absolute;
+  right: 1.3rem;
+  bottom: 0.75rem;
+  left: 1.3rem;
+  height: 8px;
+  border-radius: 999px;
+  background: #050505;
+  box-shadow: inset 0 2px 3px black, 0 1px rgb(255 255 255 / 10%);
+  content: "";
+}
+
+.contact-printer__machine span,
+.contact-printer__machine strong {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+}
+
+.contact-printer__machine span {
+  color: rgb(255 255 255 / 42%);
+}
+
+.contact-printer__machine strong {
+  grid-column: 2;
+  grid-row: 1;
+  color: #777;
+}
+
+.contact-printer__machine i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #555;
+  box-shadow: 0 0 0 3px #171719;
+}
+
+.dare-contact--printing .danger-switch {
+  animation: contact-machine-shake 90ms steps(2, end) infinite;
+}
+
+.contact-printer-overlay .contact-printer__machine i {
+  background: #ff3028;
+  box-shadow: 0 0 0 3px #171719, 0 0 14px #ff1818;
+}
+
+.contact-printer-overlay--printing .contact-printer__machine strong {
+  color: #ff6b64;
+  animation: contact-status-blink 360ms steps(2, end) infinite;
+}
+
+.contact-printer-overlay--printed .contact-printer__machine strong {
+  color: var(--acid);
+}
+
+.contact-printer__noise {
+  position: fixed;
+  right: max(1rem, calc((100vw - 760px) / 2));
+  bottom: 88px;
+  left: max(1rem, calc((100vw - 760px) / 2));
+  z-index: 5;
+  display: flex;
+  justify-content: space-between;
+  opacity: 0;
+  color: var(--orange);
+  font-family: var(--font-heading);
+  font-size: clamp(1.4rem, 4vw, 3.4rem);
+  font-weight: 950;
+  letter-spacing: -0.08em;
+  pointer-events: none;
+}
+
+.contact-printer-overlay--printing .contact-printer__noise {
+  animation: contact-grind-type 520ms steps(3, end) infinite;
+}
+
+.contact-printer__noise span:nth-child(2) {
+  transform: translateY(1.2rem) rotate(-5deg);
+}
+
+.contact-printer__noise span:nth-child(3) {
+  transform: rotate(4deg);
+}
+
+.contact-printer__output {
+  position: absolute;
+  inset: 0 0 80px;
+  z-index: 4;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  padding-inline: clamp(1.5rem, 5vw, 4rem);
+  pointer-events: none;
+}
+
+.contact-printer-overlay--printed .contact-printer__output {
+  pointer-events: auto;
+}
+
+.contact-paper {
+  position: relative;
+  display: grid;
+  gap: 2rem;
+  width: min(680px, 100%);
+  max-height: calc(100svh - 104px);
+  overflow-y: auto;
+  padding: clamp(2rem, 5vw, 4rem);
+  border: 1px solid #d3cdbc;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 31px, rgb(11 11 13 / 5%) 31px 32px),
+    var(--paper);
+  color: var(--ink);
+  transform: translateY(105%);
+  transform-origin: bottom;
+  box-shadow: 0 24px 80px rgb(0 0 0 / 60%);
+  scrollbar-color: var(--orange) transparent;
+}
+
+.contact-printer-overlay--printing .contact-paper {
+  overflow-y: hidden;
+  animation: contact-paper-print 2800ms 380ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.contact-printer-overlay--printed .contact-paper {
+  transform: translateY(0);
+  animation: none;
+}
+
+.contact-paper::before {
+  position: absolute;
+  inset: 0;
+  opacity: 0.18;
+  background-image: radial-gradient(#776f60 0.55px, transparent 0.55px);
+  background-size: 5px 5px;
+  content: "";
+  pointer-events: none;
+}
+
+.contact-paper__meta {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--ink);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.55rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+}
+
+.contact-paper__intro span,
+.contact-paper__fields label > span {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.58rem;
+  font-weight: 750;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.contact-paper__intro h3 {
+  margin: 0.2rem 0 0;
+  font-family: var(--font-heading);
+  font-size: clamp(3.5rem, 10vw, 7rem);
+  font-weight: 950;
+  line-height: 0.85;
+  letter-spacing: -0.075em;
+  text-transform: uppercase;
+}
+
+.contact-paper__fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.contact-paper__fields label {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.contact-paper__message {
+  grid-column: 1 / -1;
+}
+
+.contact-paper input,
+.contact-paper textarea {
+  width: 100%;
+  border: 0;
+  border-bottom: 2px solid var(--ink);
+  border-radius: 0;
+  outline: none;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  resize: vertical;
+}
+
+.contact-paper input {
+  height: 2.4rem;
+}
+
+.contact-paper textarea {
+  min-height: 5rem;
+  padding-block: 0.45rem;
+}
+
+.contact-paper input:focus,
+.contact-paper textarea:focus {
+  border-color: var(--orange);
+  box-shadow: 0 2px var(--orange);
+}
+
+.contact-paper button {
+  position: relative;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 64px;
+  padding: 1rem 1.25rem;
+  border: 0;
+  background: var(--ink);
+  color: white;
+  font: 800 0.72rem/1 var(--font-sans);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.contact-paper button:hover {
+  background: var(--orange);
+  color: var(--ink);
+}
+
+.contact-paper button svg {
+  width: 1.2rem;
+  transition: transform 180ms ease;
+}
+
+.contact-paper button:hover svg {
+  transform: translate(0.2rem, -0.2rem);
+}
+
+.contact-paper__serial {
+  color: rgb(11 11 13 / 48%);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.12em;
+  text-align: center;
+}
+
+@keyframes danger-flicker {
+  0%, 100% { opacity: 1; }
+  80% { opacity: 0.8; }
+}
+
+@keyframes danger-light-off {
+  0% { opacity: 1; }
+  80%, 100% { opacity: 0; }
+}
+
+@keyframes contact-machine-shake {
+  0% { transform: translate(-1px, 0); }
+  50% { transform: translate(1px, 1px); }
+  100% { transform: translate(0, -1px); }
+}
+
+@keyframes contact-overlay-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes contact-printer-arrive {
+  from { transform: translateY(115%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes contact-status-blink {
+  0%, 45% { opacity: 1; }
+  46%, 100% { opacity: 0.35; }
+}
+
+@keyframes contact-grind-type {
+  0% { opacity: 0; transform: scale(0.9); }
+  35%, 75% { opacity: 1; }
+  100% { opacity: 0; transform: scale(1.08); }
+}
+
+@keyframes contact-paper-print {
+  0%, 8% { transform: translateY(105%); }
+  24% { transform: translateY(82%); }
+  27% { transform: translateY(86%); }
+  48% { transform: translateY(54%); }
+  51% { transform: translateY(58%); }
+  72% { transform: translateY(26%); }
+  75% { transform: translateY(30%); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes contact-screen-push {
+  0%, 8% { transform: translateY(0); }
+  24% { transform: translateY(-3svh); }
+  27% { transform: translateY(-2.5svh); }
+  48% { transform: translateY(-6svh); }
+  51% { transform: translateY(-5.5svh); }
+  72% { transform: translateY(-9svh); }
+  75% { transform: translateY(-8.5svh); }
+  100% { transform: translateY(-12svh); }
+}
+
+body.contact-printer-printing .site-reveal {
+  animation: contact-screen-push 3180ms 120ms steps(10, end) forwards;
+  will-change: transform;
+}
+
+body.contact-printer-ready .site-reveal {
+  transform: translateY(-12svh) !important;
+}
+
 .agency-footer {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -2786,6 +3366,40 @@ html[data-intro-seen="true"] .lanyard-intro {
     grid-template-columns: 1fr;
   }
 
+  .dare-contact {
+    padding-inline: 1rem;
+  }
+
+  .dare-contact__heading {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .dare-contact__heading p {
+    width: min(100%, 30rem);
+  }
+
+  .dare-contact__stage {
+    padding-top: 5rem;
+  }
+
+  .contact-printer__output {
+    padding-inline: 1.5rem;
+  }
+
+  .contact-paper {
+    gap: 1.5rem;
+    padding: 2rem 1.25rem;
+  }
+
+  .contact-paper__fields {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-paper__message {
+    grid-column: auto;
+  }
+
   .agency-footer {
     grid-template-columns: 1fr;
     gap: 1rem;
@@ -2844,6 +3458,126 @@ html[data-intro-seen="true"] .lanyard-intro {
 
   .phase-main-card [data-slot="card-footer"] span {
     display: none;
+  }
+}
+
+/* Mechanical crunch runs only while the contact button is printing. */
+body.contact-printer-printing::after {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  opacity: 0.11;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 3px,
+      rgb(255 255 255 / 16%) 3px 4px
+    ),
+    linear-gradient(90deg, rgb(249 115 22 / 8%), transparent 35% 68%, rgb(109 82 255 / 7%));
+  mix-blend-mode: overlay;
+  content: "";
+  pointer-events: none;
+  animation: cube-crunch-scan 720ms steps(3, end) infinite;
+}
+
+body.contact-printer-printing .agency-site :where(h1, h2, h3, .brand) {
+  animation: cube-type-crunch 1480ms steps(1, end) infinite;
+  will-change: translate, filter;
+}
+
+body.contact-printer-printing .agency-site :where(
+  section > header,
+  article,
+  .story-sidebar,
+  .story-card-shell,
+  .featured-project,
+  .studio-faq-trigger,
+  .closing-info > div,
+  .danger-switch
+) {
+  animation: cube-panel-crunch 1840ms steps(1, end) infinite;
+  will-change: translate;
+}
+
+body.contact-printer-printing .agency-site :where(article, .featured-project, .studio-faq-trigger):nth-child(2n) {
+  animation-delay: -610ms;
+  animation-direction: reverse;
+}
+
+body.contact-printer-printing .agency-site :where(article, .featured-project, .studio-faq-trigger):nth-child(3n) {
+  animation-delay: -1170ms;
+}
+
+body.contact-printer-printing .agency-site :where(a, button) {
+  transition: translate 90ms steps(2, end), filter 90ms steps(2, end);
+}
+
+body.contact-printer-printing .agency-site :where(a, button):hover {
+  translate: 1px -1px;
+  filter: contrast(1.12) saturate(1.16);
+}
+
+body.contact-printer-printing .agency-site :where(a, button):active {
+  translate: -2px 2px;
+  filter: contrast(1.3) saturate(1.28);
+}
+
+@keyframes cube-type-crunch {
+  0%, 72%, 100% {
+    translate: 0 0;
+    filter: none;
+    text-shadow: none;
+  }
+  73% {
+    translate: -1px 1px;
+    filter: contrast(1.18);
+    text-shadow: 2px 0 rgb(249 115 22 / 45%), -1px 0 rgb(109 82 255 / 35%);
+  }
+  76% {
+    translate: 2px -1px;
+    text-shadow: -2px 0 rgb(249 115 22 / 35%);
+  }
+  79% {
+    translate: -1px 0;
+    filter: contrast(1.08);
+    text-shadow: 1px 0 rgb(255 255 255 / 24%);
+  }
+  82% {
+    translate: 0 0;
+    filter: none;
+    text-shadow: none;
+  }
+}
+
+@keyframes cube-panel-crunch {
+  0%, 58%, 100% { translate: 0 0; }
+  60% { translate: 1px 0; }
+  63% { translate: -1px -1px; }
+  66% { translate: 2px 1px; }
+  69% { translate: -1px 0; }
+  72% { translate: 0 0; }
+}
+
+@keyframes cube-crunch-scan {
+  0% {
+    translate: 0 0;
+    clip-path: inset(0 0 0 0);
+  }
+  28% {
+    translate: 1px -1px;
+    clip-path: inset(7% 0 13% 0);
+  }
+  31% {
+    translate: -1px 1px;
+    clip-path: inset(0 0 0 0);
+  }
+  68% {
+    translate: 0 1px;
+    clip-path: inset(42% 0 28% 0);
+  }
+  72%, 100% {
+    translate: 0 0;
+    clip-path: inset(0 0 0 0);
   }
 }
 

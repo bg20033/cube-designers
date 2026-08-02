@@ -25,7 +25,6 @@ type BandProps = LanyardProps & {
   gyroMotion: { current: GyroMotion }
   requestGyroscope: () => void
 }
-type LanyardBody = RapierRigidBody & { lerped?: THREE.Vector3 }
 type OrientationEventWithPermission = typeof DeviceOrientationEvent & {
   requestPermission?: () => Promise<"granted" | "denied">
 }
@@ -35,21 +34,35 @@ const CARD_HEIGHT = 3.45
 const BAND_WIDTH = 0.16
 const BAND_ACCENT_WIDTH = 0.024
 const RELEASE_RETURN_SPEED = 7
+const MOBILE_BREAKPOINT = "(max-width: 719px)"
+const DESKTOP_BAND_POINTS = 29
+const MOBILE_BAND_POINTS = 21
 
-function createBadgeTexture(back = false) {
+const SEGMENT_PROPS: RigidBodyProps = {
+  type: "dynamic",
+  colliders: false,
+  canSleep: true,
+  angularDamping: 3,
+  linearDamping: 2.8,
+}
+
+function createBadgeTexture(back = false, mobile = false) {
   const canvas = document.createElement("canvas")
-  canvas.width = 768
-  canvas.height = 1080
+  const textureWidth = mobile ? 384 : 512
+  const textureScale = textureWidth / 768
+  canvas.width = textureWidth
+  canvas.height = Math.round(1080 * textureScale)
   const context = canvas.getContext("2d")
 
   if (!context) return new THREE.Texture()
 
+  context.scale(textureScale, textureScale)
   context.fillStyle = back ? "#151317" : "#f4f1ea"
-  context.fillRect(0, 0, canvas.width, canvas.height)
+  context.fillRect(0, 0, 768, 1080)
 
   if (back) {
     context.fillStyle = "#f97316"
-    context.fillRect(0, 0, 72, canvas.height)
+    context.fillRect(0, 0, 72, 1080)
     context.fillStyle = "#f4f1ea"
     context.font = "900 104px Arial, sans-serif"
     context.fillText("CUBE", 118, 250)
@@ -69,7 +82,7 @@ function createBadgeTexture(back = false) {
     gradient.addColorStop(0.58, "rgba(139,92,246,.04)")
     gradient.addColorStop(1, "rgba(139,92,246,.18)")
     context.fillStyle = gradient
-    context.fillRect(0, 0, canvas.width, canvas.height)
+    context.fillRect(0, 0, 768, 1080)
     context.fillStyle = "#0b0b0d"
     context.font = "900 112px Arial, sans-serif"
     context.fillText("CUBE", 62, 270)
@@ -109,6 +122,65 @@ function createBadgeTexture(back = false) {
   return texture
 }
 
+function createBandGeometry(pointCount: number) {
+  const geometry = new MeshLineGeometry()
+  geometry.setPoints(new Float32Array(pointCount * 3))
+  ;(["position", "previous", "next"] as const).forEach((attribute) => {
+    ;(geometry.getAttribute(attribute) as THREE.BufferAttribute).setUsage(
+      THREE.DynamicDrawUsage,
+    )
+  })
+  return geometry
+}
+
+function updateBandGeometry(
+  geometry: MeshLineGeometry,
+  curve: THREE.CatmullRomCurve3,
+  points: Float32Array,
+  sample: THREE.Vector3,
+) {
+  const pointCount = points.length / 3
+
+  for (let index = 0; index < pointCount; index += 1) {
+    curve.getPoint(index / (pointCount - 1), sample)
+    const offset = index * 3
+    points[offset] = sample.x
+    points[offset + 1] = sample.y
+    points[offset + 2] = sample.z
+  }
+
+  const position = geometry.getAttribute("position") as THREE.BufferAttribute
+  const previous = geometry.getAttribute("previous") as THREE.BufferAttribute
+  const next = geometry.getAttribute("next") as THREE.BufferAttribute
+  const positionValues = position.array as Float32Array
+  const previousValues = previous.array as Float32Array
+  const nextValues = next.array as Float32Array
+
+  for (let index = 0; index < pointCount; index += 1) {
+    const source = index * 3
+    const previousSource = Math.max(0, index - 1) * 3
+    const nextSource = Math.min(pointCount - 1, index + 1) * 3
+    const destination = index * 6
+
+    for (let duplicate = 0; duplicate < 2; duplicate += 1) {
+      const vertex = destination + duplicate * 3
+      positionValues[vertex] = points[source]
+      positionValues[vertex + 1] = points[source + 1]
+      positionValues[vertex + 2] = points[source + 2]
+      previousValues[vertex] = points[previousSource]
+      previousValues[vertex + 1] = points[previousSource + 1]
+      previousValues[vertex + 2] = points[previousSource + 2]
+      nextValues[vertex] = points[nextSource]
+      nextValues[vertex + 1] = points[nextSource + 1]
+      nextValues[vertex + 2] = points[nextSource + 2]
+    }
+  }
+
+  position.needsUpdate = true
+  previous.needsUpdate = true
+  next.needsUpdate = true
+}
+
 export default function Lanyard({ onActivate }: LanyardProps) {
   const [isMobile, setIsMobile] = useState(false)
   const gyroMotion = useRef<GyroMotion>({ x: 0, z: 0, active: false })
@@ -116,10 +188,11 @@ export default function Lanyard({ onActivate }: LanyardProps) {
   const gyroPermissionRequested = useRef(false)
 
   useEffect(() => {
-    const updateViewport = () => setIsMobile(window.innerWidth < 720)
+    const viewport = window.matchMedia(MOBILE_BREAKPOINT)
+    const updateViewport = () => setIsMobile(viewport.matches)
     updateViewport()
-    window.addEventListener("resize", updateViewport)
-    return () => window.removeEventListener("resize", updateViewport)
+    viewport.addEventListener("change", updateViewport)
+    return () => viewport.removeEventListener("change", updateViewport)
   }, [])
 
   useEffect(() => {
@@ -190,10 +263,10 @@ export default function Lanyard({ onActivate }: LanyardProps) {
   return (
     <Canvas
       camera={{
-        position: [0, 0, isMobile ? 17 : 15],
+        position: [0, 0, isMobile ? 14 : 15],
         fov: isMobile ? 35 : 31,
       }}
-      dpr={[1, isMobile ? 1.15 : 1.45]}
+      dpr={[1, isMobile ? 1 : 1.25]}
       gl={{
         alpha: true,
         antialias: true,
@@ -207,7 +280,7 @@ export default function Lanyard({ onActivate }: LanyardProps) {
       <ambientLight intensity={2.15} />
       <directionalLight color="#fff9f0" intensity={3.2} position={[-4, 5, 7]} />
       <pointLight color="#ffb078" intensity={14} position={[4, -3, 4]} />
-      <Physics gravity={[0, -44, 0]} timeStep={1 / 60} interpolate>
+      <Physics gravity={[0, -114, 0]} timeStep={1 / 170} interpolate>
         <Band
           isMobile={isMobile}
           gyroMotion={gyroMotion}
@@ -226,30 +299,25 @@ function Band({
   onActivate,
 }: BandProps) {
   const fixed = useRef<RapierRigidBody>(null!)
-  const joint1 = useRef<LanyardBody>(null!)
-  const joint2 = useRef<LanyardBody>(null!)
+  const joint1 = useRef<RapierRigidBody>(null!)
+  const joint2 = useRef<RapierRigidBody>(null!)
   const joint3 = useRef<RapierRigidBody>(null!)
   const card = useRef<RapierRigidBody>(null!)
-  const band = useRef<
-    THREE.Mesh<
-      InstanceType<typeof MeshLineGeometry>,
-      InstanceType<typeof MeshLineMaterial>
-    >
-  >(null)
-  const bandAccent = useRef<
-    THREE.Mesh<
-      InstanceType<typeof MeshLineGeometry>,
-      InstanceType<typeof MeshLineMaterial>
-    >
-  >(null)
   const cardVisual = useRef<THREE.Group>(null)
   const pressOrigin = useRef({ x: 0, y: 0 })
   const activationTimer = useRef<number | undefined>(undefined)
   const wasDragging = useRef(false)
-  const frontTexture = useMemo(() => createBadgeTexture(), [])
-  const backTexture = useMemo(() => createBadgeTexture(true), [])
-  const bandGeometry = useMemo(() => new MeshLineGeometry(), [])
-  const bandAccentGeometry = useMemo(() => new MeshLineGeometry(), [])
+  const frontTexture = useMemo(() => createBadgeTexture(false, isMobile), [isMobile])
+  const backTexture = useMemo(() => createBadgeTexture(true, isMobile), [isMobile])
+  const bandPointCount = isMobile ? MOBILE_BAND_POINTS : DESKTOP_BAND_POINTS
+  const bandGeometry = useMemo(
+    () => createBandGeometry(bandPointCount),
+    [bandPointCount],
+  )
+  const bandPoints = useMemo(
+    () => new Float32Array(bandPointCount * 3),
+    [bandPointCount],
+  )
   const bandMaterial = useMemo(
     () => {
       const material = new MeshLineMaterial({
@@ -287,31 +355,24 @@ function Band({
   const [dragOffset, setDragOffset] = useState<false | THREE.Vector3>(false)
   const [hovered, setHovered] = useState(false)
   const [pressed, setPressed] = useState(false)
-  const [curve] = useState(
-    () =>
-      new THREE.CatmullRomCurve3([
+  const curve = useMemo(() => {
+    const nextCurve = new THREE.CatmullRomCurve3([
         new THREE.Vector3(),
         new THREE.Vector3(),
         new THREE.Vector3(),
         new THREE.Vector3(),
-      ]),
-  )
+      ])
+    nextCurve.curveType = "chordal"
+    return nextCurve
+  }, [])
   const point = useMemo(() => new THREE.Vector3(), [])
   const direction = useMemo(() => new THREE.Vector3(), [])
   const cardAnchor = useMemo(() => new THREE.Vector3(), [])
   const cardQuaternion = useMemo(() => new THREE.Quaternion(), [])
-  const angularVelocity = useMemo(() => new THREE.Vector3(), [])
-  const rotation = useMemo(() => new THREE.Vector3(), [])
   const gyroForce = useMemo(() => new THREE.Vector3(), [])
-
-  const segmentProps: RigidBodyProps = {
-    type: "dynamic",
-    colliders: false,
-    canSleep: true,
-    angularDamping: 3,
-    linearDamping: 2.8,
-    ccd: true,
-  }
+  const curveSample = useMemo(() => new THREE.Vector3(), [])
+  const joint1Smoothed = useMemo(() => new THREE.Vector3(), [])
+  const joint2Smoothed = useMemo(() => new THREE.Vector3(), [])
 
   useRopeJoint(fixed, joint1, [[0, 0, 0], [0, 0, 0], 1.1])
   useRopeJoint(joint1, joint2, [[0, 0, 0], [0, 0, 0], 1.1])
@@ -334,22 +395,25 @@ function Band({
       frontTexture.dispose()
       backTexture.dispose()
       bandGeometry.dispose()
-      bandAccentGeometry.dispose()
     },
-    [backTexture, bandAccentGeometry, bandGeometry, frontTexture],
+    [backTexture, bandGeometry, frontTexture],
   )
 
   useEffect(() => () => bandMaterial.dispose(), [bandMaterial])
   useEffect(() => () => bandAccentMaterial.dispose(), [bandAccentMaterial])
 
-  const getSmoothedPoint = (body: LanyardBody) => {
-    if (!body.lerped) {
-      body.lerped = new THREE.Vector3().copy(body.translation())
-    }
-    return body.lerped
-  }
-
   useFrame((state, delta) => {
+    if (cardVisual.current) {
+      const target = pressed ? 0.92 : 1
+      const next = THREE.MathUtils.damp(
+        cardVisual.current.scale.x,
+        target,
+        34,
+        delta,
+      )
+      cardVisual.current.scale.setScalar(next)
+    }
+
     if (
       dragOffset &&
       fixed.current &&
@@ -362,9 +426,10 @@ function Band({
       point.set(state.pointer.x, state.pointer.y, 0.5).unproject(state.camera)
       direction.copy(point).sub(state.camera.position).normalize()
       point.add(direction.multiplyScalar(state.camera.position.length()))
-      ;[card.current, joint1.current, joint2.current, joint3.current].forEach(
-        (body) => body.wakeUp(),
-      )
+      card.current.wakeUp()
+      joint1.current.wakeUp()
+      joint2.current.wakeUp()
+      joint3.current.wakeUp()
       card.current.setNextKinematicTranslation({
         x: point.x - dragOffset.x,
         y: point.y - dragOffset.y,
@@ -373,22 +438,53 @@ function Band({
     }
 
     if (
-      band.current &&
-      bandAccent.current &&
       fixed.current &&
       joint1.current &&
       joint2.current &&
       joint3.current &&
       card.current
     ) {
-      ;[joint1.current, joint2.current].forEach((body) => {
-        const smoothed = getSmoothedPoint(body)
-        const distance = Math.min(
-          1,
-          Math.max(0.1, smoothed.distanceTo(body.translation())),
-        )
-        smoothed.lerp(body.translation(), delta * (4 + distance * 46))
-      })
+      const gyro = gyroMotion.current
+      const gyroActive =
+        !dragOffset &&
+        isMobile &&
+        gyro.active &&
+        Math.abs(gyro.x) + Math.abs(gyro.z) > 0.045
+      const isSettled =
+        !dragOffset &&
+        !wasDragging.current &&
+        !gyroActive &&
+        joint1.current.isSleeping() &&
+        joint2.current.isSleeping() &&
+        joint3.current.isSleeping() &&
+        card.current.isSleeping()
+
+      if (isSettled) return
+
+      const joint1Position = joint1.current.translation()
+      const joint2Position = joint2.current.translation()
+
+      if (joint1Smoothed.lengthSq() === 0) joint1Smoothed.copy(joint1Position)
+      if (joint2Smoothed.lengthSq() === 0) joint2Smoothed.copy(joint2Position)
+
+      const joint1Distance = THREE.MathUtils.clamp(
+        joint1Smoothed.distanceTo(joint1Position),
+        0.1,
+        1,
+      )
+      const joint2Distance = THREE.MathUtils.clamp(
+        joint2Smoothed.distanceTo(joint2Position),
+        0.1,
+        1,
+      )
+      joint1Smoothed.lerp(
+        joint1Position,
+        Math.min(1, delta * (4 + joint1Distance * 46)),
+      )
+      joint2Smoothed.lerp(
+        joint2Position,
+        Math.min(1, delta * (4 + joint2Distance * 46)),
+      )
       const cardRotation = card.current.rotation()
       cardQuaternion.set(
         cardRotation.x,
@@ -401,14 +497,10 @@ function Band({
         .applyQuaternion(cardQuaternion)
         .add(card.current.translation())
       curve.points[0].copy(cardAnchor)
-      curve.points[1].copy(getSmoothedPoint(joint2.current))
-      curve.points[2].copy(getSmoothedPoint(joint1.current))
+      curve.points[1].copy(joint2Smoothed)
+      curve.points[2].copy(joint1Smoothed)
       curve.points[3].copy(fixed.current.translation())
-      const curvePoints = curve.getPoints(isMobile ? 20 : 28)
-      band.current.geometry.setPoints(curvePoints)
-      bandAccent.current.geometry.setPoints(curvePoints)
-      angularVelocity.copy(card.current.angvel())
-      rotation.copy(card.current.rotation())
+      updateBandGeometry(bandGeometry, curve, bandPoints, curveSample)
 
       if (!dragOffset && wasDragging.current) {
         const fixedPosition = fixed.current.translation()
@@ -434,13 +526,7 @@ function Band({
         wasDragging.current = false
       }
 
-      const gyro = gyroMotion.current
-      if (
-        !dragOffset &&
-        isMobile &&
-        gyro.active &&
-        Math.abs(gyro.x) + Math.abs(gyro.z) > 0.015
-      ) {
+      if (gyroActive) {
         gyroForce.set(gyro.x * 34, 0, gyro.z * 28)
         card.current.addTorque(
           {
@@ -465,29 +551,18 @@ function Band({
         card.current.addForce(gyroForce, true)
       }
 
+      const angularVelocity = card.current.angvel()
       card.current.setAngvel(
         {
           x: angularVelocity.x,
-          y: angularVelocity.y - rotation.y * 0.2,
+          y: angularVelocity.y - cardRotation.y * 0.2,
           z: angularVelocity.z,
         },
         false,
       )
     }
 
-    if (cardVisual.current) {
-      const target = pressed ? 0.92 : 1
-      const next = THREE.MathUtils.damp(
-        cardVisual.current.scale.x,
-        target,
-        34,
-        delta,
-      )
-      cardVisual.current.scale.setScalar(next)
-    }
   })
-
-  curve.curveType = "chordal"
 
   const handlePointerDown = (event: ThreeEvent<PointerEvent>) => {
     event.stopPropagation()
@@ -528,21 +603,22 @@ function Band({
   return (
     <>
       <group position={[0, isMobile ? 4.9 : 5.1, 0]}>
-        <RigidBody ref={fixed} {...segmentProps} type="fixed" />
-        <RigidBody ref={joint1} {...segmentProps} position={[0.5, -0.35, 0]}>
+        <RigidBody ref={fixed} {...SEGMENT_PROPS} type="fixed" />
+        <RigidBody ref={joint1} {...SEGMENT_PROPS} position={[0.5, -0.35, 0]}>
           <BallCollider args={[0.08]} />
         </RigidBody>
-        <RigidBody ref={joint2} {...segmentProps} position={[0.8, -1.2, 0]}>
+        <RigidBody ref={joint2} {...SEGMENT_PROPS} position={[0.8, -1.2, 0]}>
           <BallCollider args={[0.08]} />
         </RigidBody>
-        <RigidBody ref={joint3} {...segmentProps} position={[0.35, -2.15, 0]}>
+        <RigidBody ref={joint3} {...SEGMENT_PROPS} position={[0.35, -2.15, 0]}>
           <BallCollider args={[0.08]} />
         </RigidBody>
         <RigidBody
           ref={card}
-          {...segmentProps}
+          {...SEGMENT_PROPS}
           position={[0.7, -4.15, 0]}
           type={dragOffset ? "kinematicPosition" : "dynamic"}
+          ccd
         >
           <CuboidCollider
             args={[CARD_WIDTH / 2, CARD_HEIGHT / 2, 0.1]}
@@ -608,15 +684,13 @@ function Band({
         </RigidBody>
       </group>
       <mesh
-        ref={band}
         geometry={bandGeometry}
         material={bandMaterial}
         frustumCulled={false}
         renderOrder={-2}
       />
       <mesh
-        ref={bandAccent}
-        geometry={bandAccentGeometry}
+        geometry={bandGeometry}
         material={bandAccentMaterial}
         frustumCulled={false}
         renderOrder={-1}
