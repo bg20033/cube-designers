@@ -30,6 +30,15 @@ test("product details have a stable indexable route", async ({ page }) => {
   await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(4)
 })
 
+test("shop opens with the compact utility header instead of a hero", async ({
+  page,
+}) => {
+  await page.goto("/shop")
+  await expect(page.locator(".shop-hero")).toHaveCount(0)
+  await expect(page.locator(".shop-compact-head")).toBeVisible()
+  await expect(page.locator(".shop-category-browser")).toBeVisible()
+})
+
 test("portfolio images load with responsive sources and useful alt text", async ({
   page,
 }) => {
@@ -147,6 +156,11 @@ test("landing service story stays pinned while its scroll story advances", async
     )
     .toBe(0)
   await expect(page.locator(".story-card-shell")).toBeVisible()
+  const storyImage = page.locator(".story-visual img")
+  await expect(storyImage).toHaveAttribute("srcset", /\.webp\s+\d+w/)
+  await expect
+    .poll(() => storyImage.evaluate((element) => element.naturalWidth))
+    .toBeGreaterThan(0)
 })
 
 test("roadmap remains pinned and updates its day from scroll progress", async ({

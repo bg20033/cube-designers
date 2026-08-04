@@ -10,6 +10,7 @@ import { ArrowRight, ArrowUpRight, Check, MoveDown } from "lucide-react"
 import { AnimatePresence, motion, MotionConfig } from "motion/react"
 
 import OptionWheel from "@/components/OptionWheel"
+import { ResponsiveImage } from "@/components/ResponsiveImage"
 import wheelSound from "@/assets/223.mp3"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -27,6 +28,7 @@ export type StoryItem = {
   title: string
   eyebrow: string
   project: string
+  image: string
   description: string
   result: string
   deliverables: string[]
@@ -319,6 +321,11 @@ export default function ServiceStory({
             </div>
 
             <div className="story-visual" aria-hidden="true">
+              <ResponsiveImage
+                image={activeItem.image}
+                alt=""
+                sizes="(max-width: 820px) 100vw, 56vw"
+              />
               <div className="visual-grid" />
               <span className="visual-index">
                 {String(activeIndex + 1).padStart(2, "0")}

@@ -610,33 +610,19 @@ export default function ShopPage() {
       <SiteNoise />
       <SiteHeader />
 
-      <main>
-        <section className="shop-hero" id="top">
-          <div className="shop-hero-grid" aria-hidden="true" />
-          <div className="shop-hero-kicker">
-            <span>K/06</span>
-            CUBE shop · Custom print & merchandise
+      <main className="shop-main">
+        <div className="shop-compact-head" id="top">
+          <div>
+            <span>K/06 · CUSTOM PRINT & MERCHANDISE</span>
+            <h1>SHOP.</h1>
           </div>
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-          >
-            PRINT WHAT
-            <em>YOU MEAN.</em>
-          </motion.h1>
-          <div className="shop-hero-bottom">
-            <p>
-              Produkte të zgjedhura për biznese dhe ekipe. Zgjidhe produktin,
-              sasinë dhe dërgoje porosinë për konfirmim.
-            </p>
-            <button type="button" onClick={() => setCartOpen(true)}>
-              <ShoppingBag />
-              Cart
-              <span>{String(itemCount).padStart(2, "0")}</span>
-            </button>
-          </div>
-        </section>
+          <p>Zgjidhe produktin, sasinë dhe dërgoje për konfirmim.</p>
+          <button type="button" onClick={() => setCartOpen(true)}>
+            <ShoppingBag />
+            Cart
+            <span>{String(itemCount).padStart(2, "0")}</span>
+          </button>
+        </div>
 
         <section className="shop-assurance" aria-label="Shop benefits">
           <article>

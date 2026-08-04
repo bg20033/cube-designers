@@ -53,6 +53,7 @@ const designItems: StoryItem[] = [
     title: "Brand Identity",
     eyebrow: "Strategy / Identity",
     project: "LUMË — Brand System",
+    image: "sermova-brand-system",
     description:
       "Nga pozicionimi te logoja dhe gjuha vizuale: një sistem i qartë që e bën brandin të dallueshëm në çdo pikë kontakti.",
     result: "Një identitet i plotë, jo vetëm një logo.",
@@ -67,6 +68,7 @@ const designItems: StoryItem[] = [
     title: "Visual Systems",
     eyebrow: "Creative Direction",
     project: "NOVA — Visual Language",
+    image: "altec-brand-system",
     description:
       "Sistem modular me tipografi, ngjyra, forma dhe rregulla që i jep ekipit liri pa humbur konsistencën.",
     result: "Brand që duket njësoj i fortë kudo.",
@@ -81,6 +83,7 @@ const designItems: StoryItem[] = [
     title: "Packaging",
     eyebrow: "Product / Packaging",
     project: "MALI — Product Family",
+    image: "shop-menu",
     description:
       "Paketim që bie në sy në raft, tregon historinë e produktit dhe funksionon po aq mirë në dorë sa në fotografi.",
     result: "Më shumë vëmendje, më shumë dëshirë.",
@@ -95,6 +98,7 @@ const designItems: StoryItem[] = [
     title: "Editorial",
     eyebrow: "Publication Design",
     project: "FORMA — Annual Review",
+    image: "shop-catalog",
     description:
       "Raporte, katalogë dhe publikime me hierarki të fortë, ritëm vizual dhe detaje që e bëjnë leximin eksperiencë.",
     result: "Informacion kompleks, i bërë i bukur.",
@@ -109,6 +113,7 @@ const designItems: StoryItem[] = [
     title: "Campaign Design",
     eyebrow: "Campaign / Art Direction",
     project: "MOVE — Launch Campaign",
+    image: "shop-flyer",
     description:
       "Një ide qendrore e kthyer në key visuals dhe formate që funksionojnë nga billboard-i te telefoni.",
     result: "Një kampanjë, shumë momente të forta.",
@@ -126,6 +131,7 @@ const printItems: StoryItem[] = [
     title: "Business Print",
     eyebrow: "Corporate / Print",
     project: "KUBE — Everyday Essentials",
+    image: "shop-business-cards",
     description:
       "Kartëvizita, letterhead, folderë dhe materiale zyre të menduara si një eksperiencë e vetme, premium.",
     result: "Detaje të vogla që bëjnë përshtypje të madhe.",
@@ -140,6 +146,7 @@ const printItems: StoryItem[] = [
     title: "Packaging & Labels",
     eyebrow: "Print / Packaging",
     project: "BORA — Shelf Presence",
+    image: "shop-stickers",
     description:
       "Strukturë, material, finish dhe artwork — gjithçka që duhet që produkti të dallohet para se të hapet.",
     result: "Paketim që shet para se të flasë.",
@@ -154,6 +161,7 @@ const printItems: StoryItem[] = [
     title: "Large Format",
     eyebrow: "Outdoor / Space",
     project: "CITY — Seen From Afar",
+    image: "shop-rollup",
     description:
       "Billboards, banera, signage dhe grafika hapësinore me kompozim të optimizuar për distancë dhe lëvizje.",
     result: "Mesazh që lexohet në një sekondë.",
@@ -168,6 +176,7 @@ const printItems: StoryItem[] = [
     title: "Merch & Apparel",
     eyebrow: "Culture / Merchandise",
     project: "LOCAL — Wear The Idea",
+    image: "shop-apparel-kit",
     description:
       "Merch që njerëzit duan ta veshin: nga koncepti grafik te përzgjedhja e materialit dhe teknika e shtypit.",
     result: "Brandi bëhet pjesë e kulturës.",
@@ -182,6 +191,7 @@ const printItems: StoryItem[] = [
     title: "Premium Finishes",
     eyebrow: "Craft / Detail",
     project: "NOIR — Tactile Edition",
+    image: "sermova-logo-paper",
     description:
       "Foil, emboss, letterpress dhe paper engineering për materiale që mbahen mend edhe me sy mbyllur.",
     result: "Një eksperiencë që mund ta prekësh.",
@@ -199,6 +209,7 @@ const digitalItems: StoryItem[] = [
     title: "Web Experiences",
     eyebrow: "UX / UI / Development",
     project: "NEXUS — Digital Flagship",
+    image: "altec-office-sign",
     description:
       "Faqe të shpejta, responsive dhe të dizajnuara rreth një ideje të fortë — nga user flow te micro-interactions.",
     result: "Një website që ndihet po aq mirë sa duket.",
@@ -213,6 +224,7 @@ const digitalItems: StoryItem[] = [
     title: "Social Content",
     eyebrow: "Content / Social",
     project: "PULSE — Always On",
+    image: "sermova-brand-system",
     description:
       "Një sistem përmbajtjeje me ritëm, formate dhe art direction që e mban brandin aktiv pa u bërë monoton.",
     result: "Feed koherent, përmbajtje që ndalet.",
@@ -227,6 +239,7 @@ const digitalItems: StoryItem[] = [
     title: "Paid Campaigns",
     eyebrow: "Performance / Creative",
     project: "SHIFT — Growth Sprint",
+    image: "shop-flyer",
     description:
       "Kreativë të ndërtuara për testim, targetim dhe optimizim — me fokus te rezultati, jo vetëm te reach-i.",
     result: "Creative performance që mëson dhe rritet.",
@@ -241,6 +254,7 @@ const digitalItems: StoryItem[] = [
     title: "Content Production",
     eyebrow: "Photo / Motion / Copy",
     project: "FRAME — Brand Stories",
+    image: "production-detail",
     description:
       "Fotografi, video, motion dhe copy nën një drejtim të vetëm kreativ për histori që tingëllojnë si brandi yt.",
     result: "Më pak përmbajtje. Më shumë ndikim.",
@@ -255,6 +269,7 @@ const digitalItems: StoryItem[] = [
     title: "E-commerce",
     eyebrow: "Commerce / Conversion",
     project: "SHOP — Frictionless",
+    image: "shop-notebook",
     description:
       "Dyqane digjitale me hierarki të qartë, product storytelling dhe një checkout që e bën blerjen të lehtë.",
     result: "Nga browse te buy, pa fërkim.",

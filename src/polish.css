@@ -64,6 +64,169 @@
   transition: transform var(--motion-snap), filter var(--motion-snap);
 }
 
+/* Real work now sits underneath the existing animated service-card system. */
+.story-visual > img {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.82) contrast(1.07);
+  transform: scale(1.015);
+}
+
+.story-visual::before {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(180deg, rgb(11 11 13 / 56%), transparent 40%, rgb(11 11 13 / 76%)),
+    linear-gradient(90deg, rgb(11 11 13 / 26%), transparent 55%);
+  content: "";
+  pointer-events: none;
+}
+
+.story-visual .visual-grid {
+  z-index: 2;
+  color: white;
+}
+
+.story-visual .visual-index {
+  z-index: 2;
+  color: rgb(255 255 255 / 34%);
+  text-shadow: 0 2px 40px rgb(11 11 13 / 42%);
+}
+
+.story-visual .visual-capability,
+.story-visual .visual-stamp,
+.story-visual .visual-orbit,
+.story-visual .visual-labels,
+.story-visual > p {
+  z-index: 3;
+  color: white;
+  text-shadow: 0 2px 24px rgb(11 11 13 / 70%);
+}
+
+.story-visual .visual-capability {
+  mix-blend-mode: normal;
+}
+
+.story-visual .visual-labels span {
+  border-color: rgb(255 255 255 / 70%);
+  background: rgb(11 11 13 / 44%);
+}
+
+.story-visual .visual-scanline {
+  z-index: 4;
+}
+
+/* The shop now opens as a compact utility surface instead of a second hero. */
+.shop-main {
+  padding-top: 76px;
+}
+
+.shop-compact-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(230px, 0.55fr) auto;
+  gap: clamp(1.5rem, 4vw, 5rem);
+  align-items: end;
+  min-height: 168px;
+  padding: clamp(1.4rem, 2.6vw, 2.5rem) var(--site-gutter);
+  border-bottom: 1px solid rgb(255 255 255 / 24%);
+  background: var(--ink);
+  color: white;
+}
+
+.shop-compact-head > div > span {
+  display: block;
+  margin-bottom: 0.65rem;
+  color: var(--orange);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.52rem;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+}
+
+.shop-compact-head h1 {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: clamp(3rem, 5.5vw, 6.2rem);
+  font-weight: 950;
+  line-height: 0.72;
+  letter-spacing: -0.08em;
+}
+
+.shop-compact-head > p {
+  max-width: 340px;
+  margin: 0;
+  color: rgb(255 255 255 / 58%);
+  font-size: 0.66rem;
+  line-height: 1.6;
+}
+
+.shop-compact-head > button {
+  display: inline-flex;
+  gap: 0.65rem;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 0.65rem 0 0.9rem;
+  border: 1px solid rgb(255 255 255 / 36%);
+  border-radius: 999px;
+  background: transparent;
+  color: white;
+  font-size: 0.64rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.shop-compact-head > button svg {
+  width: 0.9rem;
+  color: var(--orange);
+}
+
+.shop-compact-head > button span {
+  display: grid;
+  width: 29px;
+  height: 29px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--acid);
+  color: var(--ink);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.48rem;
+}
+
+.shop-assurance article {
+  min-height: 116px;
+  padding: 1rem 1.2rem;
+}
+
+.shop-assurance article > span {
+  top: 1rem;
+  right: 1.2rem;
+}
+
+.shop-assurance article > strong {
+  font-size: clamp(1.1rem, 1.65vw, 1.8rem);
+}
+
+.shop-category-browser > div > button {
+  min-height: 168px;
+}
+
+.shop-category-browser button > strong {
+  font-size: clamp(1.45rem, 2.25vw, 2.65rem);
+}
+
+.shop-catalog {
+  padding-top: clamp(4rem, 6vw, 6.5rem);
+}
+
+.shop-catalog-heading {
+  margin-bottom: clamp(2.4rem, 4vw, 4rem);
+}
+
 .featured-project-visual::after,
 .work-case-visual::before,
 .shop-product-visual::after,
@@ -305,6 +468,56 @@
 }
 
 @media (max-width: 760px) {
+  .shop-main {
+    padding-top: 66px;
+  }
+
+  .shop-compact-head {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1rem;
+    min-height: 126px;
+    padding: 1.2rem 1rem;
+  }
+
+  .shop-compact-head h1 {
+    font-size: clamp(2.8rem, 14vw, 4.4rem);
+  }
+
+  .shop-compact-head > p {
+    display: none;
+  }
+
+  .shop-assurance article {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 0.9rem;
+    align-items: center;
+    min-height: 74px;
+    padding: 0.8rem 1rem;
+  }
+
+  .shop-assurance article > span {
+    position: static;
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  .shop-assurance article > strong {
+    grid-column: 2;
+    grid-row: 1;
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  .shop-category-browser > div > button {
+    flex-basis: 172px;
+    min-height: 152px;
+  }
+
+  .shop-catalog {
+    padding-top: 3.75rem;
+  }
+
   .lanyard-intro-copy {
     inset: 1rem 1rem auto;
     grid-template-columns: 1fr;
@@ -357,7 +570,8 @@
   .work-case-visual > img,
   .work-case-gallery img,
   .shop-product-visual > img,
-  .shop-quick-visual > img {
+  .shop-quick-visual > img,
+  .story-visual > img {
     transition: none !important;
     transform: none !important;
   }
