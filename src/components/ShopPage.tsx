@@ -17,6 +17,7 @@ import {
   X,
 } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
+import { ResponsiveImage } from "@/components/ResponsiveImage"
 
 import {
   SiteFooter,
@@ -50,6 +51,7 @@ export type Product = {
   material: string
   badge?: "Bestseller" | "New" | "Eco"
   featured?: boolean
+  image?: string
 }
 
 export type CartItem = {
@@ -71,6 +73,7 @@ export const products: Product[] = [
     material: "Premium paper",
     badge: "Bestseller",
     featured: true,
+    image: "shop-business-cards",
   },
   {
     id: "rollup-banner",
@@ -84,6 +87,7 @@ export const products: Product[] = [
     production: "Standard",
     material: "Blockout film",
     featured: true,
+    image: "shop-rollup",
   },
   {
     id: "branded-pens",
@@ -97,6 +101,7 @@ export const products: Product[] = [
     production: "Standard",
     material: "Aluminium",
     badge: "Bestseller",
+    image: "shop-pens",
   },
   {
     id: "notebooks",
@@ -110,6 +115,7 @@ export const products: Product[] = [
     production: "Standard",
     material: "Recycled paper",
     badge: "Eco",
+    image: "shop-notebook",
   },
   {
     id: "tshirts",
@@ -123,6 +129,7 @@ export const products: Product[] = [
     production: "Standard",
     material: "Heavy cotton",
     featured: true,
+    image: "shop-tshirt",
   },
   {
     id: "stickers",
@@ -136,6 +143,7 @@ export const products: Product[] = [
     production: "Fast",
     material: "Weatherproof vinyl",
     badge: "Bestseller",
+    image: "shop-stickers",
   },
   {
     id: "flyers",
@@ -148,6 +156,7 @@ export const products: Product[] = [
     tone: "violet",
     production: "Fast",
     material: "Silk paper",
+    image: "shop-flyer",
   },
   {
     id: "tote-bags",
@@ -173,6 +182,7 @@ export const products: Product[] = [
     tone: "paper",
     production: "Standard",
     material: "Silk paper",
+    image: "shop-brochure",
   },
   {
     id: "menus",
@@ -186,6 +196,7 @@ export const products: Product[] = [
     production: "Standard",
     material: "Laminated card",
     badge: "New",
+    image: "shop-menu",
   },
   {
     id: "posters",
@@ -198,6 +209,7 @@ export const products: Product[] = [
     tone: "violet",
     production: "Fast",
     material: "Poster paper",
+    image: "shop-flyer",
   },
   {
     id: "vinyl-banner",
@@ -211,6 +223,7 @@ export const products: Product[] = [
     production: "Fast",
     material: "PVC vinyl",
     featured: true,
+    image: "sermova-billboard",
   },
   {
     id: "window-graphics",
@@ -224,6 +237,7 @@ export const products: Product[] = [
     production: "Custom",
     material: "Cut vinyl",
     badge: "New",
+    image: "sermova-facade",
   },
   {
     id: "mugs",
@@ -286,6 +300,7 @@ export const products: Product[] = [
     production: "Fast",
     material: "Paper / PP",
     badge: "Bestseller",
+    image: "shop-stickers",
   },
   {
     id: "shipping-boxes",
@@ -884,6 +899,12 @@ export default function ShopPage() {
                         transition={{ duration: 0.22 }}
                       >
                         <div className="shop-product-visual">
+                          {product.image && (
+                            <ResponsiveImage
+                              image={product.image}
+                              sizes="(max-width: 760px) 100vw, (max-width: 1100px) 50vw, 33vw"
+                            />
+                          )}
                           <div className="shop-product-topline">
                             <span>{product.number}</span>
                             <div>
@@ -985,13 +1006,15 @@ export default function ShopPage() {
               >
                 <X />
               </button>
-              <div
-                className="shop-quick-visual"
-                data-tone={quickView.tone}
-                aria-hidden="true"
-              >
+              <div className="shop-quick-visual" data-tone={quickView.tone}>
+                {quickView.image && (
+                  <ResponsiveImage
+                    image={quickView.image}
+                    sizes="(max-width: 760px) 100vw, 50vw"
+                  />
+                )}
                 <span>{quickView.number}</span>
-                <strong>{quickView.name}</strong>
+                <strong aria-hidden="true">{quickView.name}</strong>
                 <i>{quickView.category}</i>
               </div>
               <div className="shop-quick-copy">

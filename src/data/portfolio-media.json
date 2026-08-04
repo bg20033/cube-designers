@@ -1,0 +1,903 @@
+[
+    {
+        "key":  "sermova-logo-paper",
+        "source":  "Sermova-Logo-3.jpg",
+        "group":  "sermova",
+        "alt":  "SERMOVA logo embossed on textured white paper",
+        "focal":  "50% 50%",
+        "width":  2300,
+        "height":  1472,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/sermova-logo-paper-960.webp",
+                             "width":  960,
+                             "height":  614
+                         },
+                         {
+                             "src":  "/media/portfolio/sermova-logo-paper-1600.webp",
+                             "width":  1600,
+                             "height":  1024
+                         },
+                         {
+                             "src":  "/media/portfolio/sermova-logo-paper-2300.webp",
+                             "width":  2300,
+                             "height":  1472
+                         }
+                     ]
+    },
+    {
+        "key":  "sermova-building-sign",
+        "source":  "Sermova-Logo-5.jpg",
+        "group":  "sermova",
+        "alt":  "SERMOVA exterior building sign",
+        "focal":  "50% 45%",
+        "width":  3750,
+        "height":  2500,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/sermova-building-sign-960.webp",
+                             "width":  960,
+                             "height":  640
+                         },
+                         {
+                             "src":  "/media/portfolio/sermova-building-sign-1600.webp",
+                             "width":  1600,
+                             "height":  1066
+                         },
+                         {
+                             "src":  "/media/portfolio/sermova-building-sign-2400.webp",
+                             "width":  2400,
+                             "height":  1600
+                         }
+                     ]
+    },
+    {
+        "key":  "sermova-logo-sketch",
+        "source":  "Sermova Logo 2.jpg",
+        "group":  "sermova",
+        "alt":  "SERMOVA logo development sketches",
+        "focal":  "50% 50%",
+        "width":  1300,
+        "height":  867,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/sermova-logo-sketch-960.webp",
+                             "width":  960,
+                             "height":  640
+                         },
+                         {
+                             "src":  "/media/portfolio/sermova-logo-sketch-1300.webp",
+                             "width":  1300,
+                             "height":  868
+                         }
+                     ]
+    },
+    {
+        "key":  "sermova-flags",
+        "source":  "Sermova-Logo-8.jpg",
+        "group":  "sermova",
+        "alt":  "SERMOVA identity applied to outdoor flags",
+        "focal":  "50% 50%",
+        "width":  4800,
+        "height":  3400,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/sermova-flags-960.webp",
+                             "width":  960,
+                             "height":  680
+                         },
+                         {
+                             "src":  "/media/portfolio/sermova-flags-1600.webp",
+                             "width":  1600,
+                             "height":  1134
+                         },
+                         {
+                             "src":  "/media/portfolio/sermova-flags-2400.webp",
+                             "width":  2400,
+                             "height":  1700
+                         }
+                     ]
+    },
+    {
+        "key":  "sermova-facade",
+        "source":  "Sermova-Logo-4.jpg",
+        "group":  "sermova",
+        "alt":  "SERMOVA signage mounted on a building facade",
+        "focal":  "50% 50%",
+        "width":  4500,
+        "height":  3200,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/sermova-facade-960.webp",
+                             "width":  960,
+                             "height":  682
+                         },
+                         {
+                             "src":  "/media/portfolio/sermova-facade-1600.webp",
+                             "width":  1600,
+                             "height":  1138
+                         },
+                         {
+                             "src":  "/media/portfolio/sermova-facade-2400.webp",
+                             "width":  2400,
+                             "height":  1706
+                         }
+                     ]
+    },
+    {
+        "key":  "sermova-vehicle",
+        "source":  "Sermova-Logo-7.jpg",
+        "group":  "sermova",
+        "alt":  "SERMOVA vehicle graphics on a white SUV",
+        "focal":  "54% 50%",
+        "width":  4000,
+        "height":  3000,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/sermova-vehicle-960.webp",
+                             "width":  960,
+                             "height":  720
+                         },
+                         {
+                             "src":  "/media/portfolio/sermova-vehicle-1600.webp",
+                             "width":  1600,
+                             "height":  1200
+                         },
+                         {
+                             "src":  "/media/portfolio/sermova-vehicle-2400.webp",
+                             "width":  2400,
+                             "height":  1800
+                         }
+                     ]
+    },
+    {
+        "key":  "sermova-brand-system",
+        "source":  "Sermova-Logo-9.jpg",
+        "group":  "sermova",
+        "alt":  "SERMOVA brand system across digital and printed applications",
+        "focal":  "50% 50%",
+        "width":  6000,
+        "height":  4000,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/sermova-brand-system-960.webp",
+                             "width":  960,
+                             "height":  640
+                         },
+                         {
+                             "src":  "/media/portfolio/sermova-brand-system-1600.webp",
+                             "width":  1600,
+                             "height":  1066
+                         },
+                         {
+                             "src":  "/media/portfolio/sermova-brand-system-2400.webp",
+                             "width":  2400,
+                             "height":  1600
+                         }
+                     ]
+    },
+    {
+        "key":  "sermova-billboard",
+        "source":  "Sermova-Logo-10.jpg",
+        "group":  "sermova",
+        "alt":  "SERMOVA outdoor billboard application",
+        "focal":  "50% 50%",
+        "width":  4800,
+        "height":  3100,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/sermova-billboard-960.webp",
+                             "width":  960,
+                             "height":  620
+                         },
+                         {
+                             "src":  "/media/portfolio/sermova-billboard-1600.webp",
+                             "width":  1600,
+                             "height":  1034
+                         },
+                         {
+                             "src":  "/media/portfolio/sermova-billboard-2400.webp",
+                             "width":  2400,
+                             "height":  1550
+                         }
+                     ]
+    },
+    {
+        "key":  "altec-logo-paper",
+        "source":  "Bright Clean Logo Presentation Mockups (1) copy (1).jpg",
+        "group":  "altec",
+        "alt":  "ALTEC Pro logo embossed on white paper",
+        "focal":  "50% 50%",
+        "width":  2300,
+        "height":  1472,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/altec-logo-paper-960.webp",
+                             "width":  960,
+                             "height":  614
+                         },
+                         {
+                             "src":  "/media/portfolio/altec-logo-paper-1600.webp",
+                             "width":  1600,
+                             "height":  1024
+                         },
+                         {
+                             "src":  "/media/portfolio/altec-logo-paper-2300.webp",
+                             "width":  2300,
+                             "height":  1472
+                         }
+                     ]
+    },
+    {
+        "key":  "altec-building-sign",
+        "source":  "Sign_Mockup_(6).jpg",
+        "group":  "altec",
+        "alt":  "ALTEC Pro rooftop signage on a glass building",
+        "focal":  "50% 42%",
+        "width":  3750,
+        "height":  2500,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/altec-building-sign-960.webp",
+                             "width":  960,
+                             "height":  640
+                         },
+                         {
+                             "src":  "/media/portfolio/altec-building-sign-1600.webp",
+                             "width":  1600,
+                             "height":  1066
+                         },
+                         {
+                             "src":  "/media/portfolio/altec-building-sign-2400.webp",
+                             "width":  2400,
+                             "height":  1600
+                         }
+                     ]
+    },
+    {
+        "key":  "altec-office-sign",
+        "source":  "Office Mockup Vol 22 B copy.jpg",
+        "group":  "altec",
+        "alt":  "ALTEC Pro interior office signage",
+        "focal":  "50% 50%",
+        "width":  2400,
+        "height":  1600,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/altec-office-sign-960.webp",
+                             "width":  960,
+                             "height":  640
+                         },
+                         {
+                             "src":  "/media/portfolio/altec-office-sign-1600.webp",
+                             "width":  1600,
+                             "height":  1066
+                         },
+                         {
+                             "src":  "/media/portfolio/altec-office-sign-2400.webp",
+                             "width":  2400,
+                             "height":  1600
+                         }
+                     ]
+    },
+    {
+        "key":  "altec-sketch",
+        "source":  "sketch copy.jpg",
+        "group":  "altec",
+        "alt":  "ALTEC Pro identity sketching process",
+        "focal":  "50% 50%",
+        "width":  3500,
+        "height":  2333,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/altec-sketch-960.webp",
+                             "width":  960,
+                             "height":  640
+                         },
+                         {
+                             "src":  "/media/portfolio/altec-sketch-1600.webp",
+                             "width":  1600,
+                             "height":  1066
+                         },
+                         {
+                             "src":  "/media/portfolio/altec-sketch-2400.webp",
+                             "width":  2400,
+                             "height":  1600
+                         }
+                     ]
+    },
+    {
+        "key":  "altec-vehicle",
+        "source":  "Pick up.jpg",
+        "group":  "altec",
+        "alt":  "ALTEC Pro vehicle livery on a service van",
+        "focal":  "50% 50%",
+        "width":  4500,
+        "height":  3000,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/altec-vehicle-960.webp",
+                             "width":  960,
+                             "height":  640
+                         },
+                         {
+                             "src":  "/media/portfolio/altec-vehicle-1600.webp",
+                             "width":  1600,
+                             "height":  1066
+                         },
+                         {
+                             "src":  "/media/portfolio/altec-vehicle-2400.webp",
+                             "width":  2400,
+                             "height":  1600
+                         }
+                     ]
+    },
+    {
+        "key":  "altec-brand-system",
+        "source":  "Mockup_set copy 2.jpg",
+        "group":  "altec",
+        "alt":  "ALTEC Pro identity across stationery and digital devices",
+        "focal":  "50% 50%",
+        "width":  6000,
+        "height":  4000,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/altec-brand-system-960.webp",
+                             "width":  960,
+                             "height":  640
+                         },
+                         {
+                             "src":  "/media/portfolio/altec-brand-system-1600.webp",
+                             "width":  1600,
+                             "height":  1066
+                         },
+                         {
+                             "src":  "/media/portfolio/altec-brand-system-2400.webp",
+                             "width":  2400,
+                             "height":  1600
+                         }
+                     ]
+    },
+    {
+        "key":  "altec-flags",
+        "source":  "Free Outdoor Flag Poles Mockup copy.jpg",
+        "group":  "altec",
+        "alt":  "ALTEC Pro identity applied to outdoor flags",
+        "focal":  "50% 50%",
+        "width":  4800,
+        "height":  3400,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/altec-flags-960.webp",
+                             "width":  960,
+                             "height":  680
+                         },
+                         {
+                             "src":  "/media/portfolio/altec-flags-1600.webp",
+                             "width":  1600,
+                             "height":  1134
+                         },
+                         {
+                             "src":  "/media/portfolio/altec-flags-2400.webp",
+                             "width":  2400,
+                             "height":  1700
+                         }
+                     ]
+    },
+    {
+        "key":  "identity-wall-mark",
+        "source":  "Wall Logo Mockup (1).jpg",
+        "group":  "identity",
+        "alt":  "Dimensional brand mark mounted on a timber wall",
+        "focal":  "50% 50%",
+        "width":  1417,
+        "height":  1417,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/identity-wall-mark-960.webp",
+                             "width":  960,
+                             "height":  960
+                         },
+                         {
+                             "src":  "/media/portfolio/identity-wall-mark-1417.webp",
+                             "width":  1417,
+                             "height":  1416
+                         }
+                     ]
+    },
+    {
+        "key":  "identity-sketch-one",
+        "source":  "01_sketch_mockup.jpg",
+        "group":  "identity",
+        "alt":  "Designer drawing an identity concept on tracing paper",
+        "focal":  "50% 50%",
+        "width":  4000,
+        "height":  2670,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/identity-sketch-one-960.webp",
+                             "width":  960,
+                             "height":  640
+                         },
+                         {
+                             "src":  "/media/portfolio/identity-sketch-one-1600.webp",
+                             "width":  1600,
+                             "height":  1068
+                         },
+                         {
+                             "src":  "/media/portfolio/identity-sketch-one-2400.webp",
+                             "width":  2400,
+                             "height":  1602
+                         }
+                     ]
+    },
+    {
+        "key":  "identity-sketch-two",
+        "source":  "05_sketch_mockup.jpg",
+        "group":  "identity",
+        "alt":  "Energy consulting logo sketch in progress",
+        "focal":  "50% 50%",
+        "width":  4000,
+        "height":  2669,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/identity-sketch-two-960.webp",
+                             "width":  960,
+                             "height":  640
+                         },
+                         {
+                             "src":  "/media/portfolio/identity-sketch-two-1600.webp",
+                             "width":  1600,
+                             "height":  1068
+                         },
+                         {
+                             "src":  "/media/portfolio/identity-sketch-two-2400.webp",
+                             "width":  2400,
+                             "height":  1602
+                         }
+                     ]
+    },
+    {
+        "key":  "identity-sketch-three",
+        "source":  "03_sketch_mockup.jpg",
+        "group":  "identity",
+        "alt":  "Designer refining an energy consulting symbol",
+        "focal":  "50% 50%",
+        "width":  4000,
+        "height":  2670,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/identity-sketch-three-960.webp",
+                             "width":  960,
+                             "height":  640
+                         },
+                         {
+                             "src":  "/media/portfolio/identity-sketch-three-1600.webp",
+                             "width":  1600,
+                             "height":  1068
+                         },
+                         {
+                             "src":  "/media/portfolio/identity-sketch-three-2400.webp",
+                             "width":  2400,
+                             "height":  1602
+                         }
+                     ]
+    },
+    {
+        "key":  "identity-sketch-four",
+        "source":  "02_sketch_mockup.jpg",
+        "group":  "identity",
+        "alt":  "Identity construction sketch with ruler and pencil",
+        "focal":  "50% 50%",
+        "width":  4000,
+        "height":  2670,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/identity-sketch-four-960.webp",
+                             "width":  960,
+                             "height":  640
+                         },
+                         {
+                             "src":  "/media/portfolio/identity-sketch-four-1600.webp",
+                             "width":  1600,
+                             "height":  1068
+                         },
+                         {
+                             "src":  "/media/portfolio/identity-sketch-four-2400.webp",
+                             "width":  2400,
+                             "height":  1602
+                         }
+                     ]
+    },
+    {
+        "key":  "identity-process-collage",
+        "source":  "collage_20160128151249499.jpg",
+        "group":  "identity",
+        "alt":  "Identity process collage from sketches to final mark",
+        "focal":  "50% 50%",
+        "width":  5049,
+        "height":  4950,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/identity-process-collage-960.webp",
+                             "width":  960,
+                             "height":  942
+                         },
+                         {
+                             "src":  "/media/portfolio/identity-process-collage-1600.webp",
+                             "width":  1600,
+                             "height":  1568
+                         },
+                         {
+                             "src":  "/media/portfolio/identity-process-collage-2400.webp",
+                             "width":  2400,
+                             "height":  2352
+                         }
+                     ]
+    },
+    {
+        "key":  "shop-flyer",
+        "source":  "Flyera1.jpg",
+        "group":  "shop",
+        "alt":  "Red and black promotional flyer design",
+        "focal":  "50% 50%",
+        "width":  1290,
+        "height":  1798,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/shop-flyer-960.webp",
+                             "width":  688,
+                             "height":  960
+                         },
+                         {
+                             "src":  "/media/portfolio/shop-flyer-1600.webp",
+                             "width":  1148,
+                             "height":  1600
+                         },
+                         {
+                             "src":  "/media/portfolio/shop-flyer-1798.webp",
+                             "width":  1290,
+                             "height":  1798
+                         }
+                     ]
+    },
+    {
+        "key":  "shop-tshirt",
+        "source":  "Tshirt.jpg",
+        "group":  "shop",
+        "alt":  "Printed white team T-shirt",
+        "focal":  "50% 42%",
+        "width":  602,
+        "height":  796,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/shop-tshirt-796.webp",
+                             "width":  602,
+                             "height":  796
+                         }
+                     ]
+    },
+    {
+        "key":  "shop-business-cards",
+        "source":  "Qeramik Vizitkarta.jpg",
+        "group":  "shop",
+        "alt":  "Ceramik business cards presented in a clean stack",
+        "focal":  "50% 50%",
+        "width":  1573,
+        "height":  848,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/shop-business-cards-960.webp",
+                             "width":  960,
+                             "height":  518
+                         },
+                         {
+                             "src":  "/media/portfolio/shop-business-cards-1573.webp",
+                             "width":  1573,
+                             "height":  848
+                         }
+                     ]
+    },
+    {
+        "key":  "shop-badges",
+        "source":  "2-Badge Mockup.jpg",
+        "group":  "shop",
+        "alt":  "Custom printed round badges",
+        "focal":  "50% 50%",
+        "width":  1488,
+        "height":  2000,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/shop-badges-960.webp",
+                             "width":  714,
+                             "height":  960
+                         },
+                         {
+                             "src":  "/media/portfolio/shop-badges-1600.webp",
+                             "width":  1190,
+                             "height":  1600
+                         },
+                         {
+                             "src":  "/media/portfolio/shop-badges-2000.webp",
+                             "width":  1488,
+                             "height":  2000
+                         }
+                     ]
+    },
+    {
+        "key":  "shop-menu",
+        "source":  "Mocku up ushqimi.jpg",
+        "group":  "shop",
+        "alt":  "Restaurant menu and food photography layout",
+        "focal":  "50% 50%",
+        "width":  1536,
+        "height":  2080,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/shop-menu-960.webp",
+                             "width":  708,
+                             "height":  960
+                         },
+                         {
+                             "src":  "/media/portfolio/shop-menu-1600.webp",
+                             "width":  1182,
+                             "height":  1600
+                         },
+                         {
+                             "src":  "/media/portfolio/shop-menu-2080.webp",
+                             "width":  1536,
+                             "height":  2080
+                         }
+                     ]
+    },
+    {
+        "key":  "shop-notebook",
+        "source":  "5. Open Notebook Mockup.jpg",
+        "group":  "shop",
+        "alt":  "Open branded notebook with green cover",
+        "focal":  "50% 50%",
+        "width":  2500,
+        "height":  2000,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/shop-notebook-960.webp",
+                             "width":  960,
+                             "height":  768
+                         },
+                         {
+                             "src":  "/media/portfolio/shop-notebook-1600.webp",
+                             "width":  1600,
+                             "height":  1280
+                         },
+                         {
+                             "src":  "/media/portfolio/shop-notebook-2400.webp",
+                             "width":  2400,
+                             "height":  1920
+                         }
+                     ]
+    },
+    {
+        "key":  "shop-spiral-book",
+        "source":  "Spiral_Book_Mockup_1 copy.jpg",
+        "group":  "shop",
+        "alt":  "Branded spiral notebook cover",
+        "focal":  "50% 50%",
+        "width":  2000,
+        "height":  1300,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/shop-spiral-book-960.webp",
+                             "width":  960,
+                             "height":  624
+                         },
+                         {
+                             "src":  "/media/portfolio/shop-spiral-book-1600.webp",
+                             "width":  1600,
+                             "height":  1040
+                         },
+                         {
+                             "src":  "/media/portfolio/shop-spiral-book-2000.webp",
+                             "width":  2000,
+                             "height":  1300
+                         }
+                     ]
+    },
+    {
+        "key":  "shop-pens",
+        "source":  "Shkrepsa_kimika _mockup.jpg",
+        "group":  "shop",
+        "alt":  "Custom printed promotional pens",
+        "focal":  "50% 50%",
+        "width":  3173,
+        "height":  3968,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/shop-pens-960.webp",
+                             "width":  768,
+                             "height":  960
+                         },
+                         {
+                             "src":  "/media/portfolio/shop-pens-1600.webp",
+                             "width":  1280,
+                             "height":  1600
+                         },
+                         {
+                             "src":  "/media/portfolio/shop-pens-2400.webp",
+                             "width":  1920,
+                             "height":  2400
+                         }
+                     ]
+    },
+    {
+        "key":  "shop-brochure",
+        "source":  "Deko Fix.jpg",
+        "group":  "shop",
+        "alt":  "Open product brochure with detailed layouts",
+        "focal":  "50% 50%",
+        "width":  1280,
+        "height":  960,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/shop-brochure-960.webp",
+                             "width":  960,
+                             "height":  720
+                         },
+                         {
+                             "src":  "/media/portfolio/shop-brochure-1280.webp",
+                             "width":  1280,
+                             "height":  960
+                         }
+                     ]
+    },
+    {
+        "key":  "shop-apparel-kit",
+        "source":  "Prezentimi Logos.jpg",
+        "group":  "shop",
+        "alt":  "Branded apparel and promotional kit",
+        "focal":  "50% 50%",
+        "width":  4000,
+        "height":  3200,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/shop-apparel-kit-960.webp",
+                             "width":  960,
+                             "height":  768
+                         },
+                         {
+                             "src":  "/media/portfolio/shop-apparel-kit-1600.webp",
+                             "width":  1600,
+                             "height":  1280
+                         },
+                         {
+                             "src":  "/media/portfolio/shop-apparel-kit-2400.webp",
+                             "width":  2400,
+                             "height":  1920
+                         }
+                     ]
+    },
+    {
+        "key":  "shop-catalog",
+        "source":  "Brochure-A4d.jpg",
+        "group":  "shop",
+        "alt":  "Open A4 product catalog held in hand",
+        "focal":  "50% 50%",
+        "width":  1500,
+        "height":  1000,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/shop-catalog-960.webp",
+                             "width":  960,
+                             "height":  640
+                         },
+                         {
+                             "src":  "/media/portfolio/shop-catalog-1500.webp",
+                             "width":  1500,
+                             "height":  1000
+                         }
+                     ]
+    },
+    {
+        "key":  "shop-rollup",
+        "source":  "Rollup_Stand_mockup.jpg",
+        "group":  "shop",
+        "alt":  "Freestanding printed roll-up banner",
+        "focal":  "50% 50%",
+        "width":  4000,
+        "height":  3000,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/shop-rollup-960.webp",
+                             "width":  960,
+                             "height":  720
+                         },
+                         {
+                             "src":  "/media/portfolio/shop-rollup-1600.webp",
+                             "width":  1600,
+                             "height":  1200
+                         },
+                         {
+                             "src":  "/media/portfolio/shop-rollup-2400.webp",
+                             "width":  2400,
+                             "height":  1800
+                         }
+                     ]
+    },
+    {
+        "key":  "shop-stickers",
+        "source":  "3-Free_Round_Sticker_Mockup_6 copy.jpg",
+        "group":  "shop",
+        "alt":  "Round branded stickers arranged on a pale background",
+        "focal":  "50% 50%",
+        "width":  3000,
+        "height":  2250,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/shop-stickers-960.webp",
+                             "width":  960,
+                             "height":  720
+                         },
+                         {
+                             "src":  "/media/portfolio/shop-stickers-1600.webp",
+                             "width":  1600,
+                             "height":  1200
+                         },
+                         {
+                             "src":  "/media/portfolio/shop-stickers-2400.webp",
+                             "width":  2400,
+                             "height":  1800
+                         }
+                     ]
+    },
+    {
+        "key":  "production-cutting",
+        "source":  "DSCN9926.jpg",
+        "group":  "production",
+        "alt":  "CUBE production specialist cutting a large-format graphic",
+        "focal":  "58% 50%",
+        "width":  3264,
+        "height":  2448,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/production-cutting-960.webp",
+                             "width":  960,
+                             "height":  720
+                         },
+                         {
+                             "src":  "/media/portfolio/production-cutting-1600.webp",
+                             "width":  1600,
+                             "height":  1200
+                         },
+                         {
+                             "src":  "/media/portfolio/production-cutting-2400.webp",
+                             "width":  2400,
+                             "height":  1800
+                         }
+                     ]
+    },
+    {
+        "key":  "production-detail",
+        "source":  "DSCN9928.jpg",
+        "group":  "production",
+        "alt":  "Close view of hand-finished large-format production work",
+        "focal":  "50% 48%",
+        "width":  3264,
+        "height":  2448,
+        "variants":  [
+                         {
+                             "src":  "/media/portfolio/production-detail-960.webp",
+                             "width":  960,
+                             "height":  720
+                         },
+                         {
+                             "src":  "/media/portfolio/production-detail-1600.webp",
+                             "width":  1600,
+                             "height":  1200
+                         },
+                         {
+                             "src":  "/media/portfolio/production-detail-2400.webp",
+                             "width":  2400,
+                             "height":  1800
+                         }
+                     ]
+    }
+]

@@ -30,7 +30,7 @@ const notFoundSeo: RouteSeo = {
   canonicalPath: "/404",
   index: false,
   sitemap: false,
-  ogImage: "/og.jpg",
+  ogImage: "/og.png",
 }
 
 const breadcrumbNames: Record<string, string> = {
@@ -66,7 +66,7 @@ function renderRouteNode(pathname: string): {
         canonicalPath: `/shop/${product.id}`,
         index: true,
         sitemap: true,
-        ogImage: "/og.jpg",
+        ogImage: "/og.png",
       },
       status: 200,
     }

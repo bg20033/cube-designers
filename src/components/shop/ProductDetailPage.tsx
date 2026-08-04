@@ -5,6 +5,7 @@ import {
   type Product,
 } from "@/components/ShopPage"
 import NotFoundPage from "@/components/NotFoundPage"
+import { ResponsiveImage } from "@/components/ResponsiveImage"
 import {
   SiteFooter,
   SiteHeader,
@@ -40,9 +41,17 @@ export function ProductDetail({ product }: { product: Product }) {
         </a>
 
         <section className={`shop-product-hero is-${product.tone}`}>
-          <div className="shop-product-visual" aria-hidden="true">
+          <div className="shop-product-visual">
+            {product.image && (
+              <ResponsiveImage
+                image={product.image}
+                loading="eager"
+                fetchPriority="high"
+                sizes="(max-width: 760px) 100vw, 55vw"
+              />
+            )}
             <span>{product.number}</span>
-            <strong>{product.category}</strong>
+            <strong aria-hidden="true">{product.category}</strong>
             <i />
           </div>
           <div className="shop-product-copy">

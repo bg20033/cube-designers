@@ -12,16 +12,15 @@ import ServiceStory, {
   type StoryItem,
 } from "@/components/ServiceStory"
 import {
-  ContactSection,
   SiteFooter,
   SiteHeader,
   SiteNoise,
 } from "@/components/SiteChrome"
 import { matchRoute } from "@/app/routes"
 import { RoutePathProvider } from "@/app/RouteContext"
-import Lanyard from "@/components/layout/Lanyard"
 import DareContact from "@/components/DareContact"
 
+const Lanyard = lazy(() => import("@/components/layout/Lanyard"))
 const PixelBlast = lazy(() => import("@/components/PixelBlast"))
 const AboutPage = lazy(() => import("@/components/AboutPage"))
 const RoadmapPage = lazy(() => import("@/components/RoadmapPage"))
@@ -412,7 +411,6 @@ export function HomePage({ effectsEnabled = true }: { effectsEnabled?: boolean }
         <FeaturedWork />
         <CollaborationProof />
         <FaqSection />
-        <ContactSection />
         <DareContact />
       </main>
 
@@ -445,7 +443,6 @@ function App({ pathname }: { pathname?: string }) {
     } else {
       document.body.style.overflow = previousOverflow
       document.body.style.overscrollBehavior = previousOverscroll
-      window.scrollTo({ top: 0, behavior: "instant" })
     }
 
     return () => {
@@ -525,7 +522,14 @@ function App({ pathname }: { pathname?: string }) {
               ease: [0.65, 0, 0.35, 1],
             }}
           >
-            <Lanyard onActivate={enterWebsite} />
+            <div className="lanyard-intro-copy" aria-hidden="true">
+              <span>CUBE / ACCESS 001</span>
+              <strong>DRAG. PLAY. ENTER.</strong>
+              <small>Kliko kartën për me hy</small>
+            </div>
+            <Suspense fallback={<div className="lanyard-intro-fallback" />}>
+              <Lanyard onActivate={enterWebsite} />
+            </Suspense>
           </motion.div>
         )}
       </AnimatePresence>

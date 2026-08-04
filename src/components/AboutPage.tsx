@@ -7,6 +7,7 @@ import {
   Sparkles,
 } from "lucide-react"
 import { motion } from "motion/react"
+import { ResponsiveImage } from "@/components/ResponsiveImage"
 
 import {
   ContactSection,
@@ -206,8 +207,37 @@ export default function AboutPage() {
           </div>
         </section>
 
+        <section className="about-production" aria-labelledby="about-production-title">
+          <header>
+            <div className="about-section-label">
+              <span>04</span>
+              Nga ekrani në material
+            </div>
+            <h2 id="about-production-title">
+              MADE HERE.
+              <em>FINISHED BY HAND.</em>
+            </h2>
+          </header>
+          <div className="about-production-grid">
+            <figure>
+              <ResponsiveImage
+                image="production-cutting"
+                sizes="(max-width: 760px) 100vw, 55vw"
+              />
+              <figcaption>Large format / Production</figcaption>
+            </figure>
+            <figure>
+              <ResponsiveImage
+                image="production-detail"
+                sizes="(max-width: 760px) 100vw, 45vw"
+              />
+              <figcaption>Detail / Hand finishing</figcaption>
+            </figure>
+          </div>
+        </section>
+
         <section className="about-manifesto">
-          <span>04 / Çka besojmë</span>
+          <span>05 / Çka besojmë</span>
           <p>
             <strong>IDEA FIRST.</strong>
             <strong>DETAILS ALWAYS.</strong>

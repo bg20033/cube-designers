@@ -37,7 +37,7 @@ export const siteRoutes: SiteRoute[] = [
       canonicalPath: "/",
       index: true,
       sitemap: true,
-      ogImage: "/og.jpg",
+      ogImage: "/og.png",
     },
   },
   {
@@ -50,7 +50,7 @@ export const siteRoutes: SiteRoute[] = [
       canonicalPath: "/about",
       index: true,
       sitemap: true,
-      ogImage: "/og.jpg",
+      ogImage: "/og.png",
     },
   },
   {
@@ -63,7 +63,7 @@ export const siteRoutes: SiteRoute[] = [
       canonicalPath: "/work",
       index: true,
       sitemap: true,
-      ogImage: "/og.jpg",
+      ogImage: "/og.png",
     },
   },
   {
@@ -76,7 +76,7 @@ export const siteRoutes: SiteRoute[] = [
       canonicalPath: "/roadmap",
       index: true,
       sitemap: true,
-      ogImage: "/og.jpg",
+      ogImage: "/og.png",
     },
   },
   {
@@ -89,7 +89,7 @@ export const siteRoutes: SiteRoute[] = [
       canonicalPath: "/shop",
       index: true,
       sitemap: true,
-      ogImage: "/og.jpg",
+      ogImage: "/og.png",
     },
   },
   {
@@ -102,7 +102,7 @@ export const siteRoutes: SiteRoute[] = [
       canonicalPath: "/start-project",
       index: true,
       sitemap: true,
-      ogImage: "/og.jpg",
+      ogImage: "/og.png",
     },
   },
 ]

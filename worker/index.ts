@@ -31,10 +31,7 @@ const productSlugs = new Set([
 
 const publicFiles = new Set([
   "/favicon.svg",
-  "/icons.svg",
   "/og.png",
-  "/og.jpg",
-  "/og-v2.png",
   "/robots.txt",
   "/sitemap.xml",
 ])
@@ -65,6 +62,7 @@ export default {
 
     if (
       pathname.startsWith("/assets/") ||
+      pathname.startsWith("/media/") ||
       pathname.startsWith("/src/") ||
       pathname.startsWith("/@") ||
       publicFiles.has(pathname)

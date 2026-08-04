@@ -8,6 +8,7 @@ import {
   SiteNoise,
 } from "@/components/SiteChrome"
 import { caseStudies } from "@/components/workData"
+import { ResponsiveImage } from "@/components/ResponsiveImage"
 
 export default function WorkPage() {
   return (
@@ -39,7 +40,7 @@ export default function WorkPage() {
               Jo galeri me mockups. Secili rast e tregon problemin, sistemin dhe
               rezultatin që puna duhet ta krijojë.
             </p>
-            <span>03 CASE STUDIES / 2026</span>
+            <span>03 CASE STUDIES / STUDIO ARCHIVE</span>
           </div>
         </section>
 
@@ -69,13 +70,29 @@ export default function WorkPage() {
                 <p>{project.summary}</p>
               </header>
 
-              <div className="work-case-visual" aria-hidden="true">
+              <div className="work-case-visual">
+                <ResponsiveImage image={project.heroImage} sizes="100vw" />
                 <span>{project.number}</span>
-                <strong>{project.title}</strong>
+                <strong aria-hidden="true">{project.title}</strong>
                 <div>
                   <i>{project.category}</i>
                   <i>{project.year}</i>
                 </div>
+              </div>
+
+              <div className="work-case-gallery">
+                {project.gallery.map((image, imageIndex) => (
+                  <figure key={image}>
+                    <ResponsiveImage
+                      image={image}
+                      sizes={
+                        imageIndex % 3 === 0
+                          ? "100vw"
+                          : "(max-width: 760px) 100vw, 50vw"
+                      }
+                    />
+                  </figure>
+                ))}
               </div>
 
               <div className="work-case-story">

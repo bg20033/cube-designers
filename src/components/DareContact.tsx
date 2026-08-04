@@ -122,10 +122,16 @@ export default function DareContact() {
   return (
     <section
       className={`dare-contact dare-contact--${phase}`}
+      id="contact"
       aria-labelledby="dare-contact-title"
     >
       <header className="dare-contact__heading">
+        <span>07 / Contact-o-matic</span>
         <h2 id="dare-contact-title">A guxon me prek?</h2>
+        <p>
+          Një klikim, një fletë dhe një rrugë e drejtpërdrejtë te ekipi që e
+          mendon dhe e realizon punën.
+        </p>
       </header>
 
       <div className="dare-contact__stage">
@@ -146,6 +152,16 @@ export default function DareContact() {
             <span className="danger-switch__shadow" />
           </span>
         </label>
+        <div className="dare-contact__fallback">
+          <a href="/start-project">
+            Plotëso brief-in
+            <ArrowUpRight />
+          </a>
+          <a href="mailto:hello@kube.studio">
+            hello@kube.studio
+            <ArrowUpRight />
+          </a>
+        </div>
       </div>
 
       {isActive &&

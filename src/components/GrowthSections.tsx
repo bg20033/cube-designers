@@ -1,6 +1,7 @@
 import { ArrowRight, ArrowUpRight, CheckCircle2 } from "lucide-react"
 
 import { caseStudies } from "@/components/workData"
+import { ResponsiveImage } from "@/components/ResponsiveImage"
 import {
   Accordion,
   AccordionContent,
@@ -82,9 +83,13 @@ export function FeaturedWork() {
             href={`/work#${project.slug}`}
             key={project.slug}
           >
-            <div className="featured-project-visual" aria-hidden="true">
+            <div className="featured-project-visual">
+              <ResponsiveImage
+                image={project.heroImage}
+                sizes="(max-width: 760px) 100vw, 33vw"
+              />
               <span>{project.number}</span>
-              <strong>{project.title}</strong>
+              <strong aria-hidden="true">{project.title}</strong>
               <i>{project.category}</i>
             </div>
             <div className="featured-project-copy">

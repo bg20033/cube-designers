@@ -3,6 +3,12 @@ import { expect, test } from "@playwright/test"
 
 const routes = ["/", "/about", "/work", "/roadmap", "/shop", "/start-project"]
 
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    window.sessionStorage.setItem("cube-intro-entered", "1")
+  })
+})
+
 for (const route of routes) {
   test(`${route} renders a single page heading without horizontal overflow`, async ({
     page,
@@ -22,6 +28,49 @@ test("product details have a stable indexable route", async ({ page }) => {
   await page.goto("/shop/business-cards")
   await expect(page.locator("h1")).toHaveText("Business Cards")
   await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(4)
+})
+
+test("portfolio images load with responsive sources and useful alt text", async ({
+  page,
+}) => {
+  await page.goto("/work")
+  const images = page.locator(".work-case-visual img")
+  await expect(images).toHaveCount(3)
+
+  for (let index = 0; index < (await images.count()); index += 1) {
+    const image = images.nth(index)
+    await image.scrollIntoViewIfNeeded()
+    await expect(image).toBeVisible()
+    await expect(image).toHaveAttribute("alt", /\S+/)
+    await expect(image).toHaveAttribute("srcset", /\.webp\s+\d+w/)
+    await expect
+      .poll(() => image.evaluate((element) => element.naturalWidth))
+      .toBeGreaterThan(0)
+  }
+})
+
+test("lanyard entrance works from the keyboard and is remembered", async ({
+  browser,
+  baseURL,
+}) => {
+  const context = await browser.newContext()
+  const page = await context.newPage()
+  await page.goto(baseURL ?? "/")
+
+  const entrance = page.getByRole("button", {
+    name: "Enter the Cube Designers website",
+  })
+  await expect(entrance).toBeVisible()
+  await entrance.press("Enter")
+  await expect(entrance).toHaveCount(0)
+  await expect(page.locator(".site-reveal")).toBeVisible()
+
+  await page.reload()
+  await expect(
+    page.getByRole("button", { name: "Enter the Cube Designers website" }),
+  ).toHaveCount(0)
+  await expect(page.locator(".site-reveal")).toBeVisible()
+  await context.close()
 })
 
 test("unknown routes return a real 404", async ({ request }) => {
