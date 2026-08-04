@@ -10,6 +10,53 @@
   outline-offset: 4px;
 }
 
+/* Printed contact form: unmistakable writing areas on the textured paper. */
+.contact-paper input,
+.contact-paper textarea {
+  padding: 0.75rem 0.85rem;
+  border: 2px solid var(--ink);
+  background: rgb(255 255 255 / 72%);
+  box-shadow: 4px 4px 0 rgb(11 11 13 / 14%);
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.contact-paper input {
+  height: 3.25rem;
+}
+
+.contact-paper textarea {
+  min-height: 7rem;
+  padding-block: 0.75rem;
+}
+
+.contact-paper input::placeholder,
+.contact-paper textarea::placeholder {
+  color: rgb(11 11 13 / 46%);
+  opacity: 1;
+}
+
+.contact-paper input:hover,
+.contact-paper textarea:hover {
+  background: white;
+  box-shadow: 5px 5px 0 rgb(11 11 13 / 20%);
+}
+
+.contact-paper input:focus,
+.contact-paper textarea:focus,
+.contact-paper input:focus-visible,
+.contact-paper textarea:focus-visible {
+  border-color: var(--orange);
+  outline: 3px solid rgb(249 115 22 / 30%);
+  outline-offset: 2px;
+  background: white;
+  box-shadow: 5px 5px 0 var(--orange);
+  transform: translate(-1px, -1px);
+}
+
 .lanyard-intro-copy {
   position: absolute;
   inset: 2rem 2rem auto;

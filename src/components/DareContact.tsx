@@ -206,6 +206,7 @@ export default function DareContact() {
                       name="name"
                       type="text"
                       autoComplete="name"
+                      placeholder="Emri ose kompania jote"
                       required
                     />
                   </label>
@@ -215,12 +216,18 @@ export default function DareContact() {
                       name="email"
                       type="email"
                       autoComplete="email"
+                      placeholder="hello@kompania.com"
                       required
                     />
                   </label>
                   <label className="contact-paper__message">
                     <span>Çka po ndërtojmë?</span>
-                    <textarea name="message" rows={4} required />
+                    <textarea
+                      name="message"
+                      rows={4}
+                      placeholder="Na trego shkurt për projektin..."
+                      required
+                    />
                   </label>
                 </div>
 

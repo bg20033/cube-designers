@@ -71,6 +71,34 @@ test("work case visuals keep a compact editorial scale", async ({
   expect(heroHeight).toBeLessThanOrEqual(620)
 })
 
+test("printer contact fields have clear full borders and prompts", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" })
+  await page.goto("/")
+  await page
+    .getByRole("checkbox", { name: "Aktivizo makinën e kontaktit" })
+    .check({ force: true })
+  await expect(page.locator(".contact-printer-overlay--printed")).toBeVisible()
+
+  const fields = page.locator(".contact-paper input, .contact-paper textarea")
+  await expect(fields).toHaveCount(3)
+  await expect(fields.first()).toHaveAttribute("placeholder", /Emri/)
+
+  const fullBorders = await fields.evaluateAll((elements) =>
+    elements.every((element) => {
+      const styles = getComputedStyle(element)
+      return [
+        styles.borderTopWidth,
+        styles.borderRightWidth,
+        styles.borderBottomWidth,
+        styles.borderLeftWidth,
+      ].every((width) => width === "2px")
+    }),
+  )
+  expect(fullBorders).toBe(true)
+})
+
 test("lanyard entrance works from the keyboard and is remembered", async ({
   browser,
   baseURL,
