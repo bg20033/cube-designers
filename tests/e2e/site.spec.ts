@@ -44,7 +44,36 @@ test("shop opens with the compact utility header instead of a hero", async ({
     if (!start || !end) return Number.POSITIVE_INFINITY
     return end.getBoundingClientRect().bottom - start.getBoundingClientRect().top
   })
-  expect(shopIntroHeight).toBeLessThan(430)
+  expect(shopIntroHeight).toBeLessThan(340)
+})
+
+test("mobile shop keeps a stable two-column product grid", async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(!isMobile, "Desktop uses its own responsive product grid")
+  await page.goto("/shop")
+
+  const cards = page.locator(".shop-product")
+  await expect(cards).toHaveCount(20)
+
+  const [first, second, third] = await Promise.all([
+    cards.nth(0).boundingBox(),
+    cards.nth(1).boundingBox(),
+    cards.nth(2).boundingBox(),
+  ])
+
+  expect(first).not.toBeNull()
+  expect(second).not.toBeNull()
+  expect(third).not.toBeNull()
+  expect(Math.abs(first!.y - second!.y)).toBeLessThan(2)
+  expect(Math.abs(first!.width - second!.width)).toBeLessThan(2)
+  expect(third!.y).toBeGreaterThan(first!.y + 10)
+
+  const hasMotionTransform = await cards.evaluateAll((elements) =>
+    elements.some((element) => getComputedStyle(element).transform !== "none"),
+  )
+  expect(hasMotionTransform).toBe(false)
 })
 
 test("shop quick view stays contained and readable", async ({ page }) => {

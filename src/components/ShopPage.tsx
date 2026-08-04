@@ -628,17 +628,17 @@ export default function ShopPage() {
           <article>
             <PackageCheck />
             <span>01</span>
-            <strong>Artwork check i përfshirë</strong>
+            <strong>Artwork check</strong>
           </article>
           <article>
             <Truck />
             <span>02</span>
-            <strong>Dërgesa në krejt Kosovën</strong>
+            <strong>Dërgesë Kosovë</strong>
           </article>
           <article>
             <ShieldCheck />
             <span>03</span>
-            <strong>Konfirmim para prodhimit</strong>
+            <strong>Para prodhimit</strong>
           </article>
         </section>
 
@@ -865,30 +865,24 @@ export default function ShopPage() {
                 </div>
               )}
 
-              <motion.div className="shop-product-grid" layout>
-                <AnimatePresence mode="popLayout">
-                  {visibleProducts.map((product) => {
-                    const saved = favorites.includes(product.id)
-                    const cartQuantity =
-                      cart.find((item) => item.productId === product.id)?.quantity ??
-                      0
+              <div className="shop-product-grid">
+                {visibleProducts.map((product) => {
+                  const saved = favorites.includes(product.id)
+                  const cartQuantity =
+                    cart.find((item) => item.productId === product.id)?.quantity ??
+                    0
 
-                    return (
-                      <motion.article
+                  return (
+                      <article
                         className="shop-product"
                         data-tone={product.tone}
                         key={product.id}
-                        layout
-                        initial={{ opacity: 0, scale: 0.96 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.96 }}
-                        transition={{ duration: 0.22 }}
                       >
                         <div className="shop-product-visual">
                           {product.image && (
                             <ResponsiveImage
                               image={product.image}
-                              sizes="(max-width: 760px) 100vw, (max-width: 1100px) 50vw, 33vw"
+                              sizes="(max-width: 760px) 50vw, (max-width: 1100px) 50vw, 33vw"
                             />
                           )}
                           <div className="shop-product-topline">
@@ -943,18 +937,22 @@ export default function ShopPage() {
                             </div>
                             <button
                               type="button"
+                              aria-label={`${
+                                cartQuantity > 0
+                                  ? `${cartQuantity} në cart — shto edhe një`
+                                  : "Shto"
+                              } ${product.name}`}
                               onClick={() => addToCart(product.id)}
                             >
-                              {cartQuantity > 0 ? `${cartQuantity} në cart` : "Shto"}
+                              <span>{cartQuantity > 0 ? cartQuantity : "Shto"}</span>
                               <Plus />
                             </button>
                           </footer>
                         </div>
-                      </motion.article>
-                    )
-                  })}
-                </AnimatePresence>
-              </motion.div>
+                      </article>
+                  )
+                })}
+              </div>
             </div>
           </div>
         </section>
