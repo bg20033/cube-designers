@@ -677,7 +677,7 @@ export default function ShopPage() {
           <header className="shop-catalog-heading">
             <div>
               <span>01 / Katalogu</span>
-              <h2>ZGJIDH<br />FORMATIN.</h2>
+              <h2>ZGJIDH FORMATIN.</h2>
             </div>
             <div>
               <p>

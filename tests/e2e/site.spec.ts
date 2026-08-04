@@ -76,6 +76,38 @@ test("mobile shop keeps a stable two-column product grid", async ({
   expect(hasMotionTransform).toBe(false)
 })
 
+test("desktop shop uses a dense four-column catalog", async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(isMobile, "Mobile uses a two-column product grid")
+  await page.setViewportSize({ width: 1600, height: 1000 })
+  await page.goto("/shop")
+
+  const grid = page.locator(".shop-product-grid")
+  const columnCount = await grid.evaluate((element) =>
+    getComputedStyle(element).gridTemplateColumns.split(" ").length,
+  )
+  expect(columnCount).toBe(4)
+
+  const visualHeight = await page
+    .locator(".shop-product-visual")
+    .first()
+    .evaluate((element) => element.getBoundingClientRect().height)
+  expect(visualHeight).toBeLessThan(330)
+
+  const catalogGap = await page.evaluate(() => {
+    const categories = document.querySelector(".shop-category-browser")
+    const toolbar = document.querySelector(".shop-commerce-toolbar")
+    if (!categories || !toolbar) return Number.POSITIVE_INFINITY
+    return (
+      toolbar.getBoundingClientRect().top -
+      categories.getBoundingClientRect().bottom
+    )
+  })
+  expect(catalogGap).toBeLessThan(190)
+})
+
 test("shop quick view stays contained and readable", async ({ page }) => {
   await page.goto("/shop")
   const quickViewButton = page
