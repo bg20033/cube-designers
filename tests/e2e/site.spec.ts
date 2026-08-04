@@ -58,6 +58,19 @@ test("portfolio images load with responsive sources and useful alt text", async 
   }
 })
 
+test("work case visuals keep a compact editorial scale", async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(isMobile, "Mobile uses its own compact image scale")
+  await page.goto("/work")
+  const heroHeight = await page
+    .locator(".work-case-visual")
+    .first()
+    .evaluate((element) => element.getBoundingClientRect().height)
+  expect(heroHeight).toBeLessThanOrEqual(620)
+})
+
 test("lanyard entrance works from the keyboard and is remembered", async ({
   browser,
   baseURL,
@@ -155,8 +168,11 @@ test("landing service story stays pinned while its scroll story advances", async
       ),
     )
     .toBe(0)
-  await expect(page.locator(".story-card-shell")).toBeVisible()
-  const storyImage = page.locator(".story-visual img")
+  await expect(page.locator(".story-card-shell").last()).toBeVisible()
+  await expect(
+    page.getByRole("button", { name: /Hap detajet/i }).last(),
+  ).toBeVisible()
+  const storyImage = page.locator(".story-visual img").last()
   await expect(storyImage).toHaveAttribute("srcset", /\.webp\s+\d+w/)
   await expect
     .poll(() => storyImage.evaluate((element) => element.naturalWidth))

@@ -62,18 +62,27 @@ const scrollStepSvh = 24
 const cardMotionVariants = {
   enter: (direction: number) => ({
     opacity: 0,
-    y: direction < 0 ? -22 : 22,
-    scale: 0.99,
+    x: direction < 0 ? -42 : 42,
+    y: 12,
+    rotateZ: direction < 0 ? -0.7 : 0.7,
+    scale: 0.985,
+    filter: "blur(5px)",
   }),
   active: {
     opacity: 1,
+    x: 0,
     y: 0,
+    rotateZ: 0,
     scale: 1,
+    filter: "blur(0px)",
   },
   exit: (direction: number) => ({
     opacity: 0,
-    y: direction < 0 ? 16 : -16,
-    scale: 0.995,
+    x: direction < 0 ? 34 : -34,
+    y: -8,
+    rotateZ: direction < 0 ? 0.45 : -0.45,
+    scale: 0.992,
+    filter: "blur(3px)",
   }),
 }
 
@@ -293,7 +302,7 @@ export default function ServiceStory({
           <div className="story-card-stack">
             <AnimatePresence
               initial={false}
-              mode="wait"
+              mode="sync"
               custom={cardDirection}
             >
               <motion.div
@@ -305,7 +314,7 @@ export default function ServiceStory({
                 animate="active"
                 exit="exit"
                 transition={{
-                  duration: 0.34,
+                  duration: 0.46,
                   ease: [0.22, 1, 0.36, 1],
                 }}
                 onPointerMove={handleCardPointerMove}
@@ -362,7 +371,7 @@ export default function ServiceStory({
                     <Button className="story-modal-trigger" size="lg" />
                   }
                 >
-                  Shiko shërbimin
+                  Hap detajet
                   <ArrowUpRight data-icon="inline-end" />
                 </DialogTrigger>
                 <DialogContent
