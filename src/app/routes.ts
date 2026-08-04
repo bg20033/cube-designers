@@ -44,9 +44,9 @@ export const siteRoutes: SiteRoute[] = [
     key: "about",
     path: "/about",
     seo: {
-      title: "Rreth CUBE DESIGNERS | Studio kreative në Kosovë",
+      title: "CUBE DESIGNERS | Studio kreative & branding në Kosovë",
       description:
-        "Njihuni me ekipin, parimet dhe mënyrën si CUBE DESIGNERS i kthen idetë në sisteme të qarta.",
+        "Studio kreative në Suharekë, Kosovë për branding, identitet vizual, dizajn grafik, print, packaging, web design dhe e-commerce.",
       canonicalPath: "/about",
       index: true,
       sitemap: true,

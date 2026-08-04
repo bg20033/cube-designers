@@ -171,6 +171,36 @@ function buildStructuredData(pathname: string, siteUrl: string): StructuredData[
     }
   }
 
+  if (route.key === "about") {
+    data.push({
+      "@context": "https://schema.org",
+      "@type": "ProfessionalService",
+      name: "CUBE DESIGNERS",
+      description:
+        "Studio kreative për branding, identitet vizual, dizajn grafik, print, packaging, web design dhe e-commerce.",
+      url: `${normalizedSiteUrl}/about`,
+      email: "hello@kube.studio",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Suharekë",
+        addressCountry: "XK",
+      },
+      areaServed: {
+        "@type": "Country",
+        name: "Kosovo",
+      },
+      knowsAbout: [
+        "Branding",
+        "Identitet vizual",
+        "Dizajn grafik",
+        "Print",
+        "Packaging",
+        "Web design",
+        "E-commerce",
+      ],
+    })
+  }
+
   return data
 }
 

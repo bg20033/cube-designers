@@ -7,7 +7,6 @@ import {
   Sparkles,
 } from "lucide-react"
 import { motion } from "motion/react"
-import { ResponsiveImage } from "@/components/ResponsiveImage"
 
 import {
   ContactSection,
@@ -207,33 +206,86 @@ export default function AboutPage() {
           </div>
         </section>
 
-        <section className="about-production" aria-labelledby="about-production-title">
+        <section
+          className="about-capabilities"
+          aria-labelledby="about-capabilities-title"
+        >
           <header>
             <div className="about-section-label">
               <span>04</span>
-              Nga ekrani në material
+              Studio kreative në Kosovë
             </div>
-            <h2 id="about-production-title">
-              MADE HERE.
-              <em>FINISHED BY HAND.</em>
-            </h2>
+            <div>
+              <h2 id="about-capabilities-title">
+                BRANDING, PRINT & DIGITAL.
+                <em>NË NJË STUDIO.</em>
+              </h2>
+              <p>
+                CUBE DESIGNERS është studio kreative në Suharekë, Kosovë, për
+                biznese që kërkojnë identitet vizual, dizajn grafik, materiale
+                printi dhe eksperienca digjitale të lidhura në një sistem.
+              </p>
+            </div>
           </header>
-          <div className="about-production-grid">
-            <figure>
-              <ResponsiveImage
-                image="production-cutting"
-                sizes="(max-width: 760px) 100vw, 55vw"
-              />
-              <figcaption>Large format / Production</figcaption>
-            </figure>
-            <figure>
-              <ResponsiveImage
-                image="production-detail"
-                sizes="(max-width: 760px) 100vw, 45vw"
-              />
-              <figcaption>Detail / Hand finishing</figcaption>
-            </figure>
+
+          <div className="about-capability-grid">
+            <article>
+              <span>01 / Branding</span>
+              <h3>Identitet vizual dhe strategji brendi.</h3>
+              <p>
+                Pozicionim, logo, tipografi, ngjyra, packaging dhe udhëzime që
+                e mbajnë markën konsistente në çdo kontakt.
+              </p>
+              <ul aria-label="Shërbime branding">
+                <li>Brand identity</li>
+                <li>Graphic design</li>
+                <li>Packaging</li>
+              </ul>
+            </article>
+            <article>
+              <span>02 / Print</span>
+              <h3>Dizajn printi dhe materiale të personalizuara.</h3>
+              <p>
+                Nga artwork-u dhe prepress-i te përzgjedhja e materialit,
+                sinjalistika, tekstili dhe koordinimi i prodhimit final.
+              </p>
+              <ul aria-label="Shërbime printi">
+                <li>Business print</li>
+                <li>Large format</li>
+                <li>Merchandise</li>
+              </ul>
+            </article>
+            <article>
+              <span>03 / Digital</span>
+              <h3>Web design, e-commerce dhe përmbajtje.</h3>
+              <p>
+                Faqe responsive, dyqane online, social content dhe kampanja që
+                e çojnë të njëjtën gjuhë të brendit në ekran.
+              </p>
+              <ul aria-label="Shërbime digjitale">
+                <li>Web design</li>
+                <li>E-commerce</li>
+                <li>Content systems</li>
+              </ul>
+            </article>
           </div>
+
+          <footer>
+            <p>
+              Punojmë nga Suhareka me biznese në gjithë Kosovën dhe me ekipe që
+              kanë nevojë për një partner kreativ nga ideja deri te realizimi.
+            </p>
+            <div>
+              <a href="/work">
+                Shiko projektet
+                <ArrowUpRight />
+              </a>
+              <a href="/start-project">
+                Fillo një projekt
+                <ArrowRight />
+              </a>
+            </div>
+          </footer>
         </section>
 
         <section className="about-manifesto">

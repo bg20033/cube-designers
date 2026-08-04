@@ -102,6 +102,30 @@ test("work case visuals keep a compact editorial scale", async ({
   expect(heroHeight).toBeLessThanOrEqual(620)
 })
 
+test("about is compact, text-led, and search-oriented", async ({ page }) => {
+  await page.goto("/about")
+  await expect(page.locator(".about-production")).toHaveCount(0)
+  await expect(page.locator(".about-capabilities")).toBeVisible()
+  await expect(page.locator(".about-capability-grid article")).toHaveCount(3)
+  await expect(page).toHaveTitle(/Studio kreative.*branding.*Kosovë/i)
+
+  const description = await page
+    .locator('meta[name="description"]')
+    .getAttribute("content")
+  expect(description).toMatch(/Suharekë.*identitet vizual.*web design/i)
+
+  const structuredData = (
+    await page.locator('script[type="application/ld+json"]').allTextContents()
+  ).join(" ")
+  expect(structuredData).toContain("ProfessionalService")
+  expect(structuredData).toContain("Suharekë")
+
+  const heroHeight = await page
+    .locator(".about-poster-hero")
+    .evaluate((element) => element.getBoundingClientRect().height)
+  expect(heroHeight).toBeLessThanOrEqual(760)
+})
+
 test("printer contact fields have clear full borders and prompts", async ({
   page,
 }) => {
