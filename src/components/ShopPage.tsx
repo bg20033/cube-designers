@@ -628,7 +628,7 @@ export default function ShopPage() {
           <article>
             <PackageCheck />
             <span>01</span>
-            <strong>Artwork check included</strong>
+            <strong>Artwork check i përfshirë</strong>
           </article>
           <article>
             <Truck />
@@ -644,8 +644,8 @@ export default function ShopPage() {
 
         <section className="shop-category-browser">
           <header>
-            <span>Browse by category</span>
-            <strong>20 products / 05 collections</strong>
+            <span>Shfleto sipas kategorisë</span>
+            <strong>20 produkte / 05 koleksione</strong>
           </header>
           <div>
             {categories.slice(1).map((category, index) => (
@@ -677,7 +677,7 @@ export default function ShopPage() {
           <header className="shop-catalog-heading">
             <div>
               <span>01 / Katalogu</span>
-              <h2>CHOOSE YOUR<br />CANVAS.</h2>
+              <h2>ZGJIDH<br />FORMATIN.</h2>
             </div>
             <div>
               <p>

@@ -347,10 +347,10 @@
 .shop-compact-head {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(230px, 0.55fr) auto;
-  gap: clamp(1.5rem, 4vw, 5rem);
-  align-items: end;
-  min-height: 168px;
-  padding: clamp(1.4rem, 2.6vw, 2.5rem) var(--site-gutter);
+  gap: clamp(1.2rem, 3vw, 3.5rem);
+  align-items: center;
+  min-height: 112px;
+  padding: 0.9rem var(--site-gutter);
   border-bottom: 1px solid rgb(255 255 255 / 24%);
   background: var(--ink);
   color: white;
@@ -358,7 +358,7 @@
 
 .shop-compact-head > div > span {
   display: block;
-  margin-bottom: 0.65rem;
+  margin-bottom: 0.45rem;
   color: var(--orange);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.52rem;
@@ -369,7 +369,7 @@
 .shop-compact-head h1 {
   margin: 0;
   font-family: var(--font-heading);
-  font-size: clamp(3rem, 5.5vw, 6.2rem);
+  font-size: clamp(2.6rem, 4vw, 4.4rem);
   font-weight: 950;
   line-height: 0.72;
   letter-spacing: -0.08em;
@@ -379,15 +379,15 @@
   max-width: 340px;
   margin: 0;
   color: rgb(255 255 255 / 58%);
-  font-size: 0.66rem;
-  line-height: 1.6;
+  font-size: 0.62rem;
+  line-height: 1.5;
 }
 
 .shop-compact-head > button {
   display: inline-flex;
   gap: 0.65rem;
   align-items: center;
-  min-height: 44px;
+  min-height: 40px;
   padding: 0 0.65rem 0 0.9rem;
   border: 1px solid rgb(255 255 255 / 36%);
   border-radius: 999px;
@@ -416,33 +416,213 @@
 }
 
 .shop-assurance article {
-  min-height: 116px;
-  padding: 1rem 1.2rem;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.8rem;
+  align-items: center;
+  min-height: 62px;
+  padding: 0.65rem 1rem;
 }
 
 .shop-assurance article > span {
-  top: 1rem;
-  right: 1.2rem;
+  position: static;
+  grid-column: 3;
+  grid-row: 1;
+  opacity: 0.48;
 }
 
 .shop-assurance article > strong {
-  font-size: clamp(1.1rem, 1.65vw, 1.8rem);
+  grid-column: 2;
+  grid-row: 1;
+  font-size: clamp(0.88rem, 1vw, 1.1rem);
+  line-height: 1;
+  letter-spacing: -0.025em;
+}
+
+.shop-assurance article > svg {
+  width: 1.1rem;
+}
+
+.shop-category-browser > header {
+  min-height: 42px;
+}
+
+.shop-category-browser > div {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
 .shop-category-browser > div > button {
-  min-height: 168px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
+  gap: 0.2rem 0.7rem;
+  align-items: center;
+  min-height: 88px;
+  padding: 0.75rem 1rem;
 }
 
 .shop-category-browser button > strong {
-  font-size: clamp(1.45rem, 2.25vw, 2.65rem);
+  grid-column: 2;
+  grid-row: 1;
+  margin: 0;
+  font-size: clamp(1rem, 1.35vw, 1.35rem);
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+
+.shop-category-browser button > span {
+  grid-column: 1;
+  grid-row: 1 / 3;
+}
+
+.shop-category-browser button > small {
+  grid-column: 2;
+  grid-row: 2;
+  margin: 0;
+}
+
+.shop-category-browser button > svg {
+  position: static;
+  grid-column: 3;
+  grid-row: 1 / 3;
+}
+
+.shop-category-browser > div > button::before {
+  right: -10%;
+  bottom: -100%;
+  width: 58%;
 }
 
 .shop-catalog {
-  padding-top: clamp(4rem, 6vw, 6.5rem);
+  padding-top: clamp(2.8rem, 4vw, 4.5rem);
+  padding-bottom: clamp(4rem, 7vw, 7rem);
 }
 
 .shop-catalog-heading {
-  margin-bottom: clamp(2.4rem, 4vw, 4rem);
+  gap: 4vw;
+  margin-bottom: clamp(1.8rem, 3vw, 2.8rem);
+}
+
+.shop-catalog-heading > div:first-child > span {
+  margin-bottom: 0.75rem;
+}
+
+.shop-catalog-heading h2 {
+  font-size: clamp(3rem, 5vw, 5.8rem);
+  line-height: 0.82;
+}
+
+.shop-catalog-heading > div:last-child {
+  padding-top: 0.8rem;
+}
+
+.shop-catalog-heading p {
+  margin-bottom: 0;
+  font-size: 0.68rem;
+  line-height: 1.55;
+}
+
+.shop-commerce-toolbar {
+  margin-bottom: 0.65rem;
+}
+
+.shop-search,
+.shop-sort,
+.shop-saved,
+.shop-mobile-filter {
+  min-height: 44px;
+}
+
+.shop-results-bar {
+  min-height: 44px;
+  margin-bottom: 0.65rem;
+}
+
+.shop-catalog-layout {
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 0.65rem;
+}
+
+.shop-product-visual {
+  aspect-ratio: 1.16;
+}
+
+.shop-product-info {
+  padding: 0.85rem;
+}
+
+.shop-product-info > div:first-child > strong {
+  font-size: 1.08rem;
+}
+
+.shop-product-info > p {
+  min-height: 2.9em;
+  margin: 0.75rem 0;
+}
+
+.shop-product-meta {
+  margin-bottom: 0.75rem;
+}
+
+.shop-product-info > footer {
+  padding-top: 0.75rem;
+}
+
+.shop-quick-view {
+  grid-template-columns: minmax(280px, 0.92fr) minmax(340px, 1.08fr);
+  width: min(90vw, 900px);
+  max-height: 84svh;
+  border: 2px solid var(--ink);
+  box-shadow: 14px 14px 0 var(--orange), 0 34px 100px rgb(0 0 0 / 42%);
+}
+
+.shop-quick-visual {
+  min-height: 500px;
+}
+
+.shop-quick-visual > strong {
+  font-size: clamp(2.5rem, 4vw, 4.25rem);
+}
+
+.shop-quick-copy {
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.shop-quick-copy h2 {
+  margin-top: 1.25rem;
+  font-size: clamp(2.6rem, 4.2vw, 4.5rem);
+}
+
+.shop-quick-copy > p {
+  margin: 1rem 0 1.35rem;
+  line-height: 1.55;
+}
+
+.shop-quick-copy dl > div {
+  min-height: 40px;
+}
+
+.shop-quick-price {
+  gap: 1rem;
+  padding-top: 1.35rem;
+}
+
+.shop-quick-price > button {
+  min-height: 46px;
+  background: var(--ink);
+  color: white;
+}
+
+.shop-quick-price > button svg {
+  color: var(--orange);
+}
+
+.shop-quick-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 0;
+  background: var(--ink);
+  color: white;
 }
 
 .featured-project-visual::after,
@@ -727,12 +907,12 @@
   .shop-compact-head {
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 1rem;
-    min-height: 126px;
-    padding: 1.2rem 1rem;
+    min-height: 94px;
+    padding: 0.85rem 1rem;
   }
 
   .shop-compact-head h1 {
-    font-size: clamp(2.8rem, 14vw, 4.4rem);
+    font-size: clamp(2.5rem, 11vw, 3.4rem);
   }
 
   .shop-compact-head > p {
@@ -744,8 +924,8 @@
     grid-template-columns: auto minmax(0, 1fr) auto;
     gap: 0.9rem;
     align-items: center;
-    min-height: 74px;
-    padding: 0.8rem 1rem;
+    min-height: 56px;
+    padding: 0.6rem 1rem;
   }
 
   .shop-assurance article > span {
@@ -757,17 +937,72 @@
   .shop-assurance article > strong {
     grid-column: 2;
     grid-row: 1;
-    font-size: 1rem;
+    font-size: 0.86rem;
     line-height: 1;
   }
 
   .shop-category-browser > div > button {
-    flex-basis: 172px;
-    min-height: 152px;
+    flex-basis: 148px;
+    min-height: 88px;
+    padding: 0.7rem 0.8rem;
   }
 
   .shop-catalog {
-    padding-top: 3.75rem;
+    padding-top: 2.5rem;
+  }
+
+  .shop-catalog-heading {
+    gap: 1.25rem;
+  }
+
+  .shop-catalog-heading h2 {
+    font-size: clamp(2.8rem, 13vw, 4.2rem);
+  }
+
+  .shop-product-visual {
+    aspect-ratio: 1.25;
+  }
+
+  .shop-quick-view {
+    width: calc(100vw - 0.75rem);
+    max-height: calc(100svh - 0.75rem);
+    box-shadow: 6px 6px 0 var(--orange);
+  }
+
+  .shop-quick-visual {
+    min-height: 245px;
+  }
+
+  .shop-quick-visual > strong {
+    font-size: clamp(2.3rem, 11vw, 3.8rem);
+  }
+
+  .shop-quick-copy {
+    min-height: 0;
+    padding: 1.2rem;
+  }
+
+  .shop-quick-copy h2 {
+    margin-top: 0.9rem;
+    font-size: clamp(2.5rem, 11vw, 3.6rem);
+  }
+
+  .shop-quick-copy > p {
+    margin: 0.8rem 0 1rem;
+  }
+
+  .shop-quick-price {
+    align-items: center;
+    padding-top: 1rem;
+  }
+
+  .shop-quick-price > div strong {
+    font-size: 2rem;
+  }
+
+  .shop-quick-close {
+    top: 0.7rem;
+    right: 0.7rem;
   }
 
   .lanyard-intro-copy {

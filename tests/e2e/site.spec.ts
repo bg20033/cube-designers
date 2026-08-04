@@ -37,6 +37,37 @@ test("shop opens with the compact utility header instead of a hero", async ({
   await expect(page.locator(".shop-hero")).toHaveCount(0)
   await expect(page.locator(".shop-compact-head")).toBeVisible()
   await expect(page.locator(".shop-category-browser")).toBeVisible()
+
+  const shopIntroHeight = await page.evaluate(() => {
+    const start = document.querySelector(".shop-compact-head")
+    const end = document.querySelector(".shop-category-browser")
+    if (!start || !end) return Number.POSITIVE_INFINITY
+    return end.getBoundingClientRect().bottom - start.getBoundingClientRect().top
+  })
+  expect(shopIntroHeight).toBeLessThan(430)
+})
+
+test("shop quick view stays contained and readable", async ({ page }) => {
+  await page.goto("/shop")
+  const quickViewButton = page
+    .getByRole("button", { name: /Quick view/i })
+    .first()
+  await expect(quickViewButton).toBeAttached()
+  await quickViewButton.evaluate((button) => button.click())
+
+  const quickView = page.locator(".shop-quick-view")
+  await expect(quickView).toBeVisible()
+  await expect(quickView.getByRole("heading")).not.toBeEmpty()
+  const contained = await quickView.evaluate((element) => {
+    const bounds = element.getBoundingClientRect()
+    return (
+      bounds.left >= 0 &&
+      bounds.top >= 0 &&
+      bounds.right <= window.innerWidth &&
+      bounds.bottom <= window.innerHeight
+    )
+  })
+  expect(contained).toBe(true)
 })
 
 test("portfolio images load with responsive sources and useful alt text", async ({
