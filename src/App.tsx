@@ -520,6 +520,7 @@ function App({ pathname }: { pathname?: string }) {
             role="button"
             tabIndex={0}
             aria-label="Enter the Cube Designers website"
+            onClick={reduceMotion ? enterWebsite : undefined}
             onKeyDown={(event) => {
               if (event.key === "Enter" || event.key === " ") {
                 event.preventDefault()
@@ -543,7 +544,10 @@ function App({ pathname }: { pathname?: string }) {
               <small>Kliko kartën për me hy</small>
             </div>
             <Suspense fallback={<div className="lanyard-intro-fallback" />}>
-              <Lanyard onActivate={enterWebsite} />
+              <Lanyard
+                onActivate={enterWebsite}
+                reducedMotion={Boolean(reduceMotion)}
+              />
             </Suspense>
           </motion.div>
         )}

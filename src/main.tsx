@@ -1,5 +1,5 @@
 import { StrictMode } from 'react'
-import { createRoot, hydrateRoot } from 'react-dom/client'
+import { createRoot } from 'react-dom/client'
 import './index.css'
 import './polish.css'
 import App from './App.tsx'
@@ -11,8 +11,8 @@ const app = (
   </StrictMode>
 )
 
-if (root.hasChildNodes()) {
-  hydrateRoot(root, app)
-} else {
-  createRoot(root).render(app)
-}
+// Prerendered route HTML is intentionally crawler-first and does not share the
+// interactive intro shell's tree. Mount cleanly to avoid a hydration reset
+// while the WebGL lanyard is starting.
+root.replaceChildren()
+createRoot(root).render(app)

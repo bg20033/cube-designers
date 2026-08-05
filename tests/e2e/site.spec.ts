@@ -239,6 +239,64 @@ test("lanyard entrance works from the keyboard and is remembered", async ({
   await context.close()
 })
 
+test("lanyard stays stable through drag and responsive remounts", async ({
+  browser,
+  baseURL,
+}) => {
+  const context = await browser.newContext({
+    viewport: { width: 1100, height: 800 },
+  })
+  const page = await context.newPage()
+  const pageErrors: string[] = []
+  page.on("pageerror", (error) => pageErrors.push(error.message))
+
+  await page.goto(baseURL ?? "/")
+  const entrance = page.getByRole("button", {
+    name: "Enter the Cube Designers website",
+  })
+  const canvas = entrance.locator("canvas")
+  await expect(canvas).toBeVisible()
+
+  await page.setViewportSize({ width: 600, height: 820 })
+  await expect(canvas).toBeVisible()
+  await page.setViewportSize({ width: 1000, height: 760 })
+  await expect(canvas).toBeVisible()
+
+  const bounds = await canvas.boundingBox()
+  expect(bounds).not.toBeNull()
+  await page.mouse.move(bounds!.x + bounds!.width / 2, bounds!.y + bounds!.height / 2)
+  await page.mouse.down()
+  await page.mouse.move(
+    bounds!.x + bounds!.width / 2 + 90,
+    bounds!.y + bounds!.height / 2 + 55,
+    { steps: 8 },
+  )
+  await page.mouse.up()
+
+  await expect(entrance).toBeVisible()
+  expect(pageErrors).toEqual([])
+  await context.close()
+})
+
+test("lanyard uses a static accessible entrance with reduced motion", async ({
+  browser,
+  baseURL,
+}) => {
+  const context = await browser.newContext({ reducedMotion: "reduce" })
+  const page = await context.newPage()
+  await page.goto(baseURL ?? "/")
+
+  const entrance = page.getByRole("button", {
+    name: "Enter the Cube Designers website",
+  })
+  await expect(entrance.locator(".lanyard-static-card")).toBeVisible()
+  await expect(entrance.locator("canvas")).toHaveCount(0)
+  await entrance.click()
+  await expect(entrance).toHaveCount(0)
+  await expect(page.locator(".site-reveal")).toBeVisible()
+  await context.close()
+})
+
 test("unknown routes return a real 404", async ({ request }) => {
   const response = await request.get("/not-a-real-page")
   expect(response.status()).toBe(404)

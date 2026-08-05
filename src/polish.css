@@ -111,6 +111,41 @@
   transition: transform var(--motion-snap), filter var(--motion-snap);
 }
 
+.lanyard-static-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(34vw, 245px);
+  aspect-ratio: 2.45 / 3.45;
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  background:
+    linear-gradient(135deg, rgb(249 115 22 / 20%), transparent 46%),
+    linear-gradient(315deg, rgb(139 92 246 / 20%), transparent 52%),
+    var(--paper);
+  box-shadow: 12px 14px 0 rgb(11 11 13 / 12%);
+  transform: translate(-50%, -48%) rotate(2deg);
+}
+
+.lanyard-static-card::before {
+  position: absolute;
+  inset: 11% 10% auto;
+  color: var(--ink);
+  content: "CUBE";
+  font-family: var(--font-heading);
+  font-size: clamp(2.2rem, 5vw, 4.2rem);
+  font-weight: 950;
+  letter-spacing: -0.07em;
+}
+
+.lanyard-static-card::after {
+  position: absolute;
+  inset: auto 10% 10%;
+  height: 30%;
+  background: linear-gradient(90deg, var(--violet) 0 38%, var(--acid) 38% 68%, var(--orange) 68%);
+  content: "";
+}
+
 /* Real work now sits underneath the existing animated service-card system. */
 .story-visual > img {
   position: absolute;

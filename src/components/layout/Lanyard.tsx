@@ -12,13 +12,14 @@ import {
 import {
   Canvas,
   useFrame,
+  useThree,
   type ThreeEvent,
 } from "@react-three/fiber"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { MeshLineGeometry, MeshLineMaterial } from "meshline"
 import * as THREE from "three"
 
-type LanyardProps = { onActivate: () => void }
+type LanyardProps = { onActivate: () => void; reducedMotion?: boolean }
 type GyroMotion = { x: number; z: number; active: boolean }
 type BandProps = LanyardProps & {
   isMobile: boolean
@@ -37,6 +38,10 @@ const RELEASE_RETURN_SPEED = 7
 const MOBILE_BREAKPOINT = "(max-width: 719px)"
 const DESKTOP_BAND_POINTS = 29
 const MOBILE_BAND_POINTS = 21
+const DRAG_X_LIMIT = 5.8
+const DRAG_Y_MIN = -3.8
+const DRAG_Y_MAX = 4.2
+const MAX_ANGULAR_SPEED = 10
 
 const SEGMENT_PROPS: RigidBodyProps = {
   type: "dynamic",
@@ -181,8 +186,23 @@ function updateBandGeometry(
   next.needsUpdate = true
 }
 
-export default function Lanyard({ onActivate }: LanyardProps) {
-  const [isMobile, setIsMobile] = useState(false)
+export default function Lanyard({
+  onActivate,
+  reducedMotion = false,
+}: LanyardProps) {
+  if (reducedMotion) {
+    return <div className="lanyard-static-card" aria-hidden="true" />
+  }
+
+  return <InteractiveLanyard onActivate={onActivate} />
+}
+
+function InteractiveLanyard({ onActivate }: LanyardProps) {
+  const [isMobile, setIsMobile] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia(MOBILE_BREAKPOINT).matches,
+  )
   const gyroMotion = useRef<GyroMotion>({ x: 0, z: 0, active: false })
   const gyroBaseline = useRef<{ beta: number; gamma: number } | null>(null)
   const gyroPermissionRequested = useRef(false)
@@ -280,7 +300,12 @@ export default function Lanyard({ onActivate }: LanyardProps) {
       <ambientLight intensity={2.15} />
       <directionalLight color="#fff9f0" intensity={3.2} position={[-4, 5, 7]} />
       <pointLight color="#ffb078" intensity={14} position={[4, -3, 4]} />
-      <Physics gravity={[0, -114, 0]} timeStep={1 / 170} interpolate>
+      <Physics
+        key={isMobile ? "mobile-physics" : "desktop-physics"}
+        gravity={[0, -46, 0]}
+        timeStep={1 / 60}
+        interpolate
+      >
         <Band
           isMobile={isMobile}
           gyroMotion={gyroMotion}
@@ -298,6 +323,7 @@ function Band({
   requestGyroscope,
   onActivate,
 }: BandProps) {
+  const { size } = useThree()
   const fixed = useRef<RapierRigidBody>(null!)
   const joint1 = useRef<RapierRigidBody>(null!)
   const joint2 = useRef<RapierRigidBody>(null!)
@@ -366,7 +392,11 @@ function Band({
     return nextCurve
   }, [])
   const point = useMemo(() => new THREE.Vector3(), [])
-  const direction = useMemo(() => new THREE.Vector3(), [])
+  const cardPosition = useMemo(() => new THREE.Vector3(), [])
+  const dragPlane = useMemo(
+    () => new THREE.Plane(new THREE.Vector3(0, 0, 1), 0),
+    [],
+  )
   const cardAnchor = useMemo(() => new THREE.Vector3(), [])
   const cardQuaternion = useMemo(() => new THREE.Quaternion(), [])
   const gyroForce = useMemo(() => new THREE.Vector3(), [])
@@ -402,14 +432,21 @@ function Band({
   useEffect(() => () => bandMaterial.dispose(), [bandMaterial])
   useEffect(() => () => bandAccentMaterial.dispose(), [bandAccentMaterial])
 
+  useEffect(() => {
+    bandMaterial.resolution.set(size.width, size.height)
+    bandAccentMaterial.resolution.set(size.width, size.height)
+  }, [bandAccentMaterial, bandMaterial, size.height, size.width])
+
   useFrame((state, delta) => {
+    const frameDelta = Math.min(delta, 1 / 30)
+
     if (cardVisual.current) {
       const target = pressed ? 0.92 : 1
       const next = THREE.MathUtils.damp(
         cardVisual.current.scale.x,
         target,
         34,
-        delta,
+        frameDelta,
       )
       cardVisual.current.scale.setScalar(next)
     }
@@ -423,16 +460,26 @@ function Band({
       card.current
     ) {
       wasDragging.current = true
-      point.set(state.pointer.x, state.pointer.y, 0.5).unproject(state.camera)
-      direction.copy(point).sub(state.camera.position).normalize()
-      point.add(direction.multiplyScalar(state.camera.position.length()))
+      state.raycaster.setFromCamera(state.pointer, state.camera)
+      const intersection = state.raycaster.ray.intersectPlane(dragPlane, point)
+
+      if (!intersection) return
+
       card.current.wakeUp()
       joint1.current.wakeUp()
       joint2.current.wakeUp()
       joint3.current.wakeUp()
       card.current.setNextKinematicTranslation({
-        x: point.x - dragOffset.x,
-        y: point.y - dragOffset.y,
+        x: THREE.MathUtils.clamp(
+          point.x - dragOffset.x,
+          -DRAG_X_LIMIT,
+          DRAG_X_LIMIT,
+        ),
+        y: THREE.MathUtils.clamp(
+          point.y - dragOffset.y,
+          DRAG_Y_MIN,
+          DRAG_Y_MAX,
+        ),
         z: point.z - dragOffset.z,
       })
     }
@@ -479,11 +526,11 @@ function Band({
       )
       joint1Smoothed.lerp(
         joint1Position,
-        Math.min(1, delta * (4 + joint1Distance * 46)),
+        Math.min(1, frameDelta * (4 + joint1Distance * 46)),
       )
       joint2Smoothed.lerp(
         joint2Position,
-        Math.min(1, delta * (4 + joint2Distance * 46)),
+        Math.min(1, frameDelta * (4 + joint2Distance * 46)),
       )
       const cardRotation = card.current.rotation()
       cardQuaternion.set(
@@ -554,9 +601,21 @@ function Band({
       const angularVelocity = card.current.angvel()
       card.current.setAngvel(
         {
-          x: angularVelocity.x,
-          y: angularVelocity.y - cardRotation.y * 0.2,
-          z: angularVelocity.z,
+          x: THREE.MathUtils.clamp(
+            angularVelocity.x,
+            -MAX_ANGULAR_SPEED,
+            MAX_ANGULAR_SPEED,
+          ),
+          y: THREE.MathUtils.clamp(
+            angularVelocity.y - cardRotation.y * 0.2,
+            -MAX_ANGULAR_SPEED,
+            MAX_ANGULAR_SPEED,
+          ),
+          z: THREE.MathUtils.clamp(
+            angularVelocity.z,
+            -MAX_ANGULAR_SPEED,
+            MAX_ANGULAR_SPEED,
+          ),
         },
         false,
       )
@@ -571,19 +630,32 @@ function Band({
       x: event.nativeEvent.clientX,
       y: event.nativeEvent.clientY,
     }
-    ;(event.target as Element).setPointerCapture(event.pointerId)
     if (card.current) {
+      const translation = card.current.translation()
+      cardPosition.set(translation.x, translation.y, translation.z)
+      dragPlane.setFromNormalAndCoplanarPoint(dragPlane.normal, cardPosition)
+      const intersection = event.ray.intersectPlane(dragPlane, point)
+
+      if (!intersection) return
+
+      const target = event.target as unknown as Element
+      target.setPointerCapture?.(event.pointerId)
+      card.current.setLinvel({ x: 0, y: 0, z: 0 }, true)
+      card.current.setAngvel({ x: 0, y: 0, z: 0 }, true)
       setDragOffset(
         new THREE.Vector3()
-          .copy(event.point)
-          .sub(point.copy(card.current.translation())),
+          .copy(intersection)
+          .sub(cardPosition),
       )
     }
   }
 
   const handlePointerUp = (event: ThreeEvent<PointerEvent>) => {
     event.stopPropagation()
-    ;(event.target as Element).releasePointerCapture(event.pointerId)
+    const target = event.target as unknown as Element
+    if (target.hasPointerCapture?.(event.pointerId)) {
+      target.releasePointerCapture(event.pointerId)
+    }
     setDragOffset(false)
     const moved = Math.hypot(
       event.nativeEvent.clientX - pressOrigin.current.x,
