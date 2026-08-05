@@ -15,7 +15,16 @@ import {
   useThree,
   type ThreeEvent,
 } from "@react-three/fiber"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import {
+  Component,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ErrorInfo,
+  type ReactNode,
+} from "react"
 import { MeshLineGeometry, MeshLineMaterial } from "meshline"
 import * as THREE from "three"
 
@@ -25,6 +34,10 @@ type BandProps = LanyardProps & {
   isMobile: boolean
   gyroMotion: { current: GyroMotion }
   requestGyroscope: () => void
+}
+type LanyardBoundaryProps = {
+  children: ReactNode
+  fallback: ReactNode
 }
 type OrientationEventWithPermission = typeof DeviceOrientationEvent & {
   requestPermission?: () => Promise<"granted" | "denied">
@@ -49,6 +62,39 @@ const SEGMENT_PROPS: RigidBodyProps = {
   canSleep: true,
   angularDamping: 3,
   linearDamping: 2.8,
+}
+
+class LanyardErrorBoundary extends Component<
+  LanyardBoundaryProps,
+  { failed: boolean }
+> {
+  state = { failed: false }
+
+  static getDerivedStateFromError() {
+    return { failed: true }
+  }
+
+  componentDidCatch(_error: Error, _info: ErrorInfo) {
+    // The visible CSS fallback keeps entry available if WebGL initialization fails.
+  }
+
+  render() {
+    return this.state.failed ? this.props.fallback : this.props.children
+  }
+}
+
+function StaticLanyard({ onActivate }: LanyardProps) {
+  return (
+    <div className="lanyard-static-fallback" aria-hidden="true">
+      <div
+        className="lanyard-static-card"
+        onClick={(event) => {
+          event.stopPropagation()
+          onActivate()
+        }}
+      />
+    </div>
+  )
 }
 
 function createBadgeTexture(back = false, mobile = false) {
@@ -190,14 +236,38 @@ export default function Lanyard({
   onActivate,
   reducedMotion = false,
 }: LanyardProps) {
-  if (reducedMotion) {
-    return <div className="lanyard-static-card" aria-hidden="true" />
-  }
+  const [documentVisible, setDocumentVisible] = useState(
+    () => typeof document === "undefined" || document.visibilityState !== "hidden",
+  )
+  const [webglLost, setWebglLost] = useState(false)
 
-  return <InteractiveLanyard onActivate={onActivate} />
+  useEffect(() => {
+    const handleVisibility = () => {
+      setDocumentVisible(document.visibilityState !== "hidden")
+    }
+
+    document.addEventListener("visibilitychange", handleVisibility)
+    return () => document.removeEventListener("visibilitychange", handleVisibility)
+  }, [])
+
+  const fallback = <StaticLanyard onActivate={onActivate} />
+
+  if (reducedMotion || !documentVisible || webglLost) return fallback
+
+  return (
+    <LanyardErrorBoundary fallback={fallback}>
+      <InteractiveLanyard
+        onActivate={onActivate}
+        onContextLost={() => setWebglLost(true)}
+      />
+    </LanyardErrorBoundary>
+  )
 }
 
-function InteractiveLanyard({ onActivate }: LanyardProps) {
+function InteractiveLanyard({
+  onActivate,
+  onContextLost,
+}: LanyardProps & { onContextLost: () => void }) {
   const [isMobile, setIsMobile] = useState(
     () =>
       typeof window !== "undefined" &&
@@ -206,6 +276,10 @@ function InteractiveLanyard({ onActivate }: LanyardProps) {
   const gyroMotion = useRef<GyroMotion>({ x: 0, z: 0, active: false })
   const gyroBaseline = useRef<{ beta: number; gamma: number } | null>(null)
   const gyroPermissionRequested = useRef(false)
+  const contextListener = useRef<{
+    canvas: HTMLCanvasElement
+    handler: (event: Event) => void
+  } | null>(null)
 
   useEffect(() => {
     const viewport = window.matchMedia(MOBILE_BREAKPOINT)
@@ -214,6 +288,16 @@ function InteractiveLanyard({ onActivate }: LanyardProps) {
     viewport.addEventListener("change", updateViewport)
     return () => viewport.removeEventListener("change", updateViewport)
   }, [])
+
+  useEffect(
+    () => () => {
+      const listener = contextListener.current
+      if (listener) {
+        listener.canvas.removeEventListener("webglcontextlost", listener.handler)
+      }
+    },
+    [],
+  )
 
   useEffect(() => {
     if (!isMobile || typeof DeviceOrientationEvent === "undefined") return
@@ -286,15 +370,32 @@ function InteractiveLanyard({ onActivate }: LanyardProps) {
         position: [0, 0, isMobile ? 14 : 15],
         fov: isMobile ? 35 : 31,
       }}
-      dpr={[1, isMobile ? 1 : 1.25]}
+      dpr={[1, isMobile ? 1 : 1.1]}
       gl={{
         alpha: true,
         antialias: true,
-        powerPreference: "high-performance",
+        powerPreference: "default",
       }}
       onCreated={({ gl }) => {
         gl.setClearColor(new THREE.Color("#ebe9e3"), 0)
         gl.outputColorSpace = THREE.SRGBColorSpace
+
+        const previous = contextListener.current
+        if (previous) {
+          previous.canvas.removeEventListener(
+            "webglcontextlost",
+            previous.handler,
+          )
+        }
+
+        const handler = (event: Event) => {
+          event.preventDefault()
+          onContextLost()
+        }
+        gl.domElement.addEventListener("webglcontextlost", handler, {
+          once: true,
+        })
+        contextListener.current = { canvas: gl.domElement, handler }
       }}
     >
       <ambientLight intensity={2.15} />

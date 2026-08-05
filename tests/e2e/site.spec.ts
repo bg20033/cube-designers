@@ -275,6 +275,13 @@ test("lanyard stays stable through drag and responsive remounts", async ({
 
   await expect(entrance).toBeVisible()
   expect(pageErrors).toEqual([])
+
+  await canvas.dispatchEvent("webglcontextlost")
+  const fallback = entrance.locator(".lanyard-static-card")
+  await expect(fallback).toBeVisible()
+  await expect(canvas).toHaveCount(0)
+  await fallback.click()
+  await expect(entrance).toHaveCount(0)
   await context.close()
 })
 
@@ -294,6 +301,20 @@ test("lanyard uses a static accessible entrance with reduced motion", async ({
   await entrance.click()
   await expect(entrance).toHaveCount(0)
   await expect(page.locator(".site-reveal")).toBeVisible()
+  await context.close()
+})
+
+test("inner routes never allocate the lanyard WebGL canvas", async ({
+  browser,
+  baseURL,
+}) => {
+  const context = await browser.newContext()
+  const page = await context.newPage()
+  await page.goto(baseURL ? new URL("/shop", baseURL).toString() : "/shop")
+  await expect(
+    page.getByRole("button", { name: "Enter the Cube Designers website" }),
+  ).toHaveCount(0)
+  await expect(page.locator(".lanyard-intro canvas")).toHaveCount(0)
   await context.close()
 })
 

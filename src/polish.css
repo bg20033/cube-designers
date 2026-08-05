@@ -111,6 +111,33 @@
   transition: transform var(--motion-snap), filter var(--motion-snap);
 }
 
+.lanyard-static-fallback {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.lanyard-static-fallback::before,
+.lanyard-static-fallback::after {
+  position: absolute;
+  top: -8%;
+  left: 50%;
+  width: 9px;
+  height: 58%;
+  border: 1px solid rgb(11 11 13 / 30%);
+  background: var(--ink);
+  content: "";
+  transform-origin: top;
+}
+
+.lanyard-static-fallback::before {
+  transform: translateX(-21px) rotate(5deg);
+}
+
+.lanyard-static-fallback::after {
+  transform: translateX(13px) rotate(-5deg);
+}
+
 .lanyard-static-card {
   position: absolute;
   top: 50%;
@@ -124,6 +151,8 @@
     linear-gradient(315deg, rgb(139 92 246 / 20%), transparent 52%),
     var(--paper);
   box-shadow: 12px 14px 0 rgb(11 11 13 / 12%);
+  cursor: pointer;
+  pointer-events: auto;
   transform: translate(-50%, -48%) rotate(2deg);
 }
 

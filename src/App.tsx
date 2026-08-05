@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useLayoutEffect, useState } from "react"
+import { lazy, Suspense, useEffect, useState } from "react"
 import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 
 import {
@@ -435,18 +435,17 @@ export function HomePage({ effectsEnabled = true }: { effectsEnabled?: boolean }
 }
 
 function App({ pathname }: { pathname?: string }) {
-  const [hasEntered, setHasEntered] = useState(false)
-  const reduceMotion = useReducedMotion()
   const currentPath =
     pathname ??
     (typeof window === "undefined" ? "/" : window.location.pathname)
   const route = matchRoute(currentPath)
-
-  useLayoutEffect(() => {
-    if (document.documentElement.dataset.introSeen === "true") {
-      setHasEntered(true)
-    }
-  }, [])
+  const introAlreadySeen =
+    route?.key !== "home" ||
+    (typeof document !== "undefined" &&
+      document.documentElement.dataset.introSeen === "true")
+  const [hasEntered, setHasEntered] = useState(introAlreadySeen)
+  const [effectsReady, setEffectsReady] = useState(introAlreadySeen)
+  const reduceMotion = useReducedMotion()
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow
@@ -500,7 +499,9 @@ function App({ pathname }: { pathname?: string }) {
         }}
       >
         <Suspense fallback={<PageFallback />}>
-          {route?.key === "home" && <HomePage effectsEnabled={hasEntered} />}
+          {route?.key === "home" && (
+            <HomePage effectsEnabled={hasEntered && effectsReady} />
+          )}
           {route?.key === "about" && <AboutPage />}
           {route?.key === "work" && <WorkPage />}
           {route?.key === "roadmap" && <RoadmapPage />}
@@ -513,7 +514,7 @@ function App({ pathname }: { pathname?: string }) {
         </Suspense>
       </motion.div>
 
-      <AnimatePresence>
+      <AnimatePresence onExitComplete={() => setEffectsReady(true)}>
         {!hasEntered && (
           <motion.div
             className="lanyard-intro"
