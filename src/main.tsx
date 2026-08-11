@@ -12,7 +12,6 @@ const app = (
 )
 
 // Prerendered route HTML is intentionally crawler-first and does not share the
-// interactive intro shell's tree. Mount cleanly to avoid a hydration reset
-// while the WebGL lanyard is starting.
+// interactive app tree. Mount cleanly to avoid a hydration reset.
 root.replaceChildren()
 createRoot(root).render(app)

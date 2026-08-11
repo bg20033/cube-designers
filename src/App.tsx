@@ -21,6 +21,7 @@ import { RoutePathProvider } from "@/app/RouteContext"
 import DareContact from "@/components/DareContact"
 
 const Lanyard = lazy(() => import("@/components/layout/Lanyard"))
+const LANYARD_INTRO_ENABLED = false
 const PixelBlast = lazy(() => import("@/components/PixelBlast"))
 const AboutPage = lazy(() => import("@/components/AboutPage"))
 const RoadmapPage = lazy(() => import("@/components/RoadmapPage"))
@@ -440,6 +441,7 @@ function App({ pathname }: { pathname?: string }) {
     (typeof window === "undefined" ? "/" : window.location.pathname)
   const route = matchRoute(currentPath)
   const introAlreadySeen =
+    !LANYARD_INTRO_ENABLED ||
     route?.key !== "home" ||
     (typeof document !== "undefined" &&
       document.documentElement.dataset.introSeen === "true")
@@ -515,7 +517,7 @@ function App({ pathname }: { pathname?: string }) {
       </motion.div>
 
       <AnimatePresence onExitComplete={() => setEffectsReady(true)}>
-        {!hasEntered && (
+        {LANYARD_INTRO_ENABLED && !hasEntered && (
           <motion.div
             className="lanyard-intro"
             role="button"

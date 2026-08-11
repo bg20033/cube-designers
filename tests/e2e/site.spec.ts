@@ -215,31 +215,15 @@ test("printer contact fields have clear full borders and prompts", async ({
   expect(fullBorders).toBe(true)
 })
 
-test("lanyard entrance works from the keyboard and is remembered", async ({
-  browser,
-  baseURL,
+test("landing page opens directly while the lanyard is disabled", async ({
+  page,
 }) => {
-  const context = await browser.newContext()
-  const page = await context.newPage()
-  await page.goto(baseURL ?? "/")
-
-  const entrance = page.getByRole("button", {
-    name: "Enter the Cube Designers website",
-  })
-  await expect(entrance).toBeVisible()
-  await entrance.press("Enter")
-  await expect(entrance).toHaveCount(0)
+  await page.goto("/")
   await expect(page.locator(".site-reveal")).toBeVisible()
-
-  await page.reload()
-  await expect(
-    page.getByRole("button", { name: "Enter the Cube Designers website" }),
-  ).toHaveCount(0)
-  await expect(page.locator(".site-reveal")).toBeVisible()
-  await context.close()
+  await expect(page.locator(".lanyard-intro")).toHaveCount(0)
 })
 
-test("lanyard stays stable through drag and responsive remounts", async ({
+test.skip("lanyard stays stable through drag and responsive remounts", async ({
   browser,
   baseURL,
 }) => {
@@ -285,7 +269,7 @@ test("lanyard stays stable through drag and responsive remounts", async ({
   await context.close()
 })
 
-test("lanyard uses a static accessible entrance with reduced motion", async ({
+test.skip("lanyard uses a static accessible entrance with reduced motion", async ({
   browser,
   baseURL,
 }) => {
