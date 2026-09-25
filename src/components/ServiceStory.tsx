@@ -11,7 +11,7 @@ import { AnimatePresence, motion, MotionConfig } from "motion/react"
 
 import OptionWheel from "@/components/OptionWheel"
 import { ResponsiveImage } from "@/components/ResponsiveImage"
-import wheelSound from "@/assets/223.mp3"
+import wheelSound from "@/assets/2222.wav"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {

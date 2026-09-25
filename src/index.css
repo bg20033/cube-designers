@@ -3126,6 +3126,7 @@ body.contact-printer-ready .site-reveal {
 
   .story-stage {
     min-height: 0;
+    z-index: 99999999;
   }
 
   .story-card {
@@ -3425,7 +3426,7 @@ body.contact-printer-ready .site-reveal {
   }
 
   .story-wheel [role="option"] {
-    font-size: 1rem !important;
+    font-size: 2.2rem !important;
   }
 
   .result-chip {
@@ -6998,7 +6999,12 @@ body.contact-printer-printing .agency-site :where(a, button):active {
   background: var(--orange);
 }
 
+/* Fill the hero so the entry transform on h1 doesn't shift the absolutely
+   positioned words (a transformed parent becomes their containing block). */
 .about-poster-hero h1 {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
   margin: 0;
 }
 

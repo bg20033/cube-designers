@@ -27,7 +27,6 @@ const navItems = [
   { label: "Shop", href: "/shop", path: "/shop" },
   { label: "Rreth nesh", href: "/about", path: "/about" },
   { label: "Roadmap", href: "/roadmap", path: "/roadmap" },
-  { label: "Kontakt", href: "/#contact" },
 ]
 
 type SiteHeaderProps = {
