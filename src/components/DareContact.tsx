@@ -1,6 +1,6 @@
 import { type FormEvent, useEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
-import { ArrowUpRight, X } from "lucide-react"
+import { ArrowUpRight, Check, X } from "lucide-react"
 
 import grindSound from "@/assets/rr.mp3"
 import { apiRequest, type SubmitStatus } from "@/lib/api"
@@ -206,7 +206,10 @@ export default function DareContact() {
               aria-hidden={phase !== "printed"}
               inert={phase !== "printed"}
             >
-              <form className="contact-paper" onSubmit={sendMessage}>
+              <form
+                className={`contact-paper${sendStatus === "sent" ? " contact-paper--sent" : ""}`}
+                onSubmit={sendMessage}
+              >
                 
 
                 <div className="contact-paper__intro">
@@ -215,10 +218,20 @@ export default function DareContact() {
                 </div>
 
                 {sendStatus === "sent" ? (
-                  <p className="contact-paper__sent" role="status">
-                    E morëm mesazhin. Të kthejmë përgjigje brenda 1–2 ditësh
-                    pune.
-                  </p>
+                  <div className="contact-paper__done" role="status">
+                    <span className="contact-paper__stamp" aria-hidden="true">
+                      <Check />
+                      Dërguar
+                    </span>
+                    <p>
+                      E morëm mesazhin. Të kthejmë përgjigje brenda 1–2 ditësh
+                      pune.
+                    </p>
+                    <button type="button" onClick={closePrinter}>
+                      Mbylle
+                      <X />
+                    </button>
+                  </div>
                 ) : (
                   <>
 

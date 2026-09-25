@@ -194,52 +194,50 @@ export default function ProjectBriefPage() {
                           ))}
                         </div>
                       </fieldset>
-                      <div className="brief-choice-row">
-                        <label className="brief-budget">
-                          <span>
-                            {isOneTimeEngagement(brief.engagement)
-                              ? "Buxheti total *"
-                              : "Buxheti në muaj *"}
-                          </span>
-                          <div>
-                            <b aria-hidden="true">€</b>
-                            <input
-                              type="text"
-                              inputMode="numeric"
-                              value={brief.budget}
-                              onChange={(event) =>
-                                updateField(
-                                  "budget",
-                                  event.target.value.replace(/[^\d.,\s–-]/g, "").slice(0, 20),
-                                )
+                      <label className="brief-budget">
+                        <span>
+                          {isOneTimeEngagement(brief.engagement)
+                            ? "Buxheti total *"
+                            : "Buxheti në muaj *"}
+                        </span>
+                        <div>
+                          <b aria-hidden="true">€</b>
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            value={brief.budget}
+                            onChange={(event) =>
+                              updateField(
+                                "budget",
+                                event.target.value.replace(/[^\d.,\s–-]/g, "").slice(0, 20),
+                              )
+                            }
+                            placeholder={
+                              isOneTimeEngagement(brief.engagement) ? "p.sh. 1500" : "p.sh. 400"
+                            }
+                          />
+                          {!isOneTimeEngagement(brief.engagement) && (
+                            <small aria-hidden="true">/ muaj</small>
+                          )}
+                        </div>
+                      </label>
+                      <fieldset className="brief-options">
+                        <legend>Kur doni me fillu? *</legend>
+                        <div className="brief-pills">
+                          {timelineOptions.map((timeline) => (
+                            <button
+                              className={
+                                brief.timeline === timeline ? "selected" : ""
                               }
-                              placeholder={
-                                isOneTimeEngagement(brief.engagement) ? "p.sh. 1500" : "p.sh. 400"
-                              }
-                            />
-                            {!isOneTimeEngagement(brief.engagement) && (
-                              <small aria-hidden="true">/ muaj</small>
-                            )}
-                          </div>
-                        </label>
-                        <fieldset className="brief-options">
-                          <legend>Kur doni me fillu? *</legend>
-                          <div className="brief-pills">
-                            {timelineOptions.map((timeline) => (
-                              <button
-                                className={
-                                  brief.timeline === timeline ? "selected" : ""
-                                }
-                                type="button"
-                                onClick={() => updateField("timeline", timeline)}
-                                key={timeline}
-                              >
-                                {timeline}
-                              </button>
-                            ))}
-                          </div>
-                        </fieldset>
-                      </div>
+                              type="button"
+                              onClick={() => updateField("timeline", timeline)}
+                              key={timeline}
+                            >
+                              {timeline}
+                            </button>
+                          ))}
+                        </div>
+                      </fieldset>
                     </>
                   )}
 

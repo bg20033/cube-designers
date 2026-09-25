@@ -1646,7 +1646,6 @@
   opacity: 0;
 }
 
-.contact-paper__sent,
 .contact-paper__error {
   margin: 0;
   font-size: 0.95rem;
@@ -1792,6 +1791,7 @@
 
 .brief-budget > div {
   display: flex;
+  max-width: 380px;
   gap: 0.5rem;
   align-items: baseline;
   border-bottom: 1px solid var(--ink);
@@ -1825,4 +1825,55 @@
   color: rgb(11 11 13 / 60%);
   font-size: 0.9rem;
   font-weight: 600;
+}
+
+/* Contact paper: sent state. The long "FALEMINDERIT." needs a smaller
+   heading than "TASH FOL." to stay inside the sheet. */
+.contact-paper--sent {
+  align-content: center;
+  min-height: min(520px, calc(100svh - 104px));
+}
+
+.contact-paper--sent .contact-paper__intro h3 {
+  font-size: clamp(2.4rem, 8.5vw, 4.8rem);
+  overflow-wrap: anywhere;
+}
+
+.contact-paper__done {
+  display: grid;
+  gap: 1.5rem;
+  justify-items: start;
+}
+
+.contact-paper__stamp {
+  display: inline-flex;
+  gap: 0.45rem;
+  align-items: center;
+  padding: 0.45rem 0.8rem;
+  border: 2px solid var(--orange);
+  color: var(--orange);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transform: rotate(-3deg);
+}
+
+.contact-paper__stamp svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.contact-paper__done p {
+  max-width: 34ch;
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.55;
+}
+
+@media (max-width: 760px) {
+  .contact-paper--sent {
+    min-height: 0;
+  }
 }
