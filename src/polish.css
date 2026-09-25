@@ -1636,3 +1636,87 @@
   }
 }
 
+
+/* Form submission states (API-backed forms). */
+.contact-paper__trap {
+  position: absolute !important;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.contact-paper__sent,
+.contact-paper__error {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.contact-paper__error,
+.shop-order-error {
+  color: #b91c1c;
+}
+
+.brief-sent > span {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.brief-sent > span svg {
+  width: 1em;
+  height: 1em;
+}
+
+.shop-order-done {
+  display: grid;
+  gap: 0.75rem;
+  align-content: start;
+  justify-items: start;
+  padding: 2rem 1.5rem;
+}
+
+.shop-order-done > svg {
+  width: 2.5rem;
+  height: 2.5rem;
+  color: var(--orange);
+}
+
+.shop-order-done > span {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+}
+
+.shop-order-done > strong {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+.shop-order-done > p {
+  margin: 0;
+  opacity: 0.7;
+}
+
+.shop-order-done > button {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.5rem;
+  padding: 0.8rem 1.1rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.shop-order-done > button svg {
+  width: 1rem;
+  height: 1rem;
+}

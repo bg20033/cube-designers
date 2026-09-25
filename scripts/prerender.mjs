@@ -114,7 +114,7 @@ await writeFile(
 await writeFile(
   path.join(clientDirectory, "robots.txt"),
   isProductionSeo
-    ? `User-agent: *\nAllow: /\nSitemap: ${siteUrl}/sitemap.xml\n`
+    ? `User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /api/\n\nSitemap: ${siteUrl}/sitemap.xml\n`
     : "User-agent: *\nDisallow: /\n",
   "utf8",
 )

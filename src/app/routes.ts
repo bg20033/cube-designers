@@ -140,6 +140,12 @@ export function matchRoute(pathname: string): RouteMatch | null {
   return null
 }
 
+// The admin dashboard is client-only: never prerendered, indexed or in the nav.
+export function isAdminPath(pathname: string) {
+  const normalized = normalizePathname(pathname)
+  return normalized === "/admin" || normalized.startsWith("/admin/")
+}
+
 export function getRouteSeo(key: Exclude<RouteKey, "product">) {
   return siteRoutes.find((route) => route.key === key)?.seo
 }

@@ -16,7 +16,7 @@ import {
   SiteHeader,
   SiteNoise,
 } from "@/components/SiteChrome"
-import { matchRoute } from "@/app/routes"
+import { isAdminPath, matchRoute } from "@/app/routes"
 import { RoutePathProvider } from "@/app/RouteContext"
 import DareContact from "@/components/DareContact"
 
@@ -32,6 +32,7 @@ const ProductDetailPage = lazy(
   () => import("@/components/shop/ProductDetailPage"),
 )
 const NotFoundPage = lazy(() => import("@/components/NotFoundPage"))
+const AdminPage = lazy(() => import("@/components/admin/AdminPage"))
 
 const tickerItems = [
   "Brand systems",
@@ -439,6 +440,19 @@ function App({ pathname }: { pathname?: string }) {
   const currentPath =
     pathname ??
     (typeof window === "undefined" ? "/" : window.location.pathname)
+
+  if (isAdminPath(currentPath)) {
+    return (
+      <Suspense fallback={null}>
+        <AdminPage />
+      </Suspense>
+    )
+  }
+
+  return <SiteApp currentPath={currentPath} />
+}
+
+function SiteApp({ currentPath }: { currentPath: string }) {
   const route = matchRoute(currentPath)
   const introAlreadySeen =
     !LANYARD_INTRO_ENABLED ||

@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react"
 
+import { apiRequest, type SubmitStatus } from "@/lib/api"
+
 export type BriefData = {
   name: string
   email: string
@@ -69,7 +71,37 @@ export function useProjectBrief(maxStep: number) {
   const [step, setStep] = useState(0)
   const [brief, setBrief] = useState(initialBrief)
   const [error, setError] = useState("")
+  const [status, setStatus] = useState<SubmitStatus>("idle")
   const mailtoHref = useMemo(() => createProjectBriefMailto(brief), [brief])
+
+  async function submit() {
+    if (status === "sending") return
+    setStatus("sending")
+    setError("")
+
+    const result = await apiRequest("/api/submissions", {
+      method: "POST",
+      body: {
+        kind: "project",
+        name: brief.name,
+        email: brief.email,
+        company: brief.company,
+        message: brief.project,
+        services: brief.services,
+        budget: brief.budget,
+        timeline: brief.timeline,
+        success: brief.success,
+      },
+    })
+
+    if (result.ok) {
+      setStatus("sent")
+      return
+    }
+
+    setStatus("error")
+    setError(`${result.error} Mund ta dërgosh edhe me email.`)
+  }
 
   function updateField<Key extends keyof BriefData>(
     field: Key,
@@ -107,7 +139,9 @@ export function useProjectBrief(maxStep: number) {
     step,
     brief,
     error,
+    status,
     mailtoHref,
+    submit,
     updateField,
     toggleService,
     goNext,

@@ -40,7 +40,9 @@ export default function ProjectBriefPage() {
     step,
     brief,
     error,
+    status,
     mailtoHref,
+    submit,
     updateField,
     toggleService,
     goNext,
@@ -61,8 +63,8 @@ export default function ProjectBriefPage() {
               <em>EVERYTHING.</em>
             </h1>
             <p>
-              4 hapa, rreth 3 minuta. Në fund hapet email-i yt me brief-in gati
-              për dërgim — asgjë nuk humbet në një formë pa përgjigje.
+              4 hapa, rreth 3 minuta. Brief-i vjen direkt te ekipi dhe të
+              kthehemi me përgjigje brenda 1–2 ditësh pune.
             </p>
           </div>
 
@@ -242,14 +244,27 @@ export default function ProjectBriefPage() {
                     </>
                   )}
 
-                  {step === 3 && (
+                  {step === 3 && status === "sent" && (
+                    <div className="brief-question brief-sent" role="status">
+                      <span>
+                        <Check /> Brief-i u dërgua
+                      </span>
+                      <h2>Faleminderit, {brief.name.split(" ")[0]}.</h2>
+                      <p>
+                        E morëm brief-in. Të shkruajmë te {brief.email} brenda
+                        1–2 ditësh pune.
+                      </p>
+                    </div>
+                  )}
+
+                  {step === 3 && status !== "sent" && (
                     <>
                       <div className="brief-question">
                         <span>04 / Review</span>
-                        <h2>Gati për email.</h2>
+                        <h2>Gati për dërgim.</h2>
                         <p>
-                          Kontrolloje përmbledhjen. Klikimi final e hap
-                          aplikacionin tënd të email-it me krejt brief-in gati.
+                          Kontrolloje përmbledhjen dhe dërgoje. Brief-i vjen
+                          direkt te ekipi i CUBE.
                         </p>
                       </div>
                       <div className="brief-review">
@@ -277,6 +292,7 @@ export default function ProjectBriefPage() {
                 {error}
               </div>
 
+              {status === "sent" ? null : (
               <footer className="brief-controls">
                 <button
                   className="brief-back"
@@ -293,13 +309,24 @@ export default function ProjectBriefPage() {
                     Vazhdo
                     <ArrowRight />
                   </button>
-                ) : (
+                ) : status === "error" ? (
                   <a className="brief-next" href={mailtoHref}>
-                    Hape email-in
+                    Dërgo me email
                     <ArrowUpRight />
                   </a>
+                ) : (
+                  <button
+                    className="brief-next"
+                    type="button"
+                    onClick={submit}
+                    disabled={status === "sending"}
+                  >
+                    {status === "sending" ? "Po dërgohet…" : "Dërgo brief-in"}
+                    <ArrowRight />
+                  </button>
                 )}
               </footer>
+              )}
             </form>
           </div>
         </section>

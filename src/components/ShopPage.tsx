@@ -28,307 +28,25 @@ import {
   readStoredJson,
   writeStoredJson,
 } from "@/components/shop/persistence"
+import {
+  getProductBySlug,
+  products,
+  type CartItem,
+  type Product,
+  type ProductCategory,
+  type ProductionSpeed,
+} from "@/data/products"
+import { useShopProducts } from "@/components/shop/useShopProducts"
+import { apiRequest, type SubmitStatus } from "@/lib/api"
 
-export type ProductCategory =
-  | "Print"
-  | "Promo"
-  | "Textile"
-  | "Packaging"
-  | "Signage"
-
-export type ProductionSpeed = "Fast" | "Standard" | "Custom"
-
-export type Product = {
-  id: string
-  number: string
-  name: string
-  category: ProductCategory
-  price: number
-  quantityLabel: string
-  description: string
-  tone: "orange" | "violet" | "acid" | "paper"
-  production: ProductionSpeed
-  material: string
-  badge?: "Bestseller" | "New" | "Eco"
-  featured?: boolean
-  image?: string
+export {
+  getProductBySlug,
+  products,
+  type CartItem,
+  type Product,
+  type ProductCategory,
+  type ProductionSpeed,
 }
-
-export type CartItem = {
-  productId: string
-  quantity: number
-}
-
-export const products: Product[] = [
-  {
-    id: "business-cards",
-    number: "01",
-    name: "Business Cards",
-    category: "Print",
-    price: 35,
-    quantityLabel: "100 copë",
-    description: "Kartë 350gsm, print dy-anësh dhe finish mat.",
-    tone: "paper",
-    production: "Fast",
-    material: "Premium paper",
-    badge: "Bestseller",
-    featured: true,
-    image: "shop-business-cards",
-  },
-  {
-    id: "rollup-banner",
-    number: "02",
-    name: "Roll-up Banner",
-    category: "Print",
-    price: 95,
-    quantityLabel: "85 × 200 cm",
-    description: "Konstruksion, print premium dhe çantë transporti.",
-    tone: "violet",
-    production: "Standard",
-    material: "Blockout film",
-    featured: true,
-    image: "shop-rollup",
-  },
-  {
-    id: "branded-pens",
-    number: "03",
-    name: "Branded Pens",
-    category: "Promo",
-    price: 65,
-    quantityLabel: "50 copë",
-    description: "Lapsa metalikë me print njëngjyrësh të logos.",
-    tone: "acid",
-    production: "Standard",
-    material: "Aluminium",
-    badge: "Bestseller",
-    image: "shop-pens",
-  },
-  {
-    id: "notebooks",
-    number: "04",
-    name: "Studio Notebooks",
-    category: "Promo",
-    price: 120,
-    quantityLabel: "25 copë",
-    description: "Fletore A5 me kopertinë të personalizuar dhe 80 faqe.",
-    tone: "orange",
-    production: "Standard",
-    material: "Recycled paper",
-    badge: "Eco",
-    image: "shop-notebook",
-  },
-  {
-    id: "tshirts",
-    number: "05",
-    name: "Team T-shirts",
-    category: "Textile",
-    price: 140,
-    quantityLabel: "10 copë",
-    description: "Pambuk premium me print para ose prapa.",
-    tone: "paper",
-    production: "Standard",
-    material: "Heavy cotton",
-    featured: true,
-    image: "shop-tshirt",
-  },
-  {
-    id: "stickers",
-    number: "06",
-    name: "Die-cut Stickers",
-    category: "Print",
-    price: 45,
-    quantityLabel: "100 copë",
-    description: "Vinyl rezistent, formë e personalizuar dhe laminim.",
-    tone: "acid",
-    production: "Fast",
-    material: "Weatherproof vinyl",
-    badge: "Bestseller",
-    image: "shop-stickers",
-  },
-  {
-    id: "flyers",
-    number: "07",
-    name: "Campaign Flyers",
-    category: "Print",
-    price: 55,
-    quantityLabel: "250 copë",
-    description: "A5, print full-color dy-anësh në letër 170gsm.",
-    tone: "violet",
-    production: "Fast",
-    material: "Silk paper",
-    image: "shop-flyer",
-  },
-  {
-    id: "tote-bags",
-    number: "08",
-    name: "Tote Bags",
-    category: "Textile",
-    price: 160,
-    quantityLabel: "20 copë",
-    description: "Pambuk natyral me print të personalizuar.",
-    tone: "orange",
-    production: "Standard",
-    material: "Natural cotton",
-    badge: "Eco",
-  },
-  {
-    id: "brochures",
-    number: "09",
-    name: "Company Brochures",
-    category: "Print",
-    price: 95,
-    quantityLabel: "100 copë",
-    description: "A4 palosur, 6 faqe, full-color dhe finish premium.",
-    tone: "paper",
-    production: "Standard",
-    material: "Silk paper",
-    image: "shop-brochure",
-  },
-  {
-    id: "menus",
-    number: "10",
-    name: "Restaurant Menus",
-    category: "Print",
-    price: 110,
-    quantityLabel: "25 copë",
-    description: "Menu rezistente me laminim dhe format sipas brandit.",
-    tone: "orange",
-    production: "Standard",
-    material: "Laminated card",
-    badge: "New",
-    image: "shop-menu",
-  },
-  {
-    id: "posters",
-    number: "11",
-    name: "Campaign Posters",
-    category: "Print",
-    price: 70,
-    quantityLabel: "50 copë",
-    description: "A2 poster me ngjyra të forta dhe print high-resolution.",
-    tone: "violet",
-    production: "Fast",
-    material: "Poster paper",
-    image: "shop-flyer",
-  },
-  {
-    id: "vinyl-banner",
-    number: "12",
-    name: "Outdoor Banner",
-    category: "Signage",
-    price: 85,
-    quantityLabel: "200 × 100 cm",
-    description: "Banner outdoor me vrima metalike dhe material rezistent.",
-    tone: "acid",
-    production: "Fast",
-    material: "PVC vinyl",
-    featured: true,
-    image: "sermova-billboard",
-  },
-  {
-    id: "window-graphics",
-    number: "13",
-    name: "Window Graphics",
-    category: "Signage",
-    price: 180,
-    quantityLabel: "deri 3 m²",
-    description: "Grafika për vitrina me material dhe prerje të personalizuar.",
-    tone: "paper",
-    production: "Custom",
-    material: "Cut vinyl",
-    badge: "New",
-    image: "sermova-facade",
-  },
-  {
-    id: "mugs",
-    number: "14",
-    name: "Branded Mugs",
-    category: "Promo",
-    price: 90,
-    quantityLabel: "24 copë",
-    description: "Filxhanë qeramike me print full-color rrethor.",
-    tone: "violet",
-    production: "Standard",
-    material: "Ceramic",
-  },
-  {
-    id: "lanyards",
-    number: "15",
-    name: "Event Lanyards",
-    category: "Promo",
-    price: 120,
-    quantityLabel: "50 copë",
-    description: "Lanyards të printuar me kapëse dhe badge holder.",
-    tone: "orange",
-    production: "Standard",
-    material: "Polyester",
-  },
-  {
-    id: "hoodies",
-    number: "16",
-    name: "Team Hoodies",
-    category: "Textile",
-    price: 240,
-    quantityLabel: "10 copë",
-    description: "Hoodie premium me screen print ose embroidery.",
-    tone: "acid",
-    production: "Custom",
-    material: "Heavy cotton",
-    badge: "New",
-  },
-  {
-    id: "caps",
-    number: "17",
-    name: "Embroidered Caps",
-    category: "Textile",
-    price: 150,
-    quantityLabel: "15 copë",
-    description: "Kapela me embroidery të logos dhe ngjyrë të zgjedhur.",
-    tone: "paper",
-    production: "Custom",
-    material: "Brushed cotton",
-  },
-  {
-    id: "product-labels",
-    number: "18",
-    name: "Product Labels",
-    category: "Packaging",
-    price: 75,
-    quantityLabel: "250 copë",
-    description: "Etiketa në roll, formë dhe material sipas produktit.",
-    tone: "orange",
-    production: "Fast",
-    material: "Paper / PP",
-    badge: "Bestseller",
-    image: "shop-stickers",
-  },
-  {
-    id: "shipping-boxes",
-    number: "19",
-    name: "Shipping Boxes",
-    category: "Packaging",
-    price: 210,
-    quantityLabel: "50 copë",
-    description: "Kuti corrugated me print të brandit dhe madhësi custom.",
-    tone: "violet",
-    production: "Custom",
-    material: "Corrugated board",
-    badge: "Eco",
-  },
-  {
-    id: "paper-bags",
-    number: "20",
-    name: "Retail Paper Bags",
-    category: "Packaging",
-    price: 190,
-    quantityLabel: "100 copë",
-    description: "Qese premium me dorezë dhe print sipas identitetit.",
-    tone: "acid",
-    production: "Custom",
-    material: "Kraft paper",
-    badge: "Eco",
-  },
-]
 
 const categories: Array<"Krejt" | ProductCategory> = [
   "Krejt",
@@ -347,11 +65,12 @@ const currency = new Intl.NumberFormat("de-DE", {
   maximumFractionDigits: 0,
 })
 
-export function getProductBySlug(slug: string) {
-  return products.find((product) => product.id === slug)
-}
 
 export default function ShopPage() {
+  const catalog = useShopProducts()
+  const [orderStatus, setOrderStatus] = useState<SubmitStatus>("idle")
+  const [orderError, setOrderError] = useState("")
+  const [placedOrder, setPlacedOrder] = useState<string | null>(null)
   const [filter, setFilter] = useState<(typeof categories)[number]>("Krejt")
   const [search, setSearch] = useState("")
   const [maxPrice, setMaxPrice] = useState(300)
@@ -455,7 +174,7 @@ export default function ShopPage() {
 
   const visibleProducts = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase()
-    const filtered = products.filter((product) => {
+    const filtered = catalog.filter((product) => {
       const matchesCategory =
         filter === "Krejt" || product.category === filter
       const matchesSearch =
@@ -486,6 +205,7 @@ export default function ShopPage() {
       return Number(Boolean(b.featured)) - Number(Boolean(a.featured))
     })
   }, [
+    catalog,
     favorites,
     favoritesOnly,
     filter,
@@ -503,7 +223,7 @@ export default function ShopPage() {
     Number(favoritesOnly)
 
   const cartDetails = cart.flatMap((item) => {
-    const product = products.find((candidate) => candidate.id === item.productId)
+    const product = catalog.find((candidate) => candidate.id === item.productId)
     return product ? [{ ...item, product }] : []
   })
 
@@ -600,8 +320,31 @@ export default function ShopPage() {
     )
   }
 
-  function submitOrder(event: React.FormEvent<HTMLFormElement>) {
+  async function submitOrder(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (orderStatus === "sending") return
+
+    setOrderStatus("sending")
+    setOrderError("")
+    const result = await apiRequest<{ reference: string }>("/api/orders", {
+      method: "POST",
+      body: {
+        reference: orderRef,
+        customer,
+        items: cart.map(({ productId, quantity }) => ({ productId, quantity })),
+      },
+    })
+
+    if (result.ok) {
+      setOrderStatus("sent")
+      setPlacedOrder(result.data.reference ?? orderRef)
+      setCart([])
+      return
+    }
+
+    // Fall back to the email order so a customer is never stuck.
+    setOrderStatus("error")
+    setOrderError(`${result.error} Po hapet email-i si alternativë.`)
     window.location.assign(orderHref)
   }
 
@@ -664,7 +407,7 @@ export default function ShopPage() {
                 <span>{String(index + 1).padStart(2, "0")}</span>
                 <strong>{category}</strong>
                 <small>
-                  {products.filter((product) => product.category === category).length}{" "}
+                  {catalog.filter((product) => product.category === category).length}{" "}
                   products
                 </small>
                 <ArrowRight />
@@ -786,8 +529,8 @@ export default function ShopPage() {
                     <span>{category}</span>
                     <small>
                       {category === "Krejt"
-                        ? products.length
-                        : products.filter(
+                        ? catalog.length
+                        : catalog.filter(
                             (product) => product.category === category,
                           ).length}
                     </small>
@@ -1090,7 +833,29 @@ export default function ShopPage() {
                 </button>
               </header>
 
-              {!checkoutOpen ? (
+              {placedOrder ? (
+                <div className="shop-order-done" role="status">
+                  <PackageCheck />
+                  <span>{placedOrder}</span>
+                  <strong>Porosia u pranua.</strong>
+                  <p>
+                    Të kontaktojmë te {customer.email} për me konfirmu
+                    artwork-un, afatin dhe totalin final.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPlacedOrder(null)
+                      setOrderStatus("idle")
+                      setCheckoutOpen(false)
+                      setCartOpen(false)
+                    }}
+                  >
+                    Vazhdo me shiku produktet
+                    <ArrowRight />
+                  </button>
+                </div>
+              ) : !checkoutOpen ? (
                 <>
                   <div className="shop-cart-items">
                     {!cartDetails.length && (
@@ -1251,12 +1016,21 @@ export default function ShopPage() {
                     <strong>{currency.format(subtotal)}</strong>
                   </div>
 
-                  <button className="shop-order-submit" type="submit">
-                    Dërgo porosinë me email
+                  {orderError && (
+                    <p className="shop-order-error" role="alert">
+                      {orderError}
+                    </p>
+                  )}
+                  <button
+                    className="shop-order-submit"
+                    type="submit"
+                    disabled={orderStatus === "sending"}
+                  >
+                    {orderStatus === "sending" ? "Po dërgohet…" : "Dërgo porosinë"}
                     <ArrowRight />
                   </button>
                   <p>
-                    Pagesa nuk merret online ende. Pas email-it e konfirmojmë
+                    Pagesa nuk merret online ende. Pas porosisë e konfirmojmë
                     artwork-un, afatin dhe totalin final.
                   </p>
                 </form>

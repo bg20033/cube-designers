@@ -49,6 +49,24 @@ export function ResponsiveImage({
   style,
   ...props
 }: ResponsiveImageProps) {
+  // Dashboard-managed products may point at a plain image URL instead of a
+  // key from the portfolio manifest.
+  if (typeof imageOrKey === "string" && !portfolioImageMap.has(imageOrKey)) {
+    if (!/^(https?:\/\/|\/)/.test(imageOrKey)) return null
+    return (
+      <img
+        {...props}
+        alt={alt ?? ""}
+        className={className}
+        decoding={decoding}
+        loading={loading}
+        sizes={sizes}
+        src={imageOrKey}
+        style={{ objectFit: "cover", ...style }}
+      />
+    )
+  }
+
   const image =
     typeof imageOrKey === "string"
       ? getPortfolioImage(imageOrKey)

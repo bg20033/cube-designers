@@ -1,9 +1,7 @@
 import { ArrowLeft, ArrowRight, Check, PackageCheck, ShieldCheck } from "lucide-react"
 
-import {
-  getProductBySlug,
-  type Product,
-} from "@/components/ShopPage"
+import type { Product } from "@/data/products"
+import { useShopProducts } from "@/components/shop/useShopProducts"
 import NotFoundPage from "@/components/NotFoundPage"
 import { ResponsiveImage } from "@/components/ResponsiveImage"
 import {
@@ -108,7 +106,7 @@ export function ProductDetail({ product }: { product: Product }) {
 }
 
 export default function ProductDetailPage({ slug }: { slug: string }) {
-  const product = getProductBySlug(slug)
+  const product = useShopProducts().find((candidate) => candidate.id === slug)
 
   if (!product) {
     return <NotFoundPage />

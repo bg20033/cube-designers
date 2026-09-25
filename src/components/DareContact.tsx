@@ -3,11 +3,14 @@ import { createPortal } from "react-dom"
 import { ArrowUpRight, X } from "lucide-react"
 
 import grindSound from "@/assets/rr.mp3"
+import { apiRequest, type SubmitStatus } from "@/lib/api"
 
 type PrintPhase = "idle" | "printing" | "printed"
 
 export default function DareContact() {
   const [phase, setPhase] = useState<PrintPhase>("idle")
+  const [sendStatus, setSendStatus] = useState<SubmitStatus>("idle")
+  const [sendError, setSendError] = useState("")
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const switchRef = useRef<HTMLInputElement | null>(null)
   const isActive = phase !== "idle"
@@ -102,20 +105,45 @@ export default function DareContact() {
 
   function closePrinter() {
     setPhase("idle")
+    setSendStatus("idle")
+    setSendError("")
     window.setTimeout(() => switchRef.current?.focus(), 0)
   }
 
-  function sendMessage(event: FormEvent<HTMLFormElement>) {
+  async function sendMessage(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (sendStatus === "sending") return
+
     const data = new FormData(event.currentTarget)
     const name = String(data.get("name") ?? "")
     const email = String(data.get("email") ?? "")
     const message = String(data.get("message") ?? "")
+
+    setSendStatus("sending")
+    setSendError("")
+    const result = await apiRequest("/api/submissions", {
+      method: "POST",
+      body: {
+        kind: "contact",
+        name,
+        email,
+        message,
+        website: String(data.get("website") ?? ""),
+      },
+    })
+
+    if (result.ok) {
+      setSendStatus("sent")
+      return
+    }
+
+    // Keep the message reachable even when the API is down.
+    setSendStatus("error")
+    setSendError(result.error)
     const subject = encodeURIComponent(`Kontakt nga ${name || "website"}`)
     const body = encodeURIComponent(
       `Emri: ${name}\nEmail: ${email}\n\n${message}`,
     )
-
     window.location.href = `mailto:info@cube-designers.com?subject=${subject}&body=${body}`
   }
 
@@ -195,9 +223,17 @@ export default function DareContact() {
                 </div>
 
                 <div className="contact-paper__intro">
-                  <span>Fleta doli.</span>
-                  <h3>Tash fol.</h3>
+                  <span>{sendStatus === "sent" ? "Mesazhi u pranua." : "Fleta doli."}</span>
+                  <h3>{sendStatus === "sent" ? "Faleminderit." : "Tash fol."}</h3>
                 </div>
+
+                {sendStatus === "sent" ? (
+                  <p className="contact-paper__sent" role="status">
+                    E morëm mesazhin. Të kthejmë përgjigje brenda 1–2 ditësh
+                    pune.
+                  </p>
+                ) : (
+                  <>
 
                 <div className="contact-paper__fields">
                   <label>
@@ -231,10 +267,26 @@ export default function DareContact() {
                   </label>
                 </div>
 
-                <button type="submit">
-                  Nise mesazhin
+                <input
+                  className="contact-paper__trap"
+                  name="website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                />
+
+                {sendError && (
+                  <p className="contact-paper__error" role="alert">
+                    {sendError} Po hapet email-i si alternativë.
+                  </p>
+                )}
+
+                <button type="submit" disabled={sendStatus === "sending"}>
+                  {sendStatus === "sending" ? "Po dërgohet…" : "Nise mesazhin"}
                   <ArrowUpRight />
                 </button>
+                  </>
+                )}
 
                 <span className="contact-paper__serial" aria-hidden="true">
                   CUBE DESIGNERS · SUHAREKË · KOSOVË

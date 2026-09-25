@@ -59,6 +59,10 @@ const process = [
   },
 ]
 
+// `!5e1` selects the satellite layer (`!5e0` is the default road map).
+const mapEmbedUrl =
+  "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1239.5037524795453!2d20.835395703208796!3d42.36270200868211!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x13539bd1887a1095%3A0x6f42ef9b2893ba2c!2sCube%20Design!5e1!3m2!1sen!2s!4v1790336007080!5m2!1sen!2s"
+
 export default function AboutPage() {
   return (
     <div className="agency-site about-page">
@@ -296,6 +300,36 @@ export default function AboutPage() {
             <em>BORING NEVER.</em>
           </p>
           <small>Suharekë · Kosovo · Available everywhere</small>
+        </section>
+
+        <section className="about-location" aria-labelledby="about-location-title">
+          <header>
+            <div className="about-section-label">
+              <span>06</span>
+              Ku jemi
+            </div>
+            <h2 id="about-location-title">
+              NA GJENI
+              <em>NË SUHAREKË.</em>
+            </h2>
+            <a
+              href="https://www.google.com/maps/search/?api=1&query=Cube+Design&query_place_id=0x13539bd1887a1095:0x6f42ef9b2893ba2c"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Hap në Google Maps
+              <ArrowUpRight />
+            </a>
+          </header>
+          <div className="about-location-map">
+            <iframe
+              title="CUBE DESIGNERS në Google Maps"
+              src={mapEmbedUrl}
+              loading="lazy"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+            />
+          </div>
         </section>
 
         <ContactSection />
