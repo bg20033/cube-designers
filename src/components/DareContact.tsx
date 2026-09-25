@@ -180,16 +180,6 @@ export default function DareContact() {
             <span className="danger-switch__shadow" />
           </span>
         </label>
-        <div className="dare-contact__fallback">
-          <a href="/start-project">
-            Plotëso brief-in
-            <ArrowUpRight />
-          </a>
-          <a href="mailto:info@cube-designers.com">
-            info@cube-designers.com
-            <ArrowUpRight />
-          </a>
-        </div>
       </div>
 
       {isActive &&
@@ -217,10 +207,7 @@ export default function DareContact() {
               inert={phase !== "printed"}
             >
               <form className="contact-paper" onSubmit={sendMessage}>
-                <div className="contact-paper__meta">
-                  <span>FORM / CUBE-07</span>
-                  <span>STATUS: READY</span>
-                </div>
+                
 
                 <div className="contact-paper__intro">
                   <span>{sendStatus === "sent" ? "Mesazhi u pranua." : "Fleta doli."}</span>

@@ -20,6 +20,13 @@ import ShopPage, {
   products,
 } from "@/components/ShopPage"
 import WorkPage from "@/components/WorkPage"
+import ServicePage from "@/components/services/ServicePage"
+import ServicesPage from "@/components/services/ServicesPage"
+import {
+  getServiceBySlug,
+  serviceCategories,
+  services,
+} from "@/data/services"
 
 type StructuredData = Record<string, unknown>
 
@@ -45,6 +52,7 @@ const breadcrumbNames: Record<string, string> = {
   "/roadmap": "Roadmap",
   "/shop": "Shop",
   "/start-project": "Fillo një projekt",
+  "/sherbime": "Shërbimet",
 }
 
 function renderRouteNode(pathname: string): {
@@ -78,6 +86,26 @@ function renderRouteNode(pathname: string): {
     }
   }
 
+  if (route.key === "service") {
+    const service = getServiceBySlug(route.params.slug)
+    if (!service) {
+      return { node: <NotFoundPage />, seo: notFoundSeo, status: 404 }
+    }
+
+    return {
+      node: <ServicePage slug={route.params.slug} />,
+      seo: {
+        title: service.seoTitle,
+        description: service.description,
+        canonicalPath: `/sherbime/${service.slug}`,
+        index: true,
+        sitemap: true,
+        ogImage: "/og.png",
+      },
+      status: 200,
+    }
+  }
+
   const seo = getRouteSeo(route.key) ?? notFoundSeo
   const nodes: Record<typeof route.key, ReactNode> = {
     home: <HomePage />,
@@ -86,6 +114,7 @@ function renderRouteNode(pathname: string): {
     roadmap: <RoadmapPage />,
     shop: <ShopPage />,
     "start-project": <ProjectBriefPage />,
+    services: <ServicesPage />,
   }
 
   return { node: nodes[route.key], seo, status: 200 }
@@ -103,17 +132,38 @@ function buildStructuredData(pathname: string, siteUrl: string): StructuredData[
       url: normalizedSiteUrl,
       inLanguage: "sq-XK",
     },
+    // Local business entity on every page; service pages reference it by @id.
     {
       "@context": "https://schema.org",
-      "@type": "Organization",
+      "@type": "ProfessionalService",
+      "@id": `${normalizedSiteUrl}/#business`,
       name: "CUBE DESIGNERS",
+      alternateName: "Cube Design",
+      description:
+        "Agjenci kreative në Suharekë për printim, branding, dizajn logo, web design, e-commerce, SEO dhe menaxhim të rrjeteve sociale.",
       url: normalizedSiteUrl,
       logo: `${normalizedSiteUrl}/favicon.svg`,
+      image: `${normalizedSiteUrl}/og.png`,
       email: "info@cube-designers.com",
-      areaServed: {
-        "@type": "Country",
-        name: "Kosovo",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "Rruga Xhavit Sylaj 59",
+        addressLocality: "Suharekë",
+        postalCode: "23000",
+        addressCountry: "XK",
       },
+      geo: {
+        "@type": "GeoCoordinates",
+        latitude: 42.362702,
+        longitude: 20.835396,
+      },
+      hasMap: "https://www.google.com/maps/search/?api=1&query=Cube+Design&query_place_id=0x13539bd1887a1095:0x6f42ef9b2893ba2c",
+      areaServed: [
+        { "@type": "City", name: "Suharekë" },
+        { "@type": "City", name: "Prishtinë" },
+        { "@type": "Country", name: "Kosovo" },
+      ],
+      knowsAbout: services.map((service) => service.name),
     },
   ]
 
@@ -122,7 +172,9 @@ function buildStructuredData(pathname: string, siteUrl: string): StructuredData[
   const breadcrumbLabel =
     route.key === "product"
       ? getProductBySlug(route.params.slug)?.name
-      : breadcrumbNames[route.pathname]
+      : route.key === "service"
+        ? getServiceBySlug(route.params.slug)?.name
+        : breadcrumbNames[route.pathname]
 
   if (breadcrumbLabel) {
     const items = [
@@ -140,6 +192,15 @@ function buildStructuredData(pathname: string, siteUrl: string): StructuredData[
         position: 2,
         name: "Shop",
         item: `${normalizedSiteUrl}/shop`,
+      })
+    }
+
+    if (route.key === "service") {
+      items.push({
+        "@type": "ListItem",
+        position: 2,
+        name: "Shërbimet",
+        item: `${normalizedSiteUrl}/sherbime`,
       })
     }
 
@@ -177,33 +238,50 @@ function buildStructuredData(pathname: string, siteUrl: string): StructuredData[
     }
   }
 
-  if (route.key === "about") {
+  if (route.key === "service") {
+    const service = getServiceBySlug(route.params.slug)
+    if (service) {
+      data.push(
+        {
+          "@context": "https://schema.org",
+          "@type": "Service",
+          name: service.name,
+          serviceType: service.name,
+          alternateName: service.alsoKnownAs,
+          description: service.description,
+          category: serviceCategories[service.category].label,
+          url: `${normalizedSiteUrl}/sherbime/${service.slug}`,
+          provider: { "@id": `${normalizedSiteUrl}/#business` },
+          areaServed: [
+            { "@type": "City", name: "Suharekë" },
+            { "@type": "City", name: "Prishtinë" },
+            { "@type": "Country", name: "Kosovo" },
+          ],
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: service.faqs.map((faq) => ({
+            "@type": "Question",
+            name: faq.q,
+            acceptedAnswer: { "@type": "Answer", text: faq.a },
+          })),
+        },
+      )
+    }
+  }
+
+  if (route.key === "services") {
     data.push({
       "@context": "https://schema.org",
-      "@type": "ProfessionalService",
-      name: "CUBE DESIGNERS",
-      description:
-        "Studio kreative për branding, identitet vizual, dizajn grafik, print, packaging, web design dhe e-commerce.",
-      url: `${normalizedSiteUrl}/about`,
-      email: "info@cube-designers.com",
-      address: {
-        "@type": "PostalAddress",
-        addressLocality: "Suharekë",
-        addressCountry: "XK",
-      },
-      areaServed: {
-        "@type": "Country",
-        name: "Kosovo",
-      },
-      knowsAbout: [
-        "Branding",
-        "Identitet vizual",
-        "Dizajn grafik",
-        "Print",
-        "Packaging",
-        "Web design",
-        "E-commerce",
-      ],
+      "@type": "ItemList",
+      name: "Shërbimet e CUBE DESIGNERS",
+      itemListElement: services.map((service, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: service.name,
+        url: `${normalizedSiteUrl}/sherbime/${service.slug}`,
+      })),
     })
   }
 
@@ -227,6 +305,7 @@ export function render(pathname: string, siteUrl: string): RenderedRoute {
 export function getPrerenderPaths() {
   return [
     ...siteRoutes.filter((route) => route.seo.sitemap).map((route) => route.path),
+    ...services.map((service) => `/sherbime/${service.slug}`),
     ...(SHOP_ENABLED ? products.map((product) => `/shop/${product.id}`) : []),
   ]
 }

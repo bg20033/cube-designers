@@ -19,11 +19,16 @@ import {
 } from "@/components/ui/sheet"
 import { useRoutePath } from "@/app/RouteContext"
 import { SHOP_ENABLED } from "@/app/routes"
+import {
+  getServicesByCategory,
+  serviceCategories,
+  type ServiceCategory,
+} from "@/data/services"
 
 const headerTexts = ["CUBE DESIGNERS", "DESIGN", "PRINT", "DIGITAL"]
 
 const navItems = [
-  { label: "Shërbimet", href: "/#services" },
+  { label: "Shërbimet", href: "/sherbime", path: "/sherbime" },
   { label: "Puna", href: "/work", path: "/work" },
   ...(SHOP_ENABLED ? [{ label: "Shop", href: "/shop", path: "/shop" }] : []),
   { label: "Rreth nesh", href: "/about", path: "/about" },
@@ -102,7 +107,11 @@ export function SiteHeader({ serviceLabel = null }: SiteHeaderProps) {
           <a
             href={item.href}
             key={item.href}
-            aria-current={item.path === currentPath ? "page" : undefined}
+            aria-current={
+              item.path && (currentPath === item.path || currentPath.startsWith(`${item.path}/`))
+                ? "page"
+                : undefined
+            }
           >
             {item.label}
           </a>
@@ -186,12 +195,40 @@ export function ContactSection() {
 
 export function SiteFooter() {
   return (
-    <footer className="agency-footer">
-      <a className="brand" href="/#top">
-        CUBE DESIGNERS<span>®</span>
-      </a>
-      <p>© 2026 CUBE DESIGNERS</p>
-      <a href="#top">Kthehu lart ↑</a>
-    </footer>
+    <>
+      {/* Crawlable links to every service page from every page. */}
+      <nav className="footer-services" aria-label="Shërbimet">
+        {(Object.keys(serviceCategories) as ServiceCategory[]).map((key) => (
+          <div key={key}>
+            <a className="footer-services__title" href={`/sherbime#${key}`}>
+              {serviceCategories[key].label}
+            </a>
+            <ul>
+              {getServicesByCategory(key).map((service) => (
+                <li key={service.slug}>
+                  <a href={`/sherbime/${service.slug}`}>{service.name}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+        <div className="footer-services__contact">
+          <span className="footer-services__title">Studio</span>
+          <p>
+            Rruga Xhavit Sylaj 59
+            <br />
+            23000 Suharekë, Kosovë
+          </p>
+          <a href="mailto:info@cube-designers.com">info@cube-designers.com</a>
+        </div>
+      </nav>
+      <footer className="agency-footer">
+        <a className="brand" href="/#top">
+          CUBE DESIGNERS<span>®</span>
+        </a>
+        <p>© 2026 CUBE DESIGNERS</p>
+        <a href="#top">Kthehu lart ↑</a>
+      </footer>
+    </>
   )
 }

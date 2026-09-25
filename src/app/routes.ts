@@ -6,6 +6,10 @@ export type RouteKey =
   | "shop"
   | "product"
   | "start-project"
+  | "services"
+  | "service"
+
+type ParamRouteKey = "product" | "service"
 
 export type RouteSeo = {
   title: string
@@ -17,14 +21,14 @@ export type RouteSeo = {
 }
 
 export type SiteRoute = {
-  key: Exclude<RouteKey, "product">
+  key: Exclude<RouteKey, ParamRouteKey>
   path: string
   seo: RouteSeo
 }
 
 export type RouteMatch =
-  | { key: Exclude<RouteKey, "product">; pathname: string; params: Record<string, never> }
-  | { key: "product"; pathname: string; params: { slug: string } }
+  | { key: Exclude<RouteKey, ParamRouteKey>; pathname: string; params: Record<string, never> }
+  | { key: ParamRouteKey; pathname: string; params: { slug: string } }
 
 // Shop is hidden until launch: no nav link, no /shop routes, not prerendered.
 export const SHOP_ENABLED = false
@@ -34,9 +38,9 @@ const allRoutes: SiteRoute[] = [
     key: "home",
     path: "/",
     seo: {
-      title: "CUBE DESIGNERS | Agjenci kreative në Kosovë",
+      title: "CUBE DESIGNERS | Agjenci Marketingu, Print & Web në Kosovë",
       description:
-        "Studio kreative në Kosovë për brand identity, print, web, e-commerce dhe eksperienca digjitale.",
+        "Agjenci kreative në Suharekë për branding, dizajn logo, printim, web design, dyqane online dhe menaxhim të rrjeteve sociale në gjithë Kosovën.",
       canonicalPath: "/",
       index: true,
       sitemap: true,
@@ -96,6 +100,19 @@ const allRoutes: SiteRoute[] = [
     },
   },
   {
+    key: "services",
+    path: "/sherbime",
+    seo: {
+      title: "Shërbimet | Print, Branding, Web & Social Media | CUBE",
+      description:
+        "Të gjitha shërbimet e CUBE DESIGNERS: printim, kartvizita, banera, dizajn logo, branding, web design, e-commerce, SEO dhe menaxhim rrjete sociale në Kosovë.",
+      canonicalPath: "/sherbime",
+      index: true,
+      sitemap: true,
+      ogImage: "/og.png",
+    },
+  },
+  {
     key: "start-project",
     path: "/start-project",
     seo: {
@@ -128,6 +145,15 @@ export function matchRoute(pathname: string): RouteMatch | null {
     return { key: exact.key, pathname: normalized, params: {} }
   }
 
+  const serviceMatch = normalized.match(/^\/sherbime\/([a-z0-9-]+)$/)
+  if (serviceMatch) {
+    return {
+      key: "service",
+      pathname: normalized,
+      params: { slug: serviceMatch[1] },
+    }
+  }
+
   const productMatch = normalized.match(/^\/shop\/([a-z0-9-]+)$/)
   if (SHOP_ENABLED && productMatch) {
     return {
@@ -146,6 +172,6 @@ export function isAdminPath(pathname: string) {
   return normalized === "/admin" || normalized.startsWith("/admin/")
 }
 
-export function getRouteSeo(key: Exclude<RouteKey, "product">) {
+export function getRouteSeo(key: Exclude<RouteKey, ParamRouteKey>) {
   return siteRoutes.find((route) => route.key === key)?.seo
 }

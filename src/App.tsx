@@ -12,7 +12,6 @@ import ServiceStory, {
   type StoryItem,
 } from "@/components/ServiceStory"
 import {
-  SiteFooter,
   SiteHeader,
   SiteNoise,
 } from "@/components/SiteChrome"
@@ -33,6 +32,8 @@ const ProductDetailPage = lazy(
 )
 const NotFoundPage = lazy(() => import("@/components/NotFoundPage"))
 const AdminPage = lazy(() => import("@/components/admin/AdminPage"))
+const ServicesPage = lazy(() => import("@/components/services/ServicesPage"))
+const ServicePage = lazy(() => import("@/components/services/ServicePage"))
 
 const tickerItems = [
   "Brand systems",
@@ -430,8 +431,6 @@ export function HomePage({ effectsEnabled = true }: { effectsEnabled?: boolean }
         <FaqSection />
         <DareContact />
       </main>
-
-      <SiteFooter />
     </div>
   )
 }
@@ -526,6 +525,8 @@ function SiteApp({ currentPath }: { currentPath: string }) {
             <ProductDetailPage slug={route.params.slug} />
           )}
           {route?.key === "start-project" && <ProjectBriefPage />}
+          {route?.key === "services" && <ServicesPage />}
+          {route?.key === "service" && <ServicePage slug={route.params.slug} />}
           {!route && <NotFoundPage />}
         </Suspense>
       </motion.div>

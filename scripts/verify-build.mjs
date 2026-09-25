@@ -9,6 +9,9 @@ const routes = [
   "/work",
   "/roadmap",
   "/start-project",
+  "/sherbime",
+  "/sherbime/printim-kartvizita",
+  "/sherbime/menaxhim-rrjete-sociale",
 ]
 
 for (const route of routes) {

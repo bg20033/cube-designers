@@ -1720,3 +1720,56 @@
   width: 1rem;
   height: 1rem;
 }
+
+/* Footer service directory (internal links to every service page). */
+.footer-services {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 2rem;
+  padding: clamp(2.5rem, 5vw, 4rem) 5vw 1.5rem;
+  border-top: 1px solid rgb(11 11 13 / 12%);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.footer-services ul {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0.9rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.footer-services a {
+  color: rgb(11 11 13 / 68%);
+  font-size: 0.88rem;
+  text-decoration: none;
+}
+
+.footer-services a:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
+
+.footer-services .footer-services__title {
+  color: var(--ink);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.footer-services__contact p {
+  margin: 0.9rem 0 0.5rem;
+  color: rgb(11 11 13 / 68%);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .footer-services {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding-inline: 1rem;
+  }
+}
