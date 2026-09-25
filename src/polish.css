@@ -1773,3 +1773,56 @@
     padding-inline: 1rem;
   }
 }
+
+/* Project brief: typed budget with currency + monthly suffix. */
+.brief-budget {
+  display: grid;
+  gap: 0.8rem;
+  align-content: start;
+  margin-top: 2.6rem;
+}
+
+.brief-budget > span {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.52rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.brief-budget > div {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  border-bottom: 1px solid var(--ink);
+}
+
+.brief-budget > div:focus-within {
+  border-color: var(--orange);
+  box-shadow: 0 2px 0 var(--orange);
+}
+
+.brief-budget b {
+  font-family: var(--font-heading);
+  font-size: 1.6rem;
+  font-weight: 900;
+}
+
+.brief-budget input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.6rem 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-heading);
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+.brief-budget small {
+  color: rgb(11 11 13 / 60%);
+  font-size: 0.9rem;
+  font-weight: 600;
+}

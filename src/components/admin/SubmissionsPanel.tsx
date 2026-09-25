@@ -139,6 +139,9 @@ export function SubmissionsPanel({ submissions, onChange, onRefresh }: Props) {
                 {!!selected.details.services?.length && (
                   <div><dt>Shërbimet</dt><dd>{selected.details.services.join(" · ")}</dd></div>
                 )}
+                {selected.details.engagement && (
+                  <div><dt>Bashkëpunimi</dt><dd>{selected.details.engagement}</dd></div>
+                )}
                 {selected.details.budget && (
                   <div><dt>Buxheti</dt><dd>{selected.details.budget}</dd></div>
                 )}

@@ -7,6 +7,7 @@ export type BriefData = {
   email: string
   company: string
   services: string[]
+  engagement: string
   budget: string
   timeline: string
   project: string
@@ -18,10 +19,43 @@ export const initialBrief: BriefData = {
   email: "",
   company: "",
   services: [],
+  engagement: "",
   budget: "",
   timeline: "",
   project: "",
   success: "",
+}
+
+export const engagementOptions = [
+  "Vetëm një herë",
+  "3 muaj",
+  "6 muaj",
+  "1 vit",
+  "Bashkëpunim i vazhdueshëm",
+]
+
+export function isOneTimeEngagement(engagement: string) {
+  return !engagement || engagement === engagementOptions[0]
+}
+
+// "1500" + "6 muaj" → "€1500 / muaj"; one-time projects show a total.
+export function formatBudget(budget: string, engagement: string) {
+  const amount = budget.trim()
+  if (!amount) return ""
+  const withCurrency = amount.includes("€") ? amount : `€${amount}`
+  return isOneTimeEngagement(engagement) ? withCurrency : `${withCurrency} / muaj`
+}
+
+// `?service=Kartvizita` (repeatable) preselects services, e.g. from the
+// "Kërko ofertë" buttons in service modals and service pages.
+function readPrefill(): Partial<BriefData> {
+  if (typeof window === "undefined") return {}
+  const services = new URLSearchParams(window.location.search)
+    .getAll("service")
+    .map((service) => service.trim().slice(0, 60))
+    .filter(Boolean)
+    .slice(0, 6)
+  return services.length ? { services: [...new Set(services)] } : {}
 }
 
 export function serializeProjectBrief(brief: BriefData) {
@@ -30,7 +64,8 @@ export function serializeProjectBrief(brief: BriefData) {
     `Email: ${brief.email}`,
     `Kompania: ${brief.company || "—"}`,
     `Shërbimet: ${brief.services.join(", ")}`,
-    `Buxheti: ${brief.budget}`,
+    `Bashkëpunimi: ${brief.engagement}`,
+    `Buxheti: ${formatBudget(brief.budget, brief.engagement)}`,
     `Afati: ${brief.timeline}`,
     "",
     "Projekti:",
@@ -53,11 +88,11 @@ export function validateBriefStep(step: number, brief: BriefData) {
     return "Shkruaje emrin dhe një email valid për me vazhdu."
   }
 
-  if (
-    step === 1 &&
-    (!brief.services.length || !brief.budget || !brief.timeline)
-  ) {
-    return "Zgjidh së paku një shërbim, buxhetin dhe afatin."
+  if (step === 1) {
+    if (!brief.services.length) return "Zgjidh së paku një shërbim."
+    if (!brief.engagement) return "Na trego sa gjatë e do bashkëpunimin."
+    if (!/\d/.test(brief.budget)) return "Shkruaje buxhetin e përafërt në euro."
+    if (!brief.timeline) return "Zgjidh kur do me fillu."
   }
 
   if (step === 2 && brief.project.trim().length < 20) {
@@ -69,7 +104,10 @@ export function validateBriefStep(step: number, brief: BriefData) {
 
 export function useProjectBrief(maxStep: number) {
   const [step, setStep] = useState(0)
-  const [brief, setBrief] = useState(initialBrief)
+  const [brief, setBrief] = useState<BriefData>(() => ({
+    ...initialBrief,
+    ...readPrefill(),
+  }))
   const [error, setError] = useState("")
   const [status, setStatus] = useState<SubmitStatus>("idle")
   const mailtoHref = useMemo(() => createProjectBriefMailto(brief), [brief])
@@ -88,7 +126,8 @@ export function useProjectBrief(maxStep: number) {
         company: brief.company,
         message: brief.project,
         services: brief.services,
-        budget: brief.budget,
+        engagement: brief.engagement,
+        budget: formatBudget(brief.budget, brief.engagement),
         timeline: brief.timeline,
         success: brief.success,
       },

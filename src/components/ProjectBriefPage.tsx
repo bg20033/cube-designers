@@ -14,19 +14,26 @@ import {
   SiteHeader,
   SiteNoise,
 } from "@/components/SiteChrome"
-import { useProjectBrief } from "@/components/project-brief/useProjectBrief"
+import {
+  engagementOptions,
+  formatBudget,
+  isOneTimeEngagement,
+  useProjectBrief,
+} from "@/components/project-brief/useProjectBrief"
 
 const serviceOptions = [
-  "Brand identity",
+  "Logo & branding",
+  "Print",
   "Packaging",
-  "Print production",
   "Website",
-  "Content & social",
-  "Campaign",
+  "Dyqan online",
+  "SEO",
+  "Social media menaxhim",
+  "Reklama online",
+  "Foto & video",
 ]
 
-const budgetOptions = ["Nën €2K", "€2K–5K", "€5K–10K", "€10K+"]
-const timelineOptions = ["Sa më shpejt", "1–2 muaj", "3–6 muaj", "Po planifikoj"]
+const timelineOptions = ["Sa më shpejt", "Brenda muajit", "1–3 muaj", "Po planifikoj"]
 
 const steps = [
   { number: "01", label: "Basics" },
@@ -153,7 +160,11 @@ export default function ProjectBriefPage() {
                       <fieldset className="brief-options">
                         <legend>Shërbimet *</legend>
                         <div className="brief-option-grid">
-                          {serviceOptions.map((service) => (
+                          {/* Services prefilled from a "Kërko ofertë" link stay selectable. */}
+                          {[
+                            ...brief.services.filter((service) => !serviceOptions.includes(service)),
+                            ...serviceOptions,
+                          ].map((service) => (
                             <button
                               className={
                                 brief.services.includes(service) ? "selected" : ""
@@ -168,24 +179,51 @@ export default function ProjectBriefPage() {
                           ))}
                         </div>
                       </fieldset>
+                      <fieldset className="brief-options">
+                        <legend>Sa gjatë e doni bashkëpunimin? *</legend>
+                        <div className="brief-pills">
+                          {engagementOptions.map((engagement) => (
+                            <button
+                              className={brief.engagement === engagement ? "selected" : ""}
+                              type="button"
+                              onClick={() => updateField("engagement", engagement)}
+                              key={engagement}
+                            >
+                              {engagement}
+                            </button>
+                          ))}
+                        </div>
+                      </fieldset>
                       <div className="brief-choice-row">
-                        <fieldset className="brief-options">
-                          <legend>Buxheti i përafërt *</legend>
-                          <div className="brief-pills">
-                            {budgetOptions.map((budget) => (
-                              <button
-                                className={brief.budget === budget ? "selected" : ""}
-                                type="button"
-                                onClick={() => updateField("budget", budget)}
-                                key={budget}
-                              >
-                                {budget}
-                              </button>
-                            ))}
+                        <label className="brief-budget">
+                          <span>
+                            {isOneTimeEngagement(brief.engagement)
+                              ? "Buxheti total *"
+                              : "Buxheti në muaj *"}
+                          </span>
+                          <div>
+                            <b aria-hidden="true">€</b>
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              value={brief.budget}
+                              onChange={(event) =>
+                                updateField(
+                                  "budget",
+                                  event.target.value.replace(/[^\d.,\s–-]/g, "").slice(0, 20),
+                                )
+                              }
+                              placeholder={
+                                isOneTimeEngagement(brief.engagement) ? "p.sh. 1500" : "p.sh. 400"
+                              }
+                            />
+                            {!isOneTimeEngagement(brief.engagement) && (
+                              <small aria-hidden="true">/ muaj</small>
+                            )}
                           </div>
-                        </fieldset>
+                        </label>
                         <fieldset className="brief-options">
-                          <legend>Afati *</legend>
+                          <legend>Kur doni me fillu? *</legend>
                           <div className="brief-pills">
                             {timelineOptions.map((timeline) => (
                               <button
@@ -276,7 +314,10 @@ export default function ProjectBriefPage() {
                         <div>
                           <span>Scope</span>
                           <strong>{brief.services.join(" · ")}</strong>
-                          <p>{brief.budget} / {brief.timeline}</p>
+                          <p>
+                            {brief.engagement} · {formatBudget(brief.budget, brief.engagement)} ·{" "}
+                            {brief.timeline}
+                          </p>
                         </div>
                         <div>
                           <span>Projekti</span>

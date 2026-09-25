@@ -4,6 +4,7 @@ import {
   createProjectBriefMailto,
   initialBrief,
   serializeProjectBrief,
+  formatBudget,
   validateBriefStep,
 } from "@/components/project-brief/useProjectBrief"
 
@@ -17,6 +18,24 @@ describe("project brief model", () => {
         email: "arta@example.com",
       }),
     ).toContain("shërbim")
+    const scoped = {
+      ...initialBrief,
+      name: "Arta",
+      email: "arta@example.com",
+      services: ["Website"],
+    }
+    expect(validateBriefStep(1, scoped)).toContain("bashkëpunimin")
+    expect(
+      validateBriefStep(1, { ...scoped, engagement: "6 muaj", budget: "" }),
+    ).toContain("buxhetin")
+    expect(
+      validateBriefStep(1, {
+        ...scoped,
+        engagement: "6 muaj",
+        budget: "400",
+        timeline: "Sa më shpejt",
+      }),
+    ).toBe("")
     expect(
       validateBriefStep(2, {
         ...initialBrief,
@@ -31,14 +50,22 @@ describe("project brief model", () => {
       name: "Arta",
       email: "arta@example.com",
       services: ["Brand identity"],
-      budget: "€2K–5K",
-      timeline: "1–2 muaj",
+      engagement: "Vetëm një herë",
+      budget: "1500",
+      timeline: "Sa më shpejt",
       project: "Një identitet i ri për kompaninë tonë.",
     }
 
     expect(serializeProjectBrief(brief)).toContain("Arta")
+    expect(serializeProjectBrief(brief)).toContain("Buxheti: €1500")
     expect(createProjectBriefMailto(brief)).toMatch(
       /^mailto:info@cube-designers\.com\?/,
     )
+  })
+
+  it("labels monthly budgets for ongoing work", () => {
+    expect(formatBudget("1500", "Vetëm një herë")).toBe("€1500")
+    expect(formatBudget("400", "1 vit")).toBe("€400 / muaj")
+    expect(formatBudget("", "1 vit")).toBe("")
   })
 })

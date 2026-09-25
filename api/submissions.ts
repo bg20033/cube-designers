@@ -23,6 +23,7 @@ export const POST = handle(async (request) => {
                 .map((service) => text(service, "shërbimi", { max: 60 }))
                 .filter(Boolean)
             : [],
+          engagement: text(body.engagement, "bashkëpunimi", { max: 60 }),
           budget: text(body.budget, "buxheti", { max: 60 }),
           timeline: text(body.timeline, "afati", { max: 60 }),
           success: text(body.success, "suksesi", { max: 2000 }),

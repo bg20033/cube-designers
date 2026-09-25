@@ -454,8 +454,9 @@ export default function ServiceStory({
                     <Button
                       className="modal-cta"
                       onClick={() => {
-                        window.location.href =
-                          "mailto:info@cube-designers.com?subject=Projekt i ri"
+                        window.location.href = `/start-project?service=${encodeURIComponent(
+                          activeItem.title,
+                        )}`
                       }}
                     >
                       Kërko ofertë

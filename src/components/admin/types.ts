@@ -17,6 +17,7 @@ export type Submission = {
   message: string
   details: {
     services?: string[]
+    engagement?: string
     budget?: string
     timeline?: string
     success?: string

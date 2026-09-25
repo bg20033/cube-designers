@@ -48,7 +48,10 @@ export function ServiceDetail({ service }: { service: ServicePageData }) {
           <p className="svc-lead">{service.lead}</p>
 
           <div className="svc-actions">
-            <a className="svc-primary" href="/start-project">
+            <a
+              className="svc-primary"
+              href={`/start-project?service=${encodeURIComponent(service.name)}`}
+            >
               Kërko ofertë
               <ArrowRight aria-hidden="true" />
             </a>
