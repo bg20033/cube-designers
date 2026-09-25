@@ -378,6 +378,27 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
   const visibilityRef = useRef({ visible: true });
   const speedRef = useRef(speed);
 
+  // Drive `autoPauseOffscreen`: stop rendering once the hero scrolls away or
+  // the tab is hidden, so the GPU isn't competing with page scrolling.
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    let inView = true;
+    const update = () => {
+      visibilityRef.current.visible = inView && !document.hidden;
+    };
+    const observer = new IntersectionObserver(([entry]) => {
+      inView = entry.isIntersecting;
+      update();
+    });
+    observer.observe(container);
+    document.addEventListener('visibilitychange', update);
+    return () => {
+      observer.disconnect();
+      document.removeEventListener('visibilitychange', update);
+    };
+  }, []);
+
   const threeRef = useRef<{
     renderer: THREE.WebGLRenderer;
     scene: THREE.Scene;
@@ -440,15 +461,18 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
         threeRef.current = null;
       }
       const canvas = document.createElement('canvas');
+      // Phones render the pixel pattern at 1x: the shader scales pixel size by
+      // the ratio, so it looks the same at a fraction of the fill cost.
+      const coarse = window.matchMedia('(pointer: coarse)').matches;
       const renderer = new THREE.WebGLRenderer({
         canvas,
-        antialias,
+        antialias: antialias && !coarse,
         alpha: true,
         powerPreference: 'high-performance'
       });
       renderer.domElement.style.width = '100%';
       renderer.domElement.style.height = '100%';
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.setPixelRatio(coarse ? 1 : Math.min(window.devicePixelRatio || 1, 2));
       container.appendChild(renderer.domElement);
       if (transparent) renderer.setClearAlpha(0);
       else renderer.setClearColor(0x000000, 1);

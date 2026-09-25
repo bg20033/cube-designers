@@ -217,9 +217,37 @@ html[data-intro-seen="true"] .lanyard-intro {
   pointer-events: none;
 }
 
-.site-noise canvas {
-  position: absolute !important;
-  inset: 0;
+/* Oversized so the stepped translate never exposes an edge. Transform-only
+   animation stays on the compositor. */
+.noise-grain {
+  position: absolute;
+  inset: -10%;
+  image-rendering: pixelated;
+  animation: noise-shift calc(var(--noise-step, 280ms) * 5) steps(5) infinite;
+  will-change: transform;
+}
+
+@keyframes noise-shift {
+  0% { transform: translate3d(0, 0, 0); }
+  20% { transform: translate3d(-3%, 2%, 0); }
+  40% { transform: translate3d(2%, -4%, 0); }
+  60% { transform: translate3d(-4%, -1%, 0); }
+  80% { transform: translate3d(3%, 3%, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+/* On phones the blended full-screen layer is re-composited on every scroll
+   frame; a static, unblended grain keeps the texture without the cost. */
+@media (max-width: 760px), (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .site-noise {
+    opacity: 0.18;
+    mix-blend-mode: normal;
+  }
+
+  .noise-grain {
+    animation: none;
+    will-change: auto;
+  }
 }
 
 .agency-header {
@@ -1010,9 +1038,11 @@ html[data-intro-seen="true"] .lanyard-intro {
   background: var(--orange);
 }
 
+/* Drifts by moving an oversized layer (compositor-only) instead of
+   animating background-position, which repainted the visual every frame. */
 .visual-grid {
   position: absolute;
-  inset: 0;
+  inset: -46px 0 0 -46px;
   z-index: -1;
   opacity: 0.22;
   background-image:
@@ -1020,11 +1050,12 @@ html[data-intro-seen="true"] .lanyard-intro {
     linear-gradient(90deg, currentColor 1px, transparent 1px);
   background-size: 46px 46px;
   animation: visualGridDrift 14s linear infinite;
+  will-change: transform;
 }
 
 @keyframes visualGridDrift {
   to {
-    background-position: 46px 46px;
+    transform: translate3d(46px, 46px, 0);
   }
 }
 
@@ -1127,6 +1158,13 @@ html[data-intro-seen="true"] .lanyard-intro {
   mix-blend-mode: overlay;
   animation: scanVisual 5s ease-in-out infinite;
   pointer-events: none;
+}
+
+@media (max-width: 820px), (pointer: coarse) {
+  /* A blended layer sweeping over the photo forces a full re-composite. */
+  .visual-scanline {
+    display: none;
+  }
 }
 
 @keyframes scanVisual {
@@ -3017,9 +3055,13 @@ body.contact-printer-ready .site-reveal {
 }
 
 @media (max-width: 820px) {
+  /* Opaque instead of a live blur: a backdrop-filter under a fixed header is
+     re-rendered on every scroll frame on phones. */
   .agency-header {
     height: 66px;
     padding-inline: 1rem;
+    background: var(--ink);
+    backdrop-filter: none;
   }
 
   .hero-meta {

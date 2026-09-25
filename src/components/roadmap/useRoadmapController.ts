@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import {
   useMotionValueEvent,
   useReducedMotion,
@@ -25,6 +25,19 @@ export function useRoadmapController(phases: RoadmapPhase[]) {
   const [activePhase, setActivePhase] = useState(0)
   const [currentDay, setCurrentDay] = useState(0)
   const reduceMotion = useReducedMotion()
+  // The scroll-driven stage only exists on desktop; on phones the day counter
+  // is hidden, so skip the per-frame state updates that re-render the page.
+  const desktopRef = useRef(true)
+
+  useEffect(() => {
+    const query = window.matchMedia("(min-width: 901px)")
+    const update = () => {
+      desktopRef.current = query.matches
+    }
+    update()
+    query.addEventListener("change", update)
+    return () => query.removeEventListener("change", update)
+  }, [])
 
   const { scrollYProgress } = useScroll({
     target: journeyRef,
@@ -39,6 +52,7 @@ export function useRoadmapController(phases: RoadmapPhase[]) {
   const lineProgress = useTransform(storyProgress, [0, 0.96], [0, 1])
 
   useMotionValueEvent(storyProgress, "change", (value) => {
+    if (!desktopRef.current) return
     const rawDay = Math.min(90, Math.max(0, Math.round(value * 90)))
     const nextPhase = getPhaseIndex(rawDay, phases)
 

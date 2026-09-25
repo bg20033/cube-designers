@@ -1,4 +1,4 @@
-import { type CSSProperties } from "react"
+import { memo, type CSSProperties } from "react"
 import {
   ArrowDown,
   ArrowUpRight,
@@ -378,24 +378,50 @@ function PhaseDetails({
             ? "OUTPUTS NË KATËR ROUTES"
             : `OUTPUTS / ${visibleRoutes[0].label.toUpperCase()}`}
         </span>
-        <div>
-          {visibleRoutes.map((route) => (
-            <section
-              style={{ "--route-color": route.color } as CSSProperties}
-              key={route.id}
-            >
-              <strong>{route.label}</strong>
-              <ul>
-                {milestone.deliverables[route.id].map((deliverable) => (
-                  <li key={deliverable}>
-                    <Check aria-hidden="true" />
-                    {deliverable}
-                  </li>
-                ))}
-              </ul>
-            </section>
-          ))}
-        </div>
+        {mobile && activeRoute === "all" ? (
+          // Phones get one tappable row per route instead of four stacked lists.
+          <div className="rm2-output-accordion">
+            {visibleRoutes.map((route) => (
+              <details
+                style={{ "--route-color": route.color } as CSSProperties}
+                key={route.id}
+              >
+                <summary>
+                  <route.icon aria-hidden="true" />
+                  <strong>{route.label}</strong>
+                  <small>{milestone.deliverables[route.id].length}</small>
+                </summary>
+                <ul>
+                  {milestone.deliverables[route.id].map((deliverable) => (
+                    <li key={deliverable}>
+                      <Check aria-hidden="true" />
+                      {deliverable}
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            ))}
+          </div>
+        ) : (
+          <div>
+            {visibleRoutes.map((route) => (
+              <section
+                style={{ "--route-color": route.color } as CSSProperties}
+                key={route.id}
+              >
+                <strong>{route.label}</strong>
+                <ul>
+                  {milestone.deliverables[route.id].map((deliverable) => (
+                    <li key={deliverable}>
+                      <Check aria-hidden="true" />
+                      {deliverable}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ))}
+          </div>
+        )}
       </div>
 
       <footer className="rm2-card-result">
@@ -641,6 +667,61 @@ function SignalMap({
   )
 }
 
+// Memoized so desktop scroll updates (day counter, active phase) never
+// re-render the phone layout.
+const MobileJourney = memo(function MobileJourney({
+  activeRoute,
+  onRouteChange,
+}: {
+  activeRoute: RouteFilter
+  onRouteChange: (route: RouteFilter) => void
+}) {
+  return (
+    <div className="rm2-mobile-journey">
+      <header>
+        <span>CUBE / ROADMAP</span>
+        <div className="rm2-display-title" aria-hidden="true">
+          <span>NGA IDEJA</span>
+          <em>te signali.</em>
+        </div>
+        <p>
+          Katër routes punojnë paralelisht dhe bashkohen në një sistem të
+          lidhur, gati për treg.
+        </p>
+        <dl className="rm2-mobile-stats">
+          <div>
+            <dt>Ditë</dt>
+            <dd>90</dd>
+          </div>
+          <div>
+            <dt>Faza</dt>
+            <dd>05</dd>
+          </div>
+          <div>
+            <dt>Routes</dt>
+            <dd>04</dd>
+          </div>
+        </dl>
+      </header>
+      <RouteFilters
+        className="rm2-mobile-filters"
+        activeRoute={activeRoute}
+        onChange={onRouteChange}
+      />
+      <div className="rm2-mobile-cards">
+        {milestones.map((milestone) => (
+          <PhaseDetails
+            milestone={milestone}
+            activeRoute={activeRoute}
+            mobile
+            key={milestone.id}
+          />
+        ))}
+      </div>
+    </div>
+  )
+})
+
 export default function RoadmapView() {
   const {
     journeyRef,
@@ -735,34 +816,7 @@ export default function RoadmapView() {
           ))}
         </div>
 
-        <div className="rm2-mobile-journey">
-          <header>
-            <span>CUBE / ROADMAP</span>
-            <div className="rm2-display-title" aria-hidden="true">
-              NGA IDEJA
-              <em>TE SIGNALI.</em>
-            </div>
-            <p>
-              90 ditë. Katër routes. Një sistem i lidhur dhe gati për treg.
-            </p>
-          </header>
-          <RouteFilters
-            className="rm2-mobile-filters"
-            activeRoute={activeRoute}
-            onChange={setActiveRoute}
-          />
-          <div className="rm2-mobile-line" aria-hidden="true" />
-          <div className="rm2-mobile-cards">
-            {milestones.map((milestone) => (
-              <PhaseDetails
-                milestone={milestone}
-                activeRoute={activeRoute}
-                mobile
-                key={milestone.id}
-              />
-            ))}
-          </div>
-        </div>
+        <MobileJourney activeRoute={activeRoute} onRouteChange={setActiveRoute} />
       </section>
 
       <section className="rm2-system-reveal">

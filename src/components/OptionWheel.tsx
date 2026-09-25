@@ -83,6 +83,9 @@ const OptionWheel = ({
 }: OptionWheelProps) => {
   const rootRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+  // Last values written per option, so each frame only touches styles that
+  // actually changed (every write invalidates style for that element).
+  const writtenRef = useRef<Array<Record<string, string>>>([]);
   const posRef = useRef(defaultSelected);
   const targetRef = useRef(defaultSelected);
   const rafRef = useRef<number | null>(null);
@@ -99,7 +102,10 @@ const OptionWheel = ({
   const [selectedIndex, setSelectedIndex] = useState(defaultSelected);
   const [isDragging, setIsDragging] = useState(false);
 
-  const remPx = typeof window !== 'undefined' ? parseFloat(getComputedStyle(document.documentElement).fontSize) || 16 : 16;
+  // Read once: getComputedStyle on every render forces a style recalculation.
+  const [remPx] = useState(() =>
+    typeof window !== 'undefined' ? parseFloat(getComputedStyle(document.documentElement).fontSize) || 16 : 16
+  );
 
   onChangeRef.current = onChange;
   cfgRef.current = {
@@ -161,14 +167,23 @@ const OptionWheel = ({
         x = -mirror * R * (1 - Math.cos(ang)) * cfg.curve;
         rot = (mirror * ang * 180) / Math.PI;
       }
-      el.style.transform = `translate(${x.toFixed(2)}px, calc(${y.toFixed(2)}px - 50%)) rotate(${rot.toFixed(3)}deg)`;
-      el.style.opacity = String(Math.max(cfg.minOpacity, 1 - dist * cfg.fade));
-      el.style.filter = cfg.blur > 0 ? `blur(${(dist * cfg.blur).toFixed(2)}px)` : 'none';
-      el.style.setProperty('--ow-p', Math.max(0, 1 - Math.min(dist, 1)).toFixed(4));
+      const opacity = Math.max(cfg.minOpacity, 1 - dist * cfg.fade);
+      const written = (writtenRef.current[i] ??= {});
+      const write = (prop: string, value: string) => {
+        if (written[prop] === value) return;
+        written[prop] = value;
+        el.style.setProperty(prop, value);
+      };
+      write('opacity', opacity.toFixed(3));
+      // Fully faded options keep their last position; moving them is invisible work.
+      if (opacity <= 0) continue;
+      write('transform', `translate(${x.toFixed(1)}px, calc(${y.toFixed(1)}px - 50%)) rotate(${rot.toFixed(2)}deg)`);
+      write('filter', cfg.blur > 0 ? `blur(${(dist * cfg.blur).toFixed(2)}px)` : 'none');
+      write('--ow-p', Math.max(0, 1 - Math.min(dist, 1)).toFixed(3));
       // Transforms create a stacking context for every option. Keep the
       // centered option above its neighbors instead of relying on DOM order,
       // which can make later labels look like they pass over the active one.
-      el.style.zIndex = String(Math.max(1, 1000 - Math.round(dist * 100)));
+      write('z-index', String(Math.max(1, 1000 - Math.round(dist * 100))));
     }
 
     rafRef.current = settled ? null : requestAnimationFrame(runFrame);
@@ -342,11 +357,12 @@ const OptionWheel = ({
         <div
           key={`${label}-${index}`}
           ref={el => {
+            if (itemRefs.current[index] !== el) writtenRef.current[index] = {};
             itemRefs.current[index] = el;
           }}
           role="option"
           aria-selected={selectedIndex === index}
-          className={`absolute top-1/2 cursor-pointer whitespace-nowrap py-2 pr-3 leading-none will-change-[transform,opacity,filter] [font-size:var(--ow-font-size)] [color:color-mix(in_srgb,var(--ow-active-color)_calc(var(--ow-p,0)*100%),var(--ow-text-color))] ${
+          className={`absolute top-1/2 cursor-pointer whitespace-nowrap py-2 pr-3 leading-none will-change-[transform,opacity] [font-size:var(--ow-font-size)] [color:color-mix(in_srgb,var(--ow-active-color)_calc(var(--ow-p,0)*100%),var(--ow-text-color))] ${
             side === 'right' ? 'right-[var(--ow-inset)] origin-right' : 'left-[var(--ow-inset)] origin-left'
           } ${selectedIndex === index ? 'font-medium' : 'font-extralight'}`}
           onClick={() => handleItemClick(index)}

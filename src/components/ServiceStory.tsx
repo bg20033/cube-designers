@@ -59,6 +59,13 @@ const toneColors: Record<
 
 const scrollStepSvh = 24
 
+// Blur during card swaps is a per-frame filter on a large layer; phones get the
+// same motion without it.
+function withoutFilter<T extends { filter: string }>(variant: T) {
+  const { filter: _filter, ...rest } = variant
+  return rest
+}
+
 const cardMotionVariants = {
   enter: (direction: number) => ({
     opacity: 0,
@@ -104,6 +111,24 @@ export default function ServiceStory({
     until: 0,
   })
   const [activeIndex, setActiveIndex] = useState(0)
+  const [lightMotion] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia("(pointer: coarse), (max-width: 820px)").matches,
+  )
+  const variants = useMemo(
+    () =>
+      lightMotion
+        ? {
+            enter: (direction: number) =>
+              withoutFilter(cardMotionVariants.enter(direction)),
+            active: withoutFilter(cardMotionVariants.active),
+            exit: (direction: number) =>
+              withoutFilter(cardMotionVariants.exit(direction)),
+          }
+        : cardMotionVariants,
+    [lightMotion],
+  )
   const previousIndexRef = useRef(activeIndex)
   const cardDirection =
     activeIndex >= previousIndexRef.current ? 1 : -1
@@ -159,13 +184,25 @@ export default function ServiceStory({
 
   useEffect(() => {
     let frame = 0
+    // Section geometry is measured only when layout changes. Reading
+    // getBoundingClientRect on every scroll frame forced a synchronous
+    // style + layout pass right after the wheel had written new styles.
+    const geometry = { top: 0, height: 0, viewport: window.innerHeight }
+
+    const measure = () => {
+      const section = sectionRef.current
+      if (!section) return
+      geometry.top = section.getBoundingClientRect().top + window.scrollY
+      geometry.height = section.offsetHeight
+      geometry.viewport = window.innerHeight
+    }
 
     const updateFromScroll = () => {
       frame = 0
-      const section = sectionRef.current
-      if (!section) return
+      if (!sectionRef.current) return
 
-      const rect = section.getBoundingClientRect()
+      const rectTop = geometry.top - window.scrollY
+      const rect = { top: rectTop, bottom: rectTop + geometry.height }
       const sectionIsActive = rect.top <= 76 && rect.bottom > 76
 
       if (sectionActiveRef.current !== sectionIsActive) {
@@ -184,7 +221,7 @@ export default function ServiceStory({
         manualSelectionRef.current.active = false
       }
 
-      const travel = Math.max(section.offsetHeight - window.innerHeight, 1)
+      const travel = Math.max(geometry.height - geometry.viewport, 1)
       const progress = Math.min(Math.max(-rect.top / travel, 0), 1)
       const next = Math.min(
         entries.length - 1,
@@ -198,13 +235,23 @@ export default function ServiceStory({
       frame = requestAnimationFrame(updateFromScroll)
     }
 
+    const onLayoutChange = () => {
+      measure()
+      onScroll()
+    }
+    // Content above (images, fonts) can shift the section after mount.
+    const resizeObserver = new ResizeObserver(onLayoutChange)
+    resizeObserver.observe(document.documentElement)
+
+    measure()
     updateFromScroll()
     window.addEventListener("scroll", onScroll, { passive: true })
-    window.addEventListener("resize", onScroll)
+    window.addEventListener("resize", onLayoutChange)
 
     return () => {
+      resizeObserver.disconnect()
       window.removeEventListener("scroll", onScroll)
-      window.removeEventListener("resize", onScroll)
+      window.removeEventListener("resize", onLayoutChange)
       if (frame) cancelAnimationFrame(frame)
       if (sectionActiveRef.current) {
         sectionActiveRef.current = false
@@ -309,7 +356,7 @@ export default function ServiceStory({
                 className="story-card-shell"
                 key={`${activeGroup.id}-${activeIndex}`}
                 custom={cardDirection}
-                variants={cardMotionVariants}
+                variants={variants}
                 initial="enter"
                 animate="active"
                 exit="exit"
