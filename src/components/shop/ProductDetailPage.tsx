@@ -76,7 +76,7 @@ export function ProductDetail({ product }: { product: Product }) {
             </dl>
             <a
               className="shop-product-order"
-              href={`mailto:hello@kube.studio?subject=${orderSubject}&body=${orderBody}`}
+              href={`mailto:info@cube-designers.com?subject=${orderSubject}&body=${orderBody}`}
             >
               Kërko ofertë
               <ArrowRight aria-hidden="true" />

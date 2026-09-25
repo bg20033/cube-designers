@@ -8,9 +8,7 @@ const routes = [
   "/about",
   "/work",
   "/roadmap",
-  "/shop",
   "/start-project",
-  "/shop/business-cards",
 ]
 
 for (const route of routes) {

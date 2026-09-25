@@ -18,13 +18,14 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { useRoutePath } from "@/app/RouteContext"
+import { SHOP_ENABLED } from "@/app/routes"
 
 const headerTexts = ["CUBE DESIGNERS", "DESIGN", "PRINT", "DIGITAL"]
 
 const navItems = [
   { label: "Shërbimet", href: "/#services" },
   { label: "Puna", href: "/work", path: "/work" },
-  { label: "Shop", href: "/shop", path: "/shop" },
+  ...(SHOP_ENABLED ? [{ label: "Shop", href: "/shop", path: "/shop" }] : []),
   { label: "Rreth nesh", href: "/about", path: "/about" },
   { label: "Roadmap", href: "/roadmap", path: "/roadmap" },
 ]
@@ -168,7 +169,7 @@ export function ContactSection() {
       <div className="closing-info">
         <div>
           <span>Email</span>
-          <a href="mailto:hello@kube.studio">hello@kube.studio</a>
+          <a href="mailto:info@cube-designers.com">info@cube-designers.com</a>
         </div>
         <div>
           <span>Studio</span>

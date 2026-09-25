@@ -408,7 +408,7 @@ export default function ServiceStory({
                       className="modal-cta"
                       onClick={() => {
                         window.location.href =
-                          "mailto:hello@kube.studio?subject=Projekt i ri"
+                          "mailto:info@cube-designers.com?subject=Projekt i ri"
                       }}
                     >
                       Kërko ofertë

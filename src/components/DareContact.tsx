@@ -116,7 +116,7 @@ export default function DareContact() {
       `Emri: ${name}\nEmail: ${email}\n\n${message}`,
     )
 
-    window.location.href = `mailto:hello@kube.studio?subject=${subject}&body=${body}`
+    window.location.href = `mailto:info@cube-designers.com?subject=${subject}&body=${body}`
   }
 
   return (
@@ -157,8 +157,8 @@ export default function DareContact() {
             Plotëso brief-in
             <ArrowUpRight />
           </a>
-          <a href="mailto:hello@kube.studio">
-            hello@kube.studio
+          <a href="mailto:info@cube-designers.com">
+            info@cube-designers.com
             <ArrowUpRight />
           </a>
         </div>

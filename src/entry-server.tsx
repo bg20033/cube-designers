@@ -3,7 +3,13 @@ import { renderToString } from "react-dom/server"
 
 import { HomePage } from "@/App"
 import { RoutePathProvider } from "@/app/RouteContext"
-import { getRouteSeo, matchRoute, siteRoutes, type RouteSeo } from "@/app/routes"
+import {
+  getRouteSeo,
+  matchRoute,
+  SHOP_ENABLED,
+  siteRoutes,
+  type RouteSeo,
+} from "@/app/routes"
 import AboutPage from "@/components/AboutPage"
 import NotFoundPage from "@/components/NotFoundPage"
 import ProductDetailPage from "@/components/shop/ProductDetailPage"
@@ -103,7 +109,7 @@ function buildStructuredData(pathname: string, siteUrl: string): StructuredData[
       name: "CUBE DESIGNERS",
       url: normalizedSiteUrl,
       logo: `${normalizedSiteUrl}/favicon.svg`,
-      email: "hello@kube.studio",
+      email: "info@cube-designers.com",
       areaServed: {
         "@type": "Country",
         name: "Kosovo",
@@ -179,7 +185,7 @@ function buildStructuredData(pathname: string, siteUrl: string): StructuredData[
       description:
         "Studio kreative për branding, identitet vizual, dizajn grafik, print, packaging, web design dhe e-commerce.",
       url: `${normalizedSiteUrl}/about`,
-      email: "hello@kube.studio",
+      email: "info@cube-designers.com",
       address: {
         "@type": "PostalAddress",
         addressLocality: "Suharekë",
@@ -221,6 +227,6 @@ export function render(pathname: string, siteUrl: string): RenderedRoute {
 export function getPrerenderPaths() {
   return [
     ...siteRoutes.filter((route) => route.seo.sitemap).map((route) => route.path),
-    ...products.map((product) => `/shop/${product.id}`),
+    ...(SHOP_ENABLED ? products.map((product) => `/shop/${product.id}`) : []),
   ]
 }

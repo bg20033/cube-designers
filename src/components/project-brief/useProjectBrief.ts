@@ -41,7 +41,7 @@ export function serializeProjectBrief(brief: BriefData) {
 
 export function createProjectBriefMailto(brief: BriefData) {
   const subject = `Project brief — ${brief.company || brief.name}`
-  return `mailto:hello@kube.studio?subject=${encodeURIComponent(
+  return `mailto:info@cube-designers.com?subject=${encodeURIComponent(
     subject,
   )}&body=${encodeURIComponent(serializeProjectBrief(brief))}`
 }

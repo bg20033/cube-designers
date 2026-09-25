@@ -26,7 +26,10 @@ export type RouteMatch =
   | { key: Exclude<RouteKey, "product">; pathname: string; params: Record<string, never> }
   | { key: "product"; pathname: string; params: { slug: string } }
 
-export const siteRoutes: SiteRoute[] = [
+// Shop is hidden until launch: no nav link, no /shop routes, not prerendered.
+export const SHOP_ENABLED = false
+
+const allRoutes: SiteRoute[] = [
   {
     key: "home",
     path: "/",
@@ -107,6 +110,10 @@ export const siteRoutes: SiteRoute[] = [
   },
 ]
 
+export const siteRoutes = allRoutes.filter(
+  (route) => SHOP_ENABLED || route.key !== "shop",
+)
+
 export function normalizePathname(pathname: string) {
   const withoutQuery = pathname.split(/[?#]/, 1)[0] || "/"
   const normalized = withoutQuery.replace(/\/{2,}/g, "/").replace(/\/+$/, "")
@@ -122,7 +129,7 @@ export function matchRoute(pathname: string): RouteMatch | null {
   }
 
   const productMatch = normalized.match(/^\/shop\/([a-z0-9-]+)$/)
-  if (productMatch) {
+  if (SHOP_ENABLED && productMatch) {
     return {
       key: "product",
       pathname: normalized,

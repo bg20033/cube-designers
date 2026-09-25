@@ -4,6 +4,7 @@ import {
   getRouteSeo,
   matchRoute,
   normalizePathname,
+  SHOP_ENABLED,
   siteRoutes,
 } from "@/app/routes"
 
@@ -20,12 +21,20 @@ describe("site route manifest", () => {
     }
   })
 
-  it("matches product slugs and rejects unknown pages", () => {
-    expect(matchRoute("/shop/business-cards")).toEqual({
-      key: "product",
-      pathname: "/shop/business-cards",
-      params: { slug: "business-cards" },
-    })
+  it("matches product slugs only while the shop is enabled", () => {
+    expect(matchRoute("/shop/business-cards")).toEqual(
+      SHOP_ENABLED
+        ? {
+            key: "product",
+            pathname: "/shop/business-cards",
+            params: { slug: "business-cards" },
+          }
+        : null,
+    )
+    expect(matchRoute("/shop")?.key ?? null).toBe(SHOP_ENABLED ? "shop" : null)
+  })
+
+  it("rejects unknown pages", () => {
     expect(matchRoute("/nothing-here")).toBeNull()
   })
 })

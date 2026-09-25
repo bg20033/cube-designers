@@ -6,18 +6,15 @@ const root = process.cwd()
 const clientDirectory = path.join(root, "dist", "client")
 const serverEntry = path.join(root, ".prerender", "entry-server.mjs")
 const templatePath = path.join(clientDirectory, "index.html")
-const isProductionSeo = process.env.SEO_DEPLOYMENT === "production"
+// Vercel production deploys are indexable by default; previews stay noindex.
+const isProductionSeo =
+  process.env.SEO_DEPLOYMENT === "production" ||
+  process.env.VERCEL_ENV === "production"
 const configuredSiteUrl = process.env.PUBLIC_SITE_URL?.replace(/\/+$/, "")
-
-if (isProductionSeo && !configuredSiteUrl) {
-  throw new Error(
-    "PUBLIC_SITE_URL is required when SEO_DEPLOYMENT=production.",
-  )
-}
 
 const siteUrl =
   configuredSiteUrl ||
-  "https://kube-creative-studio.bbxh447.chatgpt.site"
+  "https://www.cube-designers.com"
 
 const template = await readFile(templatePath, "utf8")
 const { getPrerenderPaths, render } = await import(
@@ -32,7 +29,7 @@ const escapeAttribute = (value) =>
     .replaceAll(">", "&gt;")
 
 function createHead(seo, structuredData, status) {
-  const absoluteUrl = `${siteUrl}${seo.canonicalPath === "/" ? "" : seo.canonicalPath}`
+  const absoluteUrl = `${siteUrl}${seo.canonicalPath}`
   const absoluteImage = `${siteUrl}${seo.ogImage}`
   const robots = !isProductionSeo || !seo.index || status === 404
     ? "noindex,follow"
@@ -98,11 +95,12 @@ await writeFile(
   "utf8",
 )
 
+const lastModified = new Date().toISOString().slice(0, 10)
 const sitemapUrls = isProductionSeo
   ? routes
       .map((route) => {
-        const url = `${siteUrl}${route === "/" ? "" : route}`
-        return `  <url><loc>${url}</loc></url>`
+        const url = `${siteUrl}${route}`
+        return `  <url><loc>${url}</loc><lastmod>${lastModified}</lastmod></url>`
       })
       .join("\n")
   : ""

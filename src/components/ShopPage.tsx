@@ -537,7 +537,7 @@ export default function ShopPage() {
       `Shënime: ${customer.notes || "—"}`,
     ].join("\n")
 
-    return `mailto:hello@kube.studio?subject=${encodeURIComponent(
+    return `mailto:info@cube-designers.com?subject=${encodeURIComponent(
       `Porosi e re ${orderRef}`,
     )}&body=${encodeURIComponent(body)}`
   }, [cartDetails, customer, orderRef, subtotal])

@@ -38,7 +38,7 @@ describe("project brief model", () => {
 
     expect(serializeProjectBrief(brief)).toContain("Arta")
     expect(createProjectBriefMailto(brief)).toMatch(
-      /^mailto:hello@kube\.studio\?/,
+      /^mailto:info@cube-designers\.com\?/,
     )
   })
 })
