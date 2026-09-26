@@ -2,6 +2,7 @@ import type { ReactNode } from "react"
 import { renderToString } from "react-dom/server"
 
 import { HomePage } from "@/App"
+import { socialProfiles } from "@/data/site"
 import { faqs as homeFaqs } from "@/components/GrowthSections"
 import { RoutePathProvider } from "@/app/RouteContext"
 import {
@@ -165,6 +166,7 @@ function buildStructuredData(pathname: string, siteUrl: string): StructuredData[
         { "@type": "Country", name: "Kosovo" },
       ],
       knowsAbout: services.map((service) => service.name),
+      sameAs: socialProfiles.map((profile) => profile.href),
     },
   ]
 
@@ -324,6 +326,8 @@ export function getLlmsTxt(siteUrl: string) {
     "# CUBE DESIGNERS",
     "",
     "> Agjenci kreative në Suharekë, Kosovë (Rruga Xhavit Sylaj 59, 23000 Suharekë). Branding dhe dizajn logo, printim (kartvizita, fletushka, roll-up, banera, stickers, tekstil, sinjalistikë, paketim), web design, dyqane online, SEO dhe menaxhim i rrjeteve sociale për biznese në Suharekë, Prishtinë dhe gjithë Kosovën. Kontakt: info@cube-designers.com",
+    "",
+    ...socialProfiles.map((profile) => `- ${profile.label}: ${profile.href}`),
     "",
     "## Faqet kryesore",
     "",

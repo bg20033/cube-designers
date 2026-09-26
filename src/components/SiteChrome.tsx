@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/sheet"
 import { useRoutePath } from "@/app/RouteContext"
 import { SHOP_ENABLED } from "@/app/routes"
+import { socialProfiles } from "@/data/site"
 import {
   getServicesByCategory,
   serviceCategories,
@@ -186,7 +187,16 @@ export function ContactSection() {
         </div>
         <div>
           <span>Social</span>
-          <p>Instagram · Behance · LinkedIn</p>
+          <p>
+            {socialProfiles.map((profile, index) => (
+              <span key={profile.href}>
+                {index > 0 && " · "}
+                <a href={profile.href} target="_blank" rel="noopener">
+                  {profile.label}
+                </a>
+              </span>
+            ))}
+          </p>
         </div>
       </div>
     </section>
@@ -220,6 +230,15 @@ export function SiteFooter() {
             23000 Suharekë, Kosovë
           </p>
           <a href="mailto:info@cube-designers.com">info@cube-designers.com</a>
+          <ul>
+            {socialProfiles.map((profile) => (
+              <li key={profile.href}>
+                <a href={profile.href} target="_blank" rel="noopener">
+                  {profile.label}
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
       </nav>
       <footer className="agency-footer">
