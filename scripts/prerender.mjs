@@ -17,7 +17,7 @@ const siteUrl =
   "https://www.cube-designers.com"
 
 const template = await readFile(templatePath, "utf8")
-const { getPrerenderPaths, render } = await import(
+const { getLlmsTxt, getPrerenderPaths, render } = await import(
   `${pathToFileURL(serverEntry).href}?v=${Date.now()}`
 )
 
@@ -118,5 +118,7 @@ await writeFile(
     : "User-agent: *\nDisallow: /\n",
   "utf8",
 )
+
+await writeFile(path.join(clientDirectory, "llms.txt"), getLlmsTxt(siteUrl), "utf8")
 
 await rm(path.join(root, ".prerender"), { recursive: true, force: true })

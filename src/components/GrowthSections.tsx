@@ -8,6 +8,11 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import {
+  getServicesByCategory,
+  serviceCategories,
+  type ServiceCategory,
+} from "@/data/services"
 
 const collaborationPoints = [
   {
@@ -27,7 +32,7 @@ const collaborationPoints = [
   },
 ]
 
-const faqs = [
+export const faqs = [
   {
     question: "A punoni vetëm me paketa të plota?",
     answer:
@@ -130,12 +135,52 @@ export function CollaborationProof() {
   )
 }
 
+const directoryOrder: ServiceCategory[] = ["print", "branding", "digital", "social"]
+
+// Crawlable links from the home page to every service landing page.
+export function ServicesDirectory() {
+  return (
+    <section className="services-directory" aria-labelledby="services-directory-title">
+      <header>
+        <span>06 / Shërbimet</span>
+        <h2 id="services-directory-title">
+          Print, dizajn & marketing
+          <em>në Suharekë dhe gjithë Kosovën.</em>
+        </h2>
+        <p>
+          CUBE DESIGNERS është agjenci kreative në Suharekë. Dizajnojmë logo dhe
+          identitet vizual, printojmë kartvizita, fletushka, roll-up e banera,
+          ndërtojmë faqe interneti dhe dyqane online, dhe menaxhojmë rrjetet
+          sociale për biznese në Suharekë, Prishtinë dhe në gjithë Kosovën.
+        </p>
+      </header>
+      <div className="services-directory__grid">
+        {directoryOrder.map((key) => (
+          <div key={key}>
+            <a className="services-directory__title" href={`/sherbime#${key}`}>
+              {serviceCategories[key].label}
+              <ArrowRight aria-hidden="true" />
+            </a>
+            <ul>
+              {getServicesByCategory(key).map((service) => (
+                <li key={service.slug}>
+                  <a href={`/sherbime/${service.slug}`}>{service.name}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
 export function FaqSection() {
   return (
     <section className="studio-faq">
       <header>
         <div>
-          <span>06 / FAQ</span>
+          <span>07 / FAQ</span>
           <h2>PARA SE<br />TË FILLOJMË.</h2>
         </div>
         <a href="/start-project">
@@ -151,7 +196,8 @@ export function FaqSection() {
               <span>{String(index + 1).padStart(2, "0")}</span>
               <strong>{faq.question}</strong>
             </AccordionTrigger>
-            <AccordionContent className="studio-faq-content">
+            {/* hiddenUntilFound keeps closed answers in the HTML for search engines. */}
+            <AccordionContent className="studio-faq-content" hiddenUntilFound>
               <p>{faq.answer}</p>
             </AccordionContent>
           </AccordionItem>

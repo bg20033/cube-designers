@@ -2470,10 +2470,7 @@ html[data-intro-seen="true"] .lanyard-intro {
   pointer-events: none;
 }
 
-.danger-switch:focus-within {
-  outline: 3px solid var(--orange);
-  outline-offset: 8px;
-}
+
 
 .danger-switch__button {
   position: relative;

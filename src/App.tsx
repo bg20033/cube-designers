@@ -5,6 +5,7 @@ import {
   CollaborationProof,
   FaqSection,
   FeaturedWork,
+  ServicesDirectory,
 } from "@/components/GrowthSections"
 import ScrollFloat from "@/components/ScrollFloat"
 import ServiceStory, {
@@ -350,6 +351,9 @@ export function HomePage({ effectsEnabled = true }: { effectsEnabled?: boolean }
 
           <div className="blast-copy">
             <h1>
+              <small className="hero-kicker">
+                Agjenci kreative në Suharekë · Branding, print & marketing digjital
+              </small>
               DESIGN.
               <span>PRINT.</span>
               <em>DIGITAL.</em>
@@ -428,6 +432,7 @@ export function HomePage({ effectsEnabled = true }: { effectsEnabled?: boolean }
 
         <FeaturedWork />
         <CollaborationProof />
+        <ServicesDirectory />
         <FaqSection />
         <DareContact />
       </main>

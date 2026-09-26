@@ -154,7 +154,7 @@ export default function DareContact() {
       aria-labelledby="dare-contact-title"
     >
       <header className="dare-contact__heading">
-        <span>07 / Contact-o-matic</span>
+        <span>08 / Contact-o-matic</span>
         <h2 id="dare-contact-title">A guxon me prek?</h2>
         <p>
           Një klikim, një fletë dhe një rrugë e drejtpërdrejtë te ekipi që e

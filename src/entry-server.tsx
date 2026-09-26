@@ -2,6 +2,7 @@ import type { ReactNode } from "react"
 import { renderToString } from "react-dom/server"
 
 import { HomePage } from "@/App"
+import { faqs as homeFaqs } from "@/components/GrowthSections"
 import { RoutePathProvider } from "@/app/RouteContext"
 import {
   getRouteSeo,
@@ -167,7 +168,20 @@ function buildStructuredData(pathname: string, siteUrl: string): StructuredData[
     },
   ]
 
-  if (!route || route.key === "home") return data
+  if (route?.key === "home") {
+    data.push({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: homeFaqs.map((faq) => ({
+        "@type": "Question",
+        name: faq.question,
+        acceptedAnswer: { "@type": "Answer", text: faq.answer },
+      })),
+    })
+    return data
+  }
+
+  if (!route) return data
 
   const breadcrumbLabel =
     route.key === "product"
@@ -300,6 +314,34 @@ export function render(pathname: string, siteUrl: string): RenderedRoute {
     structuredData: buildStructuredData(pathname, siteUrl),
     status: rendered.status,
   }
+}
+
+// /llms.txt: a plain-language map of the site for AI assistants and answer
+// engines (llmstxt.org). Generated from the same data as the pages.
+export function getLlmsTxt(siteUrl: string) {
+  const base = siteUrl.replace(/\/+$/, "")
+  const lines = [
+    "# CUBE DESIGNERS",
+    "",
+    "> Agjenci kreative në Suharekë, Kosovë (Rruga Xhavit Sylaj 59, 23000 Suharekë). Branding dhe dizajn logo, printim (kartvizita, fletushka, roll-up, banera, stickers, tekstil, sinjalistikë, paketim), web design, dyqane online, SEO dhe menaxhim i rrjeteve sociale për biznese në Suharekë, Prishtinë dhe gjithë Kosovën. Kontakt: info@cube-designers.com",
+    "",
+    "## Faqet kryesore",
+    "",
+    `- [Ballina](${base}/): Prezantimi i studios dhe shërbimeve`,
+    `- [Shërbimet](${base}/sherbime): Katalogu i plotë i shërbimeve`,
+    `- [Projektet](${base}/work): Punë të zgjedhura`,
+    `- [Rreth nesh](${base}/about): Kush jemi dhe ku ndodhemi`,
+    `- [Fillo një projekt](${base}/start-project): Formulari për ofertë`,
+  ]
+
+  for (const [key, category] of Object.entries(serviceCategories)) {
+    lines.push("", `## ${category.label}`, "")
+    for (const service of services.filter((item) => item.category === key)) {
+      lines.push(`- [${service.name}](${base}/sherbime/${service.slug}): ${service.description}`)
+    }
+  }
+
+  return `${lines.join("\n")}\n`
 }
 
 export function getPrerenderPaths() {
