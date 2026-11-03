@@ -487,6 +487,48 @@
   white-space: pre-wrap;
 }
 
+.admin-photo-thumb {
+  float: left;
+  width: 42px;
+  margin-right: 10px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 20%);
+}
+
+.admin-print {
+  display: grid;
+  gap: 0.5rem;
+  justify-items: start;
+}
+
+.admin-print span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.admin-print span svg {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.admin-print p {
+  margin: 0;
+  padding: 0;
+  background: none;
+}
+
+.admin-print code {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.8rem 1rem;
+  border-radius: 10px;
+  background: var(--admin-bg);
+  font-size: 0.8rem;
+  overflow-wrap: anywhere;
+}
+
 .admin-detail > .admin-button,
 .admin-inline-actions {
   justify-self: start;
@@ -747,3 +789,26 @@
     grid-column: 1 / -1;
   }
 }
+
+.admin-product-variants { display: grid; gap: 15px; padding: 18px; border: 1px solid #38383c; border-radius: 10px; }
+.admin-product-variants > legend { padding: 0 8px; }
+.admin-product-variants > p { font-size: 12px; color: #aaa; line-height: 1.7; }
+.admin-variant-row { display: grid; grid-template-columns: 1fr 1.5fr 1fr 32px; align-items: end; gap: 12px; }
+.admin-variant-row > label { min-width: 0; }
+@media (max-width:600px) { .admin-variant-row { grid-template-columns: 1fr 1fr; } }
+.admin-invitation-actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 24px 0; }
+
+.admin-invitation-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 24px; }
+.admin-invitation-tabs .admin-button[aria-pressed="true"] { background: #161616; border-color: #161616; color: #fff; }
+.admin-access-card { margin: 0 0 28px; padding: 24px; border: 1px solid #b9cbbd; border-radius: 10px; background: #f4f8f5; }
+.admin-access-head { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.admin-access-head h2 { margin: 0; font-size: 21px; }
+.admin-access-card > p, .admin-invitation-create > p { font-size: 13px; line-height: 1.7; color: #555; }
+.admin-access-card .admin-fields dd { overflow-wrap: anywhere; }
+.admin-access-card .admin-fields input { width: 100%; min-width: 0; font-family: monospace; }
+.admin-invitation-create { padding-block: 24px; margin-block: 20px; border-block: 1px solid #e5e5e5; }
+.admin-invitation-create h3 { margin: 0; font-size: 18px; }
+.admin-invitation-create .admin-invitation-check { display: flex; align-items: start; gap: 10px; }
+.admin-invitation-check > input { flex-shrink: 0; width: 18px; height: 18px; margin: 0; }
+.admin-invitation-check > span { font-weight: 500; line-height: 1.6; }
+@media (max-width: 600px) { .admin-access-card { padding: 18px; } }

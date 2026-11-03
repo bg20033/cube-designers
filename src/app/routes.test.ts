@@ -10,7 +10,7 @@ import {
 
 describe("site route manifest", () => {
   it("normalizes trailing slashes and query strings", () => {
-    expect(normalizePathname("/roadmap/?phase=2")).toBe("/roadmap")
+    expect(normalizePathname("/about/?section=2")).toBe("/about")
     expect(normalizePathname("///shop//")).toBe("/shop")
   })
 

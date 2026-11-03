@@ -10,7 +10,7 @@ import { ArrowRight, ArrowUpRight, Check, MoveDown } from "lucide-react"
 import { AnimatePresence, motion, MotionConfig } from "motion/react"
 
 import OptionWheel from "@/components/OptionWheel"
-import { ResponsiveImage } from "@/components/ResponsiveImage"
+import { getPortfolioImage, ResponsiveImage } from "@/components/ResponsiveImage"
 import wheelSound from "@/assets/2222.wav"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -57,15 +57,10 @@ const toneColors: Record<
   violet: { backgroundColor: "#6d52ff", color: "#ffffff" },
 }
 
-const scrollStepSvh = 24
+const scrollStepSvh = 17
 
-// Blur during card swaps is a per-frame filter on a large layer; phones get the
-// same motion without it.
-function withoutFilter<T extends { filter: string }>(variant: T) {
-  const { filter: _filter, ...rest } = variant
-  return rest
-}
-
+// Card swaps animate only opacity and transform: a blur filter on this large
+// image layer cost a full repaint every frame.
 const cardMotionVariants = {
   enter: (direction: number) => ({
     opacity: 0,
@@ -73,7 +68,6 @@ const cardMotionVariants = {
     y: 12,
     rotateZ: direction < 0 ? -0.7 : 0.7,
     scale: 0.985,
-    filter: "blur(5px)",
   }),
   active: {
     opacity: 1,
@@ -81,7 +75,6 @@ const cardMotionVariants = {
     y: 0,
     rotateZ: 0,
     scale: 1,
-    filter: "blur(0px)",
   },
   exit: (direction: number) => ({
     opacity: 0,
@@ -89,7 +82,6 @@ const cardMotionVariants = {
     y: -8,
     rotateZ: direction < 0 ? 0.45 : -0.45,
     scale: 0.992,
-    filter: "blur(3px)",
   }),
 }
 
@@ -111,24 +103,7 @@ export default function ServiceStory({
     until: 0,
   })
   const [activeIndex, setActiveIndex] = useState(0)
-  const [lightMotion] = useState(
-    () =>
-      typeof window !== "undefined" &&
-      window.matchMedia("(pointer: coarse), (max-width: 820px)").matches,
-  )
-  const variants = useMemo(
-    () =>
-      lightMotion
-        ? {
-            enter: (direction: number) =>
-              withoutFilter(cardMotionVariants.enter(direction)),
-            active: withoutFilter(cardMotionVariants.active),
-            exit: (direction: number) =>
-              withoutFilter(cardMotionVariants.exit(direction)),
-          }
-        : cardMotionVariants,
-    [lightMotion],
-  )
+  const variants = cardMotionVariants
   const previousIndexRef = useRef(activeIndex)
   const cardDirection =
     activeIndex >= previousIndexRef.current ? 1 : -1
@@ -158,7 +133,17 @@ export default function ServiceStory({
 
   useEffect(() => {
     previousIndexRef.current = activeIndex
-  }, [activeIndex])
+    // Warm the next and previous card images so a swap never waits on the network.
+    for (const index of [activeIndex + 1, activeIndex - 1]) {
+      const entry = entries[index]
+      if (!entry) continue
+      const image = typeof entry.item.image === "string" ? getPortfolioImage(entry.item.image) : entry.item.image
+      const preload = new Image()
+      preload.decoding = "async"
+      preload.sizes = "(max-width: 820px) 100vw, 56vw"
+      preload.srcset = image.variants.map((variant) => `${variant.src} ${variant.width}w`).join(", ")
+    }
+  }, [activeIndex, entries])
 
   const handleCardPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (event.pointerType === "touch") return
@@ -267,7 +252,7 @@ export default function ServiceStory({
         className={`service-story story-${activeGroup.tone}`}
         id={id}
         animate={toneColors[activeGroup.tone]}
-        transition={{ duration: 1.05, ease: [0.4, 0, 0.2, 1] }}
+        transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
         style={
           {
             "--story-count": entries.length,
@@ -326,7 +311,7 @@ export default function ServiceStory({
               fade={0.25}
               minOpacity={0}
               inset={64}
-              smoothing={105}
+              smoothing={85}
               draggable
             />
           </div>
@@ -361,7 +346,7 @@ export default function ServiceStory({
                 animate="active"
                 exit="exit"
                 transition={{
-                  duration: 0.46,
+                  duration: 0.34,
                   ease: [0.22, 1, 0.36, 1],
                 }}
                 onPointerMove={handleCardPointerMove}
@@ -381,6 +366,7 @@ export default function ServiceStory({
                 image={activeItem.image}
                 alt=""
                 sizes="(max-width: 820px) 100vw, 56vw"
+                loading="eager"
               />
               <div className="visual-grid" />
               <span className="visual-index">

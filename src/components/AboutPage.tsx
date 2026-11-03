@@ -6,7 +6,6 @@ import {
   ScanLine,
   Sparkles,
 } from "lucide-react"
-import { motion } from "motion/react"
 
 import {
   ContactSection,
@@ -14,27 +13,13 @@ import {
   SiteHeader,
   SiteNoise,
 } from "@/components/SiteChrome"
+import {
+  getServicesByCategory,
+  serviceCategories,
+  type ServiceCategory,
+} from "@/data/services"
 
-const disciplines = [
-  {
-    number: "01",
-    title: "Design",
-    detail: "Identitet, sisteme vizuale, packaging dhe creative direction.",
-    href: "/#design",
-  },
-  {
-    number: "02",
-    title: "Print",
-    detail: "Nga artwork-u dhe materiali deri te prodhimi final.",
-    href: "/#print",
-  },
-  {
-    number: "03",
-    title: "Digital",
-    detail: "Web, content dhe kampanja që e çojnë brandin përpara.",
-    href: "/#digital",
-  },
-]
+const serviceOrder: ServiceCategory[] = ["print", "branding", "digital", "social"]
 
 const process = [
   {
@@ -78,29 +63,16 @@ export default function AboutPage() {
             <span className="about-shape-orange" />
           </div>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 28 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          >
+          <h1 className="hero-rise">
             <span className="about-poster-cube">CUBE</span>
             <span className="about-poster-designers">DESIGNERS</span>
-          </motion.h1>
+          </h1>
 
-          <motion.div
-            className="about-poster-disciplines"
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              delay: 0.18,
-              duration: 0.55,
-              ease: [0.22, 1, 0.36, 1],
-            }}
-          >
+          <div className="about-poster-disciplines hero-rise hero-rise-late">
             <span>DESIGN.</span>
             <span>PRINT.</span>
             <span>DIGITAL.</span>
-          </motion.div>
+          </div>
 
           <div className="about-poster-meta">
             <span>K/03 · Independent creative studio</span>
@@ -162,24 +134,39 @@ export default function AboutPage() {
           </article>
         </section>
 
-        <section className="about-disciplines">
+        <section className="about-disciplines about-services" id="sherbimet" aria-labelledby="about-services-title">
           <header>
             <div className="about-section-label">
               <span>02</span>
-              Një studio · tri disiplina
+              Shërbimet · katër fusha
             </div>
-            <h2>FROM IDEA<br />TO IMPACT.</h2>
+            <h2 id="about-services-title">FROM IDEA<br />TO IMPACT.</h2>
           </header>
 
-          <div className="about-discipline-list">
-            {disciplines.map((discipline) => (
-              <a href={discipline.href} key={discipline.number}>
-                <span>{discipline.number}</span>
-                <strong>{discipline.title}</strong>
-                <p>{discipline.detail}</p>
-                <ArrowUpRight />
-              </a>
-            ))}
+          <div className="about-service-groups">
+            {serviceOrder.map((key, index) => {
+              const services = getServicesByCategory(key)
+              return (
+                <section className="about-service-group" id={key} key={key} aria-labelledby={`about-services-${key}`}>
+                  <div className="about-service-head">
+                    <span>{String(index + 1).padStart(2, "0")}</span>
+                    <h3 id={`about-services-${key}`}>{serviceCategories[key].label}</h3>
+                    <em>{services.length}</em>
+                  </div>
+                  <p>{serviceCategories[key].intro}</p>
+                  <ul>
+                    {services.map((service) => (
+                      <li key={service.slug}>
+                        <a href={`/sherbime/${service.slug}`}>
+                          {service.name}
+                          <ArrowUpRight aria-hidden="true" />
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              )
+            })}
           </div>
         </section>
 

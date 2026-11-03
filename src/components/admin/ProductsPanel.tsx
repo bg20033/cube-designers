@@ -1,12 +1,17 @@
 import { useEffect, useState, type FormEvent } from "react"
-import { Download, Pencil, Plus, Trash2, X } from "lucide-react"
+import { Download, Pencil, Plus, RefreshCw, Trash2, X } from "lucide-react"
 
 import { apiRequest } from "@/lib/api"
 import { ResponsiveImage, portfolioImages } from "@/components/ResponsiveImage"
-import { products as staticProducts, type Product } from "@/data/products"
+import {
+  productCategories,
+  products as staticProducts,
+  type Product,
+  type ProductVariant,
+} from "@/data/products"
 import { currency, type StoredProduct } from "@/components/admin/types"
 
-const categories: Product["category"][] = ["Print", "Promo", "Textile", "Packaging", "Signage"]
+const categories = productCategories
 const tones: Product["tone"][] = ["orange", "violet", "acid", "paper"]
 const speeds: Product["production"][] = ["Fast", "Standard", "Custom"]
 const badges = ["", "Bestseller", "New", "Eco"] as const
@@ -60,27 +65,65 @@ function ProductForm({
   const product = value.product
 
   function update<Key extends keyof Product>(key: Key, next: Product[Key]) {
-    setValue((current) => ({ ...current, product: { ...current.product, [key]: next } }))
+    setValue((current) => ({
+      ...current,
+      product: { ...current.product, [key]: next },
+    }))
+  }
+
+  function updateVariant(index: number, changes: Partial<ProductVariant>) {
+    setValue((current) => {
+      const previous = current.product.variants?.[index]
+      return {
+        ...current,
+        product: {
+          ...current.product,
+          variants: current.product.variants?.map((item, i) =>
+            i === index ? { ...item, ...changes } : item,
+          ),
+          defaultVariantId:
+            changes.id !== undefined &&
+            previous?.id === current.product.defaultVariantId
+              ? changes.id
+              : current.product.defaultVariantId,
+        },
+      }
+    })
   }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setBusy(true)
-    const result = await apiRequest<{ products: StoredProduct[] }>("/api/admin/products", {
-      method: "POST",
-      body: value,
-    })
+    const result = await apiRequest<{ products: StoredProduct[] }>(
+      "/api/admin/products",
+      {
+        method: "POST",
+        body: value,
+      },
+    )
     setBusy(false)
     if (!result.ok) return setError(result.error)
     onSaved(result.data.products)
   }
 
   return (
-    <div className="admin-modal" role="dialog" aria-modal="true" aria-labelledby="product-form-title">
+    <div
+      className="admin-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="product-form-title"
+    >
       <form className="admin-modal-card" onSubmit={submit}>
         <header>
-          <h2 id="product-form-title">{isNew ? "Produkt i ri" : product.name}</h2>
-          <button type="button" className="admin-icon-button" onClick={onClose} aria-label="Mbylle">
+          <h2 id="product-form-title">
+            {isNew ? "Produkt i ri" : product.name}
+          </h2>
+          <button
+            type="button"
+            className="admin-icon-button"
+            onClick={onClose}
+            aria-label="Mbylle"
+          >
             <X />
           </button>
         </header>
@@ -108,15 +151,22 @@ function ProductForm({
           </label>
           <label>
             <span>Numri</span>
-            <input value={product.number} onChange={(event) => update("number", event.target.value)} />
+            <input
+              value={product.number}
+              onChange={(event) => update("number", event.target.value)}
+            />
           </label>
           <label>
             <span>Kategoria</span>
             <select
               value={product.category}
-              onChange={(event) => update("category", event.target.value as Product["category"])}
+              onChange={(event) =>
+                update("category", event.target.value as Product["category"])
+              }
             >
-              {categories.map((item) => <option key={item}>{item}</option>)}
+              {categories.map((item) => (
+                <option key={item}>{item}</option>
+              ))}
             </select>
           </label>
           <label>
@@ -151,18 +201,29 @@ function ProductForm({
             <span>Prodhimi</span>
             <select
               value={product.production}
-              onChange={(event) => update("production", event.target.value as Product["production"])}
+              onChange={(event) =>
+                update(
+                  "production",
+                  event.target.value as Product["production"],
+                )
+              }
             >
-              {speeds.map((item) => <option key={item}>{item}</option>)}
+              {speeds.map((item) => (
+                <option key={item}>{item}</option>
+              ))}
             </select>
           </label>
           <label>
             <span>Ngjyra e kartës</span>
             <select
               value={product.tone}
-              onChange={(event) => update("tone", event.target.value as Product["tone"])}
+              onChange={(event) =>
+                update("tone", event.target.value as Product["tone"])
+              }
             >
-              {tones.map((item) => <option key={item}>{item}</option>)}
+              {tones.map((item) => (
+                <option key={item}>{item}</option>
+              ))}
             </select>
           </label>
           <label>
@@ -170,11 +231,28 @@ function ProductForm({
             <select
               value={product.badge ?? ""}
               onChange={(event) =>
-                update("badge", (event.target.value || undefined) as Product["badge"])
+                update(
+                  "badge",
+                  (event.target.value || undefined) as Product["badge"],
+                )
               }
             >
-              {badges.map((item) => <option key={item} value={item}>{item || "—"}</option>)}
+              {badges.map((item) => (
+                <option key={item} value={item}>
+                  {item || "—"}
+                </option>
+              ))}
             </select>
+          </label>
+          <label>
+            <span>Seria (p.sh. Film / Art)</span>
+            <input
+              value={product.series ?? ""}
+              maxLength={40}
+              onChange={(event) =>
+                update("series", event.target.value || undefined)
+              }
+            />
           </label>
           <label className="is-wide">
             <span>Përshkrimi *</span>
@@ -191,10 +269,14 @@ function ProductForm({
               list="admin-image-keys"
               placeholder="shop-business-cards ose https://…"
               value={product.image ?? ""}
-              onChange={(event) => update("image", event.target.value || undefined)}
+              onChange={(event) =>
+                update("image", event.target.value || undefined)
+              }
             />
             <datalist id="admin-image-keys">
-              {imageKeys.map((key) => <option key={key} value={key} />)}
+              {imageKeys.map((key) => (
+                <option key={key} value={key} />
+              ))}
             </datalist>
           </label>
           {product.image && (
@@ -202,13 +284,129 @@ function ProductForm({
               <ResponsiveImage image={product.image} alt="" sizes="200px" />
             </div>
           )}
+          <fieldset className="admin-product-variants is-wide">
+            <legend>Opsionet e produktit</legend>
+            <p>
+              Madhësi maicash ose formate posterash. Çmimi bosh përdor çmimin
+              bazë.
+            </p>
+            <label>
+              <span>Etiketa (p.sh. Madhësia / Formati)</span>
+              <input
+                value={product.variantLabel ?? ""}
+                maxLength={40}
+                onChange={(event) =>
+                  update("variantLabel", event.target.value || undefined)
+                }
+              />
+            </label>
+            {(product.variants ?? []).map((variant, index) => (
+              <div className="admin-variant-row" key={index}>
+                <label>
+                  <span>ID</span>
+                  <input
+                    required
+                    value={variant.id}
+                    pattern="[a-z0-9-]+"
+                    onChange={(event) =>
+                      updateVariant(index, { id: event.target.value })
+                    }
+                  />
+                </label>
+                <label>
+                  <span>Emri</span>
+                  <input
+                    required
+                    value={variant.label}
+                    onChange={(event) =>
+                      updateVariant(index, { label: event.target.value })
+                    }
+                  />
+                </label>
+                <label>
+                  <span>Çmimi (€)</span>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder={String(product.price)}
+                    value={variant.price ?? ""}
+                    onChange={(event) =>
+                      updateVariant(index, {
+                        price:
+                          event.target.value === ""
+                            ? undefined
+                            : Number(event.target.value),
+                      })
+                    }
+                  />
+                </label>
+                <button
+                  type="button"
+                  className="admin-icon-button"
+                  aria-label={`Largo opsionin ${variant.label || index + 1}`}
+                  onClick={() =>
+                    setValue((current) => ({
+                      ...current,
+                      product: {
+                        ...current.product,
+                        variants: current.product.variants?.filter(
+                          (_, i) => i !== index,
+                        ),
+                        defaultVariantId:
+                          current.product.defaultVariantId === variant.id
+                            ? undefined
+                            : current.product.defaultVariantId,
+                      },
+                    }))
+                  }
+                >
+                  <Trash2 />
+                </button>
+              </div>
+            ))}
+            {!!product.variants?.length && (
+              <label>
+                <span>Opsioni fillestar</span>
+                <select
+                  value={product.defaultVariantId ?? ""}
+                  onChange={(event) =>
+                    update("defaultVariantId", event.target.value || undefined)
+                  }
+                >
+                  <option value="">Opsioni i parë</option>
+                  {product.variants.map((variant, index) => (
+                    <option key={index} value={variant.id}>
+                      {variant.label || variant.id}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+            <button
+              type="button"
+              className="admin-button is-secondary"
+              disabled={(product.variants?.length ?? 0) >= 20}
+              onClick={() =>
+                update("variants", [
+                  ...(product.variants ?? []),
+                  { id: `option-${Date.now()}`, label: "" },
+                ])
+              }
+            >
+              <Plus /> Shto opsion
+            </button>
+          </fieldset>
           <label>
             <span>Renditja</span>
             <input
               type="number"
               value={value.sortOrder}
               onChange={(event) =>
-                setValue((current) => ({ ...current, sortOrder: Number(event.target.value) }))
+                setValue((current) => ({
+                  ...current,
+                  sortOrder: Number(event.target.value),
+                }))
               }
             />
           </label>
@@ -218,7 +416,10 @@ function ProductForm({
                 type="checkbox"
                 checked={value.active}
                 onChange={(event) =>
-                  setValue((current) => ({ ...current, active: event.target.checked }))
+                  setValue((current) => ({
+                    ...current,
+                    active: event.target.checked,
+                  }))
                 }
               />
               Aktiv në shop
@@ -227,20 +428,34 @@ function ProductForm({
               <input
                 type="checkbox"
                 checked={Boolean(product.featured)}
-                onChange={(event) => update("featured", event.target.checked || undefined)}
+                onChange={(event) =>
+                  update("featured", event.target.checked || undefined)
+                }
               />
               I veçuar (featured)
             </label>
           </div>
         </div>
 
-        {error && <p className="admin-error" role="alert">{error}</p>}
+        {error && (
+          <p className="admin-error" role="alert">
+            {error}
+          </p>
+        )}
 
         <footer>
-          <button type="button" className="admin-button is-ghost" onClick={onClose}>
+          <button
+            type="button"
+            className="admin-button is-ghost"
+            onClick={onClose}
+          >
             Anulo
           </button>
-          <button type="submit" className="admin-button is-primary" disabled={busy}>
+          <button
+            type="submit"
+            className="admin-button is-primary"
+            disabled={busy}
+          >
             {busy ? "Po ruhet…" : "Ruaj produktin"}
           </button>
         </footer>
@@ -253,28 +468,36 @@ export function ProductsPanel() {
   const [items, setItems] = useState<StoredProduct[] | null>(null)
   const [draft, setDraft] = useState<Draft | null>(null)
   const [error, setError] = useState("")
+  const [importing, setImporting] = useState(false)
 
   useEffect(() => {
-    void apiRequest<{ products: StoredProduct[] }>("/api/admin/products").then((result) => {
-      if (result.ok) setItems(result.data.products)
-      else setError(result.error)
-    })
+    void apiRequest<{ products: StoredProduct[] }>("/api/admin/products").then(
+      (result) => {
+        if (result.ok) setItems(result.data.products)
+        else setError(result.error)
+      },
+    )
   }, [])
 
-  async function importStatic() {
+  async function importStatic(action: "import" | "sync-options" = "import") {
+    setImporting(true)
     const result = await apiRequest<{ products: StoredProduct[] }>(
-      "/api/admin/products?action=import",
+      `/api/admin/products?action=${action}`,
       { method: "POST", body: {} },
     )
+    setImporting(false)
     if (result.ok) setItems(result.data.products)
     else setError(result.error)
   }
 
   async function toggleActive(item: StoredProduct) {
-    const result = await apiRequest<{ products: StoredProduct[] }>("/api/admin/products", {
-      method: "POST",
-      body: { ...item, active: !item.active, previousId: item.product.id },
-    })
+    const result = await apiRequest<{ products: StoredProduct[] }>(
+      "/api/admin/products",
+      {
+        method: "POST",
+        body: { ...item, active: !item.active, previousId: item.product.id },
+      },
+    )
     if (result.ok) setItems(result.data.products)
     else setError(result.error)
   }
@@ -290,7 +513,11 @@ export function ProductsPanel() {
   }
 
   if (!items) {
-    return error ? <p className="admin-error">{error}</p> : <p className="admin-empty">Duke i ngarku produktet…</p>
+    return error ? (
+      <p className="admin-error">{error}</p>
+    ) : (
+      <p className="admin-empty">Duke i ngarku produktet…</p>
+    )
   }
 
   return (
@@ -305,6 +532,37 @@ export function ProductsPanel() {
           </p>
         </div>
         <div className="admin-toolbar">
+          {items.length > 0 &&
+            staticProducts.some(
+              (product) =>
+                !items.some((item) => item.product.id === product.id),
+            ) && (
+              <button
+                className="admin-button is-secondary"
+                type="button"
+                disabled={importing}
+                onClick={() => void importStatic()}
+              >
+                <Download />{" "}
+                {importing
+                  ? "Po shtohen…"
+                  : "Shto produktet e koleksionit që mungojnë"}
+              </button>
+            )}
+          {items.length > 0 && (
+            <button
+              className="admin-button is-secondary"
+              type="button"
+              disabled={importing}
+              title="Merr madhësitë, materialet dhe çmimet e tyre nga koleksioni në kod. Emrat, tekstet dhe fotot e ndryshuara këtu mbeten."
+              onClick={() => void importStatic("sync-options")}
+            >
+              <RefreshCw />
+              {importing
+                ? "Po përditësohen…"
+                : "Përditëso madhësitë & materialet"}
+            </button>
+          )}
           <button
             className="admin-button is-primary"
             type="button"
@@ -316,17 +574,27 @@ export function ProductsPanel() {
         </div>
       </header>
 
-      {error && <p className="admin-error" role="alert">{error}</p>}
+      {error && (
+        <p className="admin-error" role="alert">
+          {error}
+        </p>
+      )}
 
       {!items.length && (
         <div className="admin-callout">
           <strong>Ende s'ka produkte në databazë.</strong>
           <p>
-            Shop-i tani shfaq {staticProducts.length} produktet që janë në kod. Importoji
-            një herë këtu dhe pastaj i menaxhon krejt nga dashboard-i: çmime, foto,
-            produkte të reja. Kur databaza ka produkte, shop-i përdor vetëm ato.
+            Shop-i tani shfaq {staticProducts.length} produktet që janë në kod.
+            Importoji një herë këtu dhe pastaj i menaxhon krejt nga dashboard-i:
+            çmime, foto, produkte të reja. Kur databaza ka produkte, shop-i
+            përdor vetëm ato.
           </p>
-          <button className="admin-button is-primary" type="button" onClick={importStatic}>
+          <button
+            className="admin-button is-primary"
+            type="button"
+            disabled={importing}
+            onClick={() => void importStatic()}
+          >
             <Download />
             Importo {staticProducts.length} produktet ekzistuese
           </button>
@@ -342,22 +610,33 @@ export function ProductsPanel() {
                 <th>Kategoria</th>
                 <th>Çmimi</th>
                 <th>Aktiv</th>
-                <th><span className="sr-only">Veprime</span></th>
+                <th>
+                  <span className="sr-only">Veprime</span>
+                </th>
               </tr>
             </thead>
             <tbody>
               {items.map((item) => (
-                <tr key={item.product.id} className={item.active ? "" : "is-inactive"}>
+                <tr
+                  key={item.product.id}
+                  className={item.active ? "" : "is-inactive"}
+                >
                   <td>
                     <div className="admin-product-cell">
                       <span className="admin-thumb">
                         {item.product.image && (
-                          <ResponsiveImage image={item.product.image} alt="" sizes="48px" />
+                          <ResponsiveImage
+                            image={item.product.image}
+                            alt=""
+                            sizes="48px"
+                          />
                         )}
                       </span>
                       <span>
                         {item.product.name}
-                        <small>{item.product.quantityLabel} · /shop/{item.product.id}</small>
+                        <small>
+                          {item.product.quantityLabel} · /shop/{item.product.id}
+                        </small>
                       </span>
                     </div>
                   </td>
@@ -380,7 +659,9 @@ export function ProductsPanel() {
                         type="button"
                         className="admin-icon-button"
                         aria-label={`Ndrysho ${item.product.name}`}
-                        onClick={() => setDraft({ ...item, previousId: item.product.id })}
+                        onClick={() =>
+                          setDraft({ ...item, previousId: item.product.id })
+                        }
                       >
                         <Pencil />
                       </button>

@@ -1,5 +1,4 @@
 import { ArrowDownRight, ArrowRight, ArrowUpRight } from "lucide-react"
-import { motion } from "motion/react"
 
 import {
   ContactSection,
@@ -23,18 +22,13 @@ export default function WorkPage() {
             <span>K/04</span>
             Selected case studies · Design / Print / Digital
           </div>
-          <motion.div
-            className="work-hero-title"
-            initial={{ opacity: 0, y: 34 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-          >
+          <div className="work-hero-title hero-rise">
             <h1>
               SELECTED
               <em>WORK.</em>
             </h1>
             <ArrowDownRight />
-          </motion.div>
+          </div>
           <div className="work-hero-bottom">
             <p>
               Jo galeri me mockups. Secili rast e tregon problemin, sistemin dhe
@@ -72,12 +66,6 @@ export default function WorkPage() {
 
               <div className="work-case-visual">
                 <ResponsiveImage image={project.heroImage} sizes="100vw" />
-                <span>{project.number}</span>
-                <strong aria-hidden="true">{project.title}</strong>
-                <div>
-                  <i>{project.category}</i>
-                  <i>{project.year}</i>
-                </div>
               </div>
 
               <div className="work-case-gallery">

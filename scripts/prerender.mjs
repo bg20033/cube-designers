@@ -2,6 +2,9 @@ import { mkdir, readFile, rm, writeFile } from "node:fs/promises"
 import path from "node:path"
 import { pathToFileURL } from "node:url"
 
+// Load the production React server renderer (smaller output, no dev markers).
+process.env.NODE_ENV ??= "production"
+
 const root = process.cwd()
 const clientDirectory = path.join(root, "dist", "client")
 const serverEntry = path.join(root, ".prerender", "entry-server.mjs")
@@ -17,9 +20,36 @@ const siteUrl =
   "https://www.cube-designers.com"
 
 const template = await readFile(templatePath, "utf8")
-const { getLlmsTxt, getPrerenderPaths, render } = await import(
+const { getLlmsTxt, getPageSource, getPrerenderPaths, render } = await import(
   `${pathToFileURL(serverEntry).href}?v=${Date.now()}`
 )
+const manifestPath = path.join(clientDirectory, ".vite", "manifest.json")
+const manifest = JSON.parse(await readFile(manifestPath, "utf8"))
+
+// Every JS and CSS file a chunk pulls in through static imports.
+function collectFiles(key, files = new Set(), seen = new Set()) {
+  const chunk = manifest[key]
+  if (!chunk || seen.has(key)) return files
+  seen.add(key)
+  files.add(chunk.file)
+  for (const css of chunk.css ?? []) files.add(css)
+  for (const child of chunk.imports ?? []) collectFiles(child, files, seen)
+  return files
+}
+const entryFiles = collectFiles("index.html")
+
+// Links for the page's own chunk: CSS so the HTML is styled on first paint,
+// modulepreload so its JS downloads alongside the entry instead of after it.
+function pageAssets(source) {
+  return [...collectFiles(source)]
+    .filter((file) => !entryFiles.has(file))
+    .map((file) =>
+      file.endsWith(".css")
+        ? `<link rel="stylesheet" crossorigin href="/${file}">`
+        : `<link rel="modulepreload" crossorigin href="/${file}">`,
+    )
+    .join("\n    ")
+}
 
 const escapeAttribute = (value) =>
   value
@@ -67,16 +97,18 @@ function createHead(seo, structuredData, status) {
   `.trim()
 }
 
-function createDocument(pathname) {
-  const rendered = render(pathname, siteUrl)
+async function createDocument(pathname) {
+  const rendered = await render(pathname, siteUrl)
   return template
     .replace("<!--app-head-->", createHead(rendered.seo, rendered.structuredData, rendered.status))
     .replace("<!--app-html-->", rendered.html)
+    .replace("</head>", `  ${pageAssets(getPageSource(pathname))}\n  </head>`)
 }
 
 const routes = getPrerenderPaths()
 
-for (const route of routes) {
+// The invitations demo needs a direct-entry document but stays out of the sitemap.
+for (const route of [...routes, "/ftesa"]) {
   const outputDirectory =
     route === "/"
       ? clientDirectory
@@ -84,14 +116,14 @@ for (const route of routes) {
   await mkdir(outputDirectory, { recursive: true })
   await writeFile(
     path.join(outputDirectory, "index.html"),
-    createDocument(route),
+    await createDocument(route),
     "utf8",
   )
 }
 
 await writeFile(
   path.join(clientDirectory, "404.html"),
-  createDocument("/404"),
+  await createDocument("/404"),
   "utf8",
 )
 
@@ -122,3 +154,4 @@ await writeFile(
 await writeFile(path.join(clientDirectory, "llms.txt"), getLlmsTxt(siteUrl), "utf8")
 
 await rm(path.join(root, ".prerender"), { recursive: true, force: true })
+await rm(path.join(clientDirectory, ".vite"), { recursive: true, force: true })

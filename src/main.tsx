@@ -1,8 +1,9 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
+import { startTransition, StrictMode } from 'react'
+import { createRoot, hydrateRoot } from 'react-dom/client'
 import './index.css'
 import './polish.css'
-import App from './App.tsx'
+import App, { preloadPage } from './App.tsx'
+import { isAdminPath } from './app/routes'
 
 const root = document.getElementById('root')!
 const app = (
@@ -11,7 +12,23 @@ const app = (
   </StrictMode>
 )
 
-// Prerendered route HTML is intentionally crawler-first and does not share the
-// interactive app tree. Mount cleanly to avoid a hydration reset.
-root.replaceChildren()
-createRoot(root).render(app)
+// Prerendered pages render the same App tree, so React adopts the existing
+// HTML instead of rebuilding it. The page chunk loads first so nothing
+// suspends mid-hydration. /admin is served the home document and mounts fresh.
+const pathname = window.location.pathname
+void preloadPage(pathname)
+  .catch(() => undefined)
+  .then(() => {
+    // Vite's unrendered document contains the app-html comment. Only real
+    // elements indicate SSR content that React should hydrate.
+    if (root.childElementCount > 0 && !isAdminPath(pathname)) {
+      // A transition lets React hydrate in small slices instead of one long
+      // task, so the page stays responsive while it becomes interactive.
+      startTransition(() => {
+        hydrateRoot(root, app)
+      })
+    } else {
+      root.replaceChildren()
+      createRoot(root).render(app)
+    }
+  })

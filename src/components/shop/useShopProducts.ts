@@ -10,9 +10,26 @@ export function useShopProducts() {
 
   useEffect(() => {
     let active = true
-    void apiRequest<{ products: Product[] }>("/api/products").then((result) => {
-      if (active && result.ok && result.data.products.length) {
-        setCatalog(result.data.products)
+    void apiRequest<{
+      products: (Product & { variantSet?: number })[]
+      variantSets?: Product["variants"][]
+      managed?: boolean
+    }>("/api/products").then((result) => {
+      if (
+        active &&
+        result.ok &&
+        Array.isArray(result.data.products) &&
+        (result.data.managed || result.data.products.length)
+      ) {
+        // Products point to a shared variant list (see api/products.ts).
+        const sets = result.data.variantSets ?? []
+        setCatalog(
+          result.data.products.map(({ variantSet, ...product }) =>
+            variantSet === undefined || !sets[variantSet]
+              ? product
+              : { ...product, variants: sets[variantSet] },
+          ),
+        )
       }
     })
     return () => {

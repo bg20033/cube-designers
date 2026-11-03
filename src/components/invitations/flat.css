@@ -1,0 +1,301 @@
+/* Neutral presentation for the invitation workspace and its existing data. */
+.inv-app,.inv-checkout,.inv-dialog {
+  --inv-purple:#202020;
+  --inv-purple-dark:#111;
+  --inv-ink:#202020;
+  --inv-muted:#666;
+  --inv-line:#e3e3e3;
+  --inv-bg:#fafafa;
+}
+.inv-app *,.inv-checkout *,.inv-dialog *,.inv-accountbar { box-shadow:none!important; }
+.inv-app,.inv-checkout { background:#fafafa; color:#222; }
+.inv-app h1,.inv-app h2,.inv-app h3,.inv-checkout h1,.inv-checkout h2,.inv-dialog h2,.inv-dialog h3 { font-family:"Inter Variable",sans-serif!important; font-style:normal!important; }
+.inv-app em,.inv-checkout em { font-style:normal; color:inherit; }
+.inv-app .inv-page-heading h1 { font:600 30px/1.3 "Inter Variable",sans-serif; letter-spacing:-.8px; color:#171717; }
+.inv-app .inv-page-heading p { font-size:13px; color:#666; }
+.inv-app .inv-eyebrow,.inv-app .inv-nav-caption { color:#666; letter-spacing:1px; }
+.inv-app .inv-sidebar { background:#fff; border-color:#e5e5e5; }
+.inv-app .inv-brand,.inv-checkout .inv-brand { color:#171717!important; }
+.inv-app .inv-brand-dot,.inv-checkout .inv-brand-dot { color:#171717; }
+.inv-app .inv-brand-symbol { transform:none; border:0; border-radius:0; color:#333; }
+.inv-app .inv-brand-symbol svg { transform:none; }
+.inv-app .inv-wedding-switch { border-radius:4px; background:#fafafa; border-color:#e3e3e3; }
+.inv-app .inv-wedding-avatar,.inv-app .inv-profile { background:#eee; color:#333; font-family:"Inter Variable",sans-serif!important; font-style:normal; }
+.inv-app .inv-sidebar nav button { color:#555; border-radius:4px; font-size:12px; }
+.inv-app .inv-sidebar nav button.is-active { color:#171717; background:#eee; }
+.inv-app .inv-sidebar nav button:hover { color:#171717; background:#f5f5f5; }
+.inv-app .inv-sidebar nav button small { background:#dedede; color:#333; }
+.inv-app .inv-sidebar-note { display:none; }
+.inv-app .inv-sidebar-bottom { padding-top:24px; }
+.inv-app .inv-sidebar-help { color:#666!important; }
+.inv-app .inv-topbar { border-color:#e5e5e5; }
+.inv-app .inv-main { padding-top:32px; }
+.inv-app .inv-button,.inv-checkout .inv-button,.inv-dialog .inv-button { border-radius:3px; font-size:12px!important; }
+.inv-app .inv-button-primary,.inv-checkout .inv-button-primary,.inv-dialog .inv-button-primary { background:#202020; border-color:#202020; color:#fff!important; }
+.inv-app .inv-button-primary:hover,.inv-checkout .inv-button-primary:hover,.inv-dialog .inv-button-primary:hover { background:#333; border-color:#333; }
+.inv-app .inv-button-outline,.inv-checkout .inv-button-outline,.inv-dialog .inv-button-outline { background:#fff; color:#333; border-color:#d8d8d8; }
+.inv-app .inv-button-outline:hover,.inv-dialog .inv-button-outline:hover { background:#f5f5f5; border-color:#aaa; }
+.inv-app .inv-button-selected { color:#171717; border-color:#555; background:#eee; }
+.inv-app .inv-text-button,.inv-dialog .inv-text-button { color:#444; font-size:11px!important; }
+.inv-app .inv-panel,.inv-app .inv-stat,.inv-app .inv-event-card,.inv-app .inv-design-option,.inv-app .inv-contact-card,.inv-checkout .inv-checkout-card { border-radius:4px; border-color:#e0e0e0; background:#fff; }
+.inv-app .inv-panel-heading h2 { font-size:14px; color:#333; font-weight:550; }
+.inv-app .inv-panel-heading p { font-size:12px; color:#666; }
+.inv-app .inv-celebration-banner { min-height:115px; padding:23px 27px; border-radius:4px; border-color:#dedede; background:#f1f1f1; }
+.inv-app .inv-banner-icon,.inv-app .inv-banner-art { display:none; }
+.inv-app .inv-banner-detail h2 { font-size:27px; color:#222; font-weight:550; letter-spacing:-.7px; }
+.inv-app .inv-banner-detail>div>span { font-size:9px; letter-spacing:1px; color:#666; }
+.inv-app .inv-banner-detail p { color:#555; font-size:12px; }
+.inv-app .inv-countdown { padding-right:0; color:#333; }
+.inv-app .inv-countdown strong { font:550 34px/1 "Inter Variable",sans-serif; letter-spacing:-1px; }
+.inv-app .inv-countdown>span { color:#666; font-size:11px; }
+.inv-app .inv-stat>div>span { font-size:11px; color:#666; }
+.inv-app .inv-stat small { font-size:10px; color:#666; }
+.inv-app .inv-stat-icon { background:#f2f2f2; color:#555; border-radius:4px; }
+.inv-app .inv-preview-card-wrap,.inv-app .inv-design-art { background:#f1f1f1; border-radius:3px; }
+.inv-app .inv-preview-card-wrap .inv-card { transform:none; }
+.inv-app .inv-design-option.is-selected { border-color:#444; }
+.inv-app .inv-design-selected { border-color:#bbb; background:#fff; color:#222; border-radius:3px; }
+.inv-app .inv-design-description h2 { color:#333; font-size:13px; }
+.inv-app .inv-design-description p { color:#666; font-size:11px; }
+.inv-app .inv-design-swatch { border-radius:3px; border-width:1px; }
+.inv-app .inv-step-list strong { font-size:12px; color:#333; }
+.inv-app .inv-step-list small { font-size:11px; color:#666; }
+.inv-app .inv-step-icon { background:#f5f5f5; border-color:#e3e3e3; border-radius:3px; color:#555; }
+.inv-app .inv-event-card h2 { color:#222; font-size:20px; font-weight:500; }
+.inv-app .inv-event-card-date,.inv-app .inv-event-card-venue { color:#555; font-size:11px; }
+.inv-app .inv-event-card-icon { color:#555; }
+.inv-app .inv-event-card-bottom { color:#555; font-size:10px; border-color:#e3e3e3; }
+.inv-app .inv-event-card-bottom strong { color:#333; }
+.inv-app .inv-table,.inv-app .inv-guest-name strong { font-size:12px; }
+.inv-app .inv-table th { color:#666; background:#fafafa; font-size:11px; }
+.inv-app .inv-guest-name strong { color:#333; }.inv-app .inv-guest-name small { color:#666; font-size:10px; }
+.inv-app .inv-avatar { color:#555; background:#eee; }
+.inv-app .inv-event-label,.inv-app .inv-status { color:#444; background:#f1f1f1; border-radius:3px; font-size:10px; }
+.inv-app .inv-seat-count,.inv-app .inv-row-actions .inv-icon-button { color:#555; }
+.inv-app .inv-form label,.inv-dialog .inv-form label { font-size:12px; color:#444; }
+.inv-app .inv-form input:not([type=checkbox]),.inv-app .inv-form textarea,.inv-dialog .inv-form input:not([type=checkbox]),.inv-dialog .inv-form textarea { border-color:#d8d8d8; background:#fff; color:#333; font-size:13px; border-radius:3px; }
+.inv-dialog { border-color:#ddd; border-radius:5px; background:#fff; color:#333; }
+.inv-dialog::backdrop { background:#0005; backdrop-filter:none; }
+.inv-dialog .inv-dialog-header h2 { font-size:21px; font-weight:550; color:#222; letter-spacing:-.4px; }
+.inv-app .inv-info-note,.inv-app .inv-demo-bar { border-color:#e3e3e3; background:#f5f5f5; color:#555; }
+.inv-app .inv-info-note p { font-size:12px; }
+.inv-app .inv-package h2 { font-size:26px; line-height:1.3; color:#222; }
+.inv-app .inv-package-icon { background:#f1f1f1; border-color:#ddd; border-radius:4px; color:#555; }
+.inv-checkout { background:#fafafa!important; }
+.inv-checkout .inv-checkout-card h1 { color:#222; font-size:30px; line-height:1.25; font-weight:550; }
+.inv-checkout .inv-checkout-card h1 em { color:inherit; font-style:normal; }
+.inv-checkout .inv-demo-pill,.inv-app .inv-demo-pill { color:#555; background:#f4f4f4; border-color:#ddd; border-radius:3px; }
+.inv-accountbar { background:#f2f2f2; color:#444; border-color:#ddd; }
+.inv-app input,.inv-app select,.inv-dialog input,.inv-dialog select { accent-color:#222; }
+.inv-app button:focus-visible,.inv-app a:focus-visible,.inv-dialog button:focus-visible,.inv-checkout button:focus-visible { outline-color:#333; }
+.inv-app .inv-planner { --plan-ink:#222; --plan-muted:#666; --plan-purple:#333; --plan-line:#ddd; }
+.inv-app .inv-budget-hero,.inv-app .inv-contact-intro,.inv-app .inv-task-hero { background:#f4f4f4; border-color:#ddd; border-radius:4px; }
+.inv-app .inv-budget-hero-main { background:none; }
+.inv-app .inv-budget-hero-side { background:#fafafa; border-color:#ddd; }
+.inv-app .inv-budget-total,.inv-app .inv-budget-hero-side>strong { font-family:"Inter Variable",sans-serif; color:#222; font-weight:550; }
+.inv-app .inv-budget-total { font-size:39px; letter-spacing:-1.3px; }
+.inv-app .inv-service-icon,.inv-app .inv-shortcut-icon,.inv-app .inv-budget-wallet { background:#eee; color:#555; border-color:#ddd; border-radius:4px; }
+.inv-app .inv-planner-shortcuts>button { background:#fff; border-color:#ddd; border-radius:4px; }
+.inv-app .inv-planner-shortcuts strong { color:#333; }
+.inv-app .inv-budget-progress,.inv-app .inv-task-progress { background:#dedede; border-radius:2px; }
+.inv-app .inv-budget-progress>span,.inv-app .inv-task-progress>span { background:#555; border-radius:2px; }
+.inv-app .inv-category-track>span { background:#555; }
+.inv-app .inv-category-track>.inv-bar-color-1 { background:#777; }.inv-app .inv-category-track>.inv-bar-color-2 { background:#999; }.inv-app .inv-category-track>.inv-bar-color-3 { background:#bbb; }
+.inv-app .inv-contact-intro h2,.inv-app .inv-task-hero h2 { font-size:24px; font-weight:550; line-height:1.3; color:#222; }
+.inv-app .inv-contact-intro em,.inv-app .inv-task-hero em { color:inherit; font-style:normal; }
+.inv-app .inv-contact-card h3 { font-size:21px; font-weight:550; line-height:1.4; color:#222; }
+.inv-app .inv-contact-status { color:#444; border-color:#ddd; background:#f4f4f4; border-radius:3px; }
+.inv-app .inv-service-categories>button { border-radius:4px; border-color:#ddd; }
+.inv-app .inv-service-categories>button.is-selected { background:#eee; border-color:#555; }
+.inv-app .inv-task-hero>.inv-service-icon { border-radius:4px; }
+.inv-app .inv-task-hero>strong { font:500 38px "Inter Variable",sans-serif; letter-spacing:-1px; }
+.inv-app .inv-task-filters>button { border-radius:3px; }
+.inv-app .inv-task-filters>button[aria-pressed=true] { background:#eee; border-color:#666; color:#222; }
+.inv-app .inv-task-checkbox input:checked+span { background:#333; border-color:#333; }
+.inv-app .inv-planner-form input:not([type=checkbox]),.inv-app .inv-planner-form select,.inv-app .inv-planner-form textarea { color:#333; background:#fff; border-color:#d5d5d5; border-radius:3px; font-size:13px; }
+@media(max-width:700px) {
+  .inv-app .inv-preview-panel { display:flex; flex-direction:column; align-items:stretch; gap:0; }
+  .inv-app .inv-preview-panel .inv-panel-heading { display:flex; align-self:auto; margin-bottom:18px; }
+  .inv-app .inv-preview-panel .inv-panel-heading h2 { margin-top:0; }
+  .inv-app .inv-preview-live { margin-top:0; }
+  .inv-app .inv-preview-card-wrap { min-height:0; padding:18px; }
+  .inv-app .inv-preview-card-wrap .inv-card { max-width:none; }
+  .inv-app .inv-preview-caption { padding:16px 0; align-self:auto; }
+  .inv-app .inv-preview-panel>.inv-button { align-self:auto; }
+  .inv-app .inv-page-heading h1 { font-size:26px; }
+  .inv-app .inv-page-heading p { font-size:12px; }
+  .inv-app .inv-sidebar nav button { font-size:10px; min-width:90px; }
+  .inv-app .inv-sidebar nav button.is-active { background:#eee; border-bottom:2px solid #222; }
+  .inv-app .inv-banner-detail h2 { font-size:23px; }
+  .inv-app .inv-banner-detail p { font-size:10px; }
+  .inv-app .inv-countdown strong { font-size:29px; }
+  .inv-app .inv-countdown>span { font-size:9px; }
+  .inv-app .inv-stat>div>span { font-size:10px; }
+  .inv-app .inv-stat small { font-size:9px; }
+  .inv-app .inv-panel-heading h2 { font-size:13px; }
+  .inv-app .inv-panel-heading p { font-size:10px; }
+  .inv-app .inv-step-list strong { font-size:11px; }
+  .inv-app .inv-step-list small { font-size:10px; }
+  .inv-app .inv-button,.inv-checkout .inv-button { font-size:11px!important; }
+  .inv-app .inv-budget-total { font-size:33px; }
+  .inv-app .inv-form input:not([type=checkbox]),.inv-app .inv-form textarea,.inv-dialog .inv-form input:not([type=checkbox]),.inv-dialog .inv-form textarea,.inv-app .inv-planner-form input:not([type=checkbox]),.inv-app .inv-planner-form select { font-size:16px; }
+}
+
+/* Four main destinations; related tools stay together. */
+.inv-app .inv-sidebar-note,.inv-app .inv-studio-label,.inv-app .inv-nav-caption { display:none; }
+.inv-app .inv-sidebar nav { margin-top:24px; }
+.inv-app .inv-sidebar nav button { font-size:13px; padding:14px 12px; }
+.inv-app .inv-wedding-switch { margin-top:25px; }
+.inv-subnav { display:flex; gap:5px; background:#eee; border-radius:5px; padding:4px; margin-bottom:24px; width:fit-content; max-width:100%; }
+.inv-subnav>button { border:0; border-radius:3px; background:none; color:#555; padding:10px 18px; font-size:12px!important; }
+.inv-subnav>button[aria-current=page] { background:#fff; color:#171717; font-weight:550; }
+.inv-share-hub { display:grid; grid-template-columns:minmax(0,1fr) 180px; align-items:center; gap:40px; padding:28px; background:#fff; border:1px solid #e0e0e0; border-radius:4px; margin-bottom:18px; }
+.inv-app .inv-share-hub h2 { font-size:29px; font-weight:600; letter-spacing:-1px; margin:9px 0; }
+.inv-share-hub-main>p { font-size:12px; color:#666; margin:0; }
+.inv-share-hub-actions { display:flex; align-items:center; flex-wrap:wrap; gap:10px; margin-top:22px; }
+.inv-share-hub-main .inv-share-hub-note { margin-top:16px; font-size:11px; }
+.inv-master-link { display:flex; align-items:center; gap:12px; margin-top:18px; border-bottom:1px solid #ddd; padding-bottom:8px; }
+.inv-master-url { width:100%; min-width:0; color:#666; font-size:11px; border:0; background:none; outline-offset:3px; text-overflow:ellipsis; }
+.inv-master-link a,.inv-master-link button { color:#444; background:none; border:0; padding:6px 0; flex-shrink:0; font-size:11px!important; display:flex; align-items:center; }
+.inv-hub-preview { display:block; min-width:0; padding:0; border:0; background:none; text-align:center; perspective:900px; }
+.inv-hub-preview .inv-card { min-height:230px!important; padding:24px 19px!important; }
+.inv-hub-preview .inv-card .inv-card-names { font-size:28px!important; }
+.inv-hub-preview .inv-card .inv-card-message { font-size:8px!important; }
+.inv-hub-preview .inv-card .inv-card-date { font-size:9px!important; }
+.inv-app .inv-simple-stats { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.inv-easy-toolbar { display:flex; align-items:flex-start; gap:12px; padding:0 22px 20px; }
+.inv-easy-toolbar .inv-search { flex:1; }
+.inv-list-options { position:relative; }
+.inv-list-options>summary { font-size:11px; color:#555; padding:12px 4px; cursor:pointer; white-space:nowrap; }
+.inv-list-options>div { position:absolute; top:100%; right:0; z-index:10; border:1px solid #ccc; background:#fff; padding:16px; width:240px; display:grid; gap:14px; }
+.inv-list-options label { display:grid; gap:6px; font-size:11px; color:#555; }
+.inv-list-options select { padding:9px; background:#fff; color:#333; border:1px solid #ddd; font-size:12px; }
+.inv-easy-row-actions { display:flex; align-items:center; justify-content:flex-end; gap:7px; }
+.inv-copy-guest { display:flex; align-items:center; gap:7px; padding:9px 11px; font-size:11px!important; background:#f5f5f5; color:#222; border:1px solid #ddd; border-radius:3px; white-space:nowrap; }
+.inv-copy-guest:hover { background:#e9e9e9; }
+.inv-guest-options { position:relative; }
+.inv-guest-options>summary { list-style:none; display:flex; align-items:center; justify-content:center; cursor:pointer; width:28px; min-height:32px; color:#666; }
+.inv-guest-options>summary::-webkit-details-marker { display:none; }
+.inv-guest-options>div { position:absolute; right:0; top:100%; border:1px solid #ccc; background:#fff; z-index:15; min-width:160px; padding:5px; }
+.inv-guest-options button { display:flex; gap:8px; align-items:center; width:100%; padding:11px; text-align:left; border:0; background:none; color:#333; font-size:12px!important; }
+.inv-guest-options button:hover { background:#f2f2f2; }
+.inv-app .inv-easy-guests .inv-table { min-width:0; }
+.inv-app .inv-easy-guests .inv-table-scroll { overflow:visible; }
+.inv-dialog .inv-kind-picker button { flex-direction:row; gap:8px; padding:11px; border-radius:3px; }
+.inv-dialog .inv-kind-picker svg { width:17px; height:17px; }
+.inv-dialog .inv-kind-picker button.is-selected { background:#eee; border-color:#222; color:#222; }
+.inv-dialog .inv-form select { background:#fff; border:1px solid #ccc; border-radius:3px; padding:11px; color:#333; font-size:13px; }
+.inv-general-enabled { display:flex!important; align-items:center; gap:10px; }
+.general-registration-fields { display:grid; grid-template-columns:minmax(0,1fr) 120px; gap:16px; margin:20px 0 28px; }
+.general-registration-fields>label { display:grid; gap:9px; font-size:13px; color:#444; }
+.general-registration-fields input,.general-registration-fields select { width:100%; min-width:0; background:#fff; border:1px solid #ccc; border-radius:4px; padding:13px; font-size:16px; color:#222; }
+@media(max-width:1000px) {
+  .inv-share-hub { grid-template-columns:minmax(0,1fr) 145px; gap:22px; }
+}
+@media(max-width:700px) {
+  .inv-app .inv-sidebar nav { margin-top:15px; }
+  .inv-app .inv-sidebar nav button { min-width:0; font-size:11px; padding:12px 7px; }
+  .inv-app .inv-wedding-switch { margin-top:0; }
+  .inv-app .inv-main { padding-top:24px; }
+  .inv-subnav { width:100%; gap:3px; }
+  .inv-subnav>button { flex:1; padding:11px 7px; font-size:11px!important; }
+  .inv-share-hub { display:block; padding:22px; }
+  .inv-hub-preview { display:none; }
+  .inv-app .inv-share-hub h2 { font-size:25px; }
+  .inv-share-hub-actions { flex-direction:column; align-items:stretch; margin-top:18px; }
+  .inv-share-hub-actions>button { justify-content:center; }
+  .inv-app .inv-simple-stats { gap:8px; }
+  .inv-app .inv-simple-stats .inv-stat { padding:15px 10px; }
+  .inv-simple-stats .inv-stat-icon { display:none; }
+  .inv-app .inv-simple-stats .inv-stat strong { font-size:26px; }
+  .inv-app .inv-simple-stats .inv-stat small { font-size:9px; }
+  .inv-easy-guests .inv-panel-heading { align-items:center; flex-wrap:wrap; gap:8px 12px; padding:14px 16px; }
+  .inv-easy-toolbar { padding:0 16px 12px; gap:8px; align-items:center; }
+  .inv-app .inv-easy-guests .inv-table,.inv-easy-guests tbody { display:block; width:100%; }
+  .inv-easy-guests .inv-table thead { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+  .inv-easy-guests .inv-table tr { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; padding:11px 16px; gap:6px 10px; border-top:1px solid #eee; }
+  .inv-app .inv-easy-guests .inv-table td { padding:0; border:0; min-width:0; }
+  .inv-easy-guests .inv-table td:first-child { grid-column:1; grid-row:1; }
+  .inv-easy-guests .inv-table td:nth-child(3) { grid-column:2; grid-row:1; justify-self:end; }
+  .inv-easy-guests .inv-table td:nth-child(2) { grid-column:1; grid-row:2; }
+  .inv-easy-guests .inv-table td:last-child { grid-column:2; grid-row:2; }
+  .inv-easy-guests .inv-guest-name strong { font-size:14px; white-space:normal; overflow-wrap:anywhere; }
+  .inv-easy-guests .inv-guest-name small { font-size:11px; margin-top:1px; }
+  .inv-easy-guests .inv-event-dots { flex-direction:row; flex-wrap:wrap; gap:3px; }
+  .inv-app .inv-easy-guests .inv-event-label,.inv-app .inv-easy-guests .inv-status { font-size:10px; padding:2px 6px; }
+  .inv-easy-guests .inv-easy-row-actions { justify-content:flex-end; gap:2px; }
+  .inv-copy-guest { padding:7px 10px; font-size:12px!important; gap:5px; }
+  .inv-easy-row-actions>.inv-icon-button { width:32px; min-height:32px; }
+  .inv-guest-options>summary { min-height:32px; width:28px; }
+  .inv-easy-guests .inv-table-footer { gap:10px; font-size:9px; }
+  .general-registration-fields { grid-template-columns:1fr; }
+}
+.inv-statistics { margin-top:20px; }
+.inv-statistics>summary { cursor:pointer; padding:17px 0; color:#444; font-size:13px; border-bottom:1px solid #ddd; }
+.inv-app .inv-easy-guests { overflow:visible; }
+
+/* Phone forms: popups as bottom sheets, 16px fields (no iPhone zoom), full-width buttons. */
+@media(max-width:700px) {
+  .inv-dialog { width:100%; max-width:100%; max-height:92dvh; margin:auto 0 0; border-radius:12px 12px 0 0; border-bottom:0; }
+  .inv-dialog .inv-dialog-header { position:sticky; top:0; z-index:2; background:#fff; padding:15px 18px; }
+  .inv-dialog .inv-dialog-header h2 { font-size:18px; }
+  .inv-dialog .inv-form { padding:18px; }
+  .inv-dialog .inv-form-actions { position:sticky; bottom:0; z-index:2; background:#fff; margin:0 -18px -18px; padding:12px 18px calc(12px + env(safe-area-inset-bottom)); border-top:1px solid #eee; }
+  .inv-dialog .inv-form-actions>.inv-button { flex:1; justify-content:center; min-height:46px; }
+  .inv-app input:not([type=checkbox]):not([type=radio]),.inv-app select,.inv-app textarea,.inv-dialog input:not([type=checkbox]),.inv-dialog select,.inv-dialog textarea,.inv-checkout input,.inv-checkout select { font-size:16px!important; }
+  .inv-app .inv-page-heading { flex-direction:column; align-items:stretch; }
+  .inv-app .inv-page-heading p { max-width:none; font-size:12px; padding-right:0; }
+  .inv-app .inv-page-heading>.inv-button,.inv-app .inv-heading-actions>.inv-button { margin-top:0; font-size:12px!important; min-height:44px; padding:10px 12px; justify-content:center; }
+  .inv-heading-actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .inv-editor-preview>.inv-card { max-width:250px; }
+  .inv-editor-form { padding:16px; }
+  .inv-editor-designs small { display:none; }
+  .inv-editor-actions>.inv-button { flex:1; justify-content:center; min-height:44px; }
+  .inv-plan-tasks form { padding:12px; }
+  .inv-plan-tasks form .inv-button { min-height:44px; }
+  .inv-plan-guests select { flex:1; }
+}
+@media(max-width:380px) {
+  .inv-copy-word { display:none; }
+  .inv-dialog .inv-form-row { flex-direction:column; gap:14px; }
+  .inv-heading-actions { grid-template-columns:1fr; }
+}
+
+/* A few blue accents across the dashboard; everything else stays neutral. */
+.inv-app,.inv-checkout,.inv-dialog { --inv-accent:#2457d6; --inv-accent-dark:#1b45ad; --inv-accent-soft:#edf2fe; --inv-accent-line:#c9d7fa; }
+.inv-app .inv-button-primary,.inv-checkout .inv-button-primary,.inv-dialog .inv-button-primary { background:var(--inv-accent); border-color:var(--inv-accent); }
+.inv-app .inv-button-primary:hover,.inv-checkout .inv-button-primary:hover,.inv-dialog .inv-button-primary:hover { background:var(--inv-accent-dark); border-color:var(--inv-accent-dark); }
+.inv-app .inv-sidebar nav button.is-active { background:var(--inv-accent-soft); color:var(--inv-accent-dark); }
+.inv-app .inv-sidebar nav button.is-active svg { color:var(--inv-accent); }
+.inv-app .inv-subnav>button[aria-current=page] { color:var(--inv-accent-dark); }
+.inv-app input,.inv-app select,.inv-dialog input,.inv-dialog select,.inv-checkout input { accent-color:var(--inv-accent); }
+.inv-app button:focus-visible,.inv-app a:focus-visible,.inv-dialog button:focus-visible,.inv-checkout button:focus-visible,.inv-app input:focus-visible,.inv-dialog input:focus-visible,.inv-app select:focus-visible,.inv-app textarea:focus-visible,.inv-dialog textarea:focus-visible { outline-color:var(--inv-accent); }
+.inv-app .inv-task-checkbox input:checked+span { background:var(--inv-accent); border-color:var(--inv-accent); }
+.inv-app .inv-copy-guest { background:var(--inv-accent-soft); color:var(--inv-accent-dark); border-color:var(--inv-accent-line); }
+.inv-app .inv-copy-guest:hover { background:#dfe8fd; }
+.inv-app .inv-status-accepted { background:var(--inv-accent-soft); color:var(--inv-accent-dark); }
+.inv-app .inv-contact-status-booked { background:var(--inv-accent-soft); color:var(--inv-accent-dark); border-color:var(--inv-accent-line); }
+.inv-attendance .is-coming { background:var(--inv-accent); }
+.inv-attendance .is-not { background:#a9b1c2; }
+.inv-attendance .is-waiting { background:#dfe3ec; }
+.inv-app .inv-pricing-toggle button[aria-pressed=true],.inv-dialog .inv-pricing-toggle button[aria-pressed=true] { color:var(--inv-accent-dark); }
+.inv-editor-designs button[aria-pressed=true] { border-color:var(--inv-accent); background:var(--inv-accent-soft); }
+.inv-editor-designs button[aria-pressed=true] svg { color:var(--inv-accent); }
+.inv-dialog .inv-kind-picker button.is-selected { background:var(--inv-accent-soft); border-color:var(--inv-accent); color:var(--inv-accent-dark); }
+.inv-plan-who a { color:var(--inv-accent-dark); }
+.inv-event-add:hover,.inv-plan-empty:hover { border-color:var(--inv-accent); color:var(--inv-accent-dark); background:var(--inv-accent-soft); }
+@media(max-width:700px) { .inv-app .inv-sidebar nav button.is-active { box-shadow:inset 0 -2px var(--inv-accent)!important; } }
+
+/* Phone: compact top bar and a bottom dock for the four sections. */
+@media(max-width:700px) {
+  .inv-app .inv-sidebar { position:sticky; top:0; z-index:30; flex-wrap:nowrap; padding:12px 18px; background:#fff; }
+  .inv-app .inv-sidebar .inv-brand { font-size:22px; }
+  .inv-app .inv-topbar { display:none; }
+  .inv-app .inv-sidebar nav { position:fixed; left:10px; right:10px; bottom:calc(10px + env(safe-area-inset-bottom)); z-index:40; margin:0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:2px; padding:5px; overflow:visible; background:#fffffff5; border:1px solid #e3e3e3; border-radius:18px; box-shadow:0 12px 32px -12px #0004!important; backdrop-filter:blur(12px); }
+  .inv-app .inv-sidebar nav button { flex-direction:column; justify-content:center; gap:3px; min-height:52px; padding:7px 2px 6px; border-radius:13px; font-size:10.5px; }
+  .inv-app .inv-sidebar nav button.is-active { background:var(--inv-accent-soft); color:var(--inv-accent-dark); box-shadow:none!important; border-bottom:0; }
+  .inv-app .inv-sidebar nav button svg { width:19px; height:19px; }
+  .inv-app .inv-sidebar nav button small { top:4px; right:calc(50% - 24px); min-width:17px; height:16px; padding:0 4px; border-radius:8px; background:var(--inv-accent); color:#fff; font-size:9px; line-height:16px; text-align:center; }
+  .inv-app .inv-main { padding-top:16px; padding-bottom:calc(96px + env(safe-area-inset-bottom)); }
+  .inv-toast { bottom:calc(84px + env(safe-area-inset-bottom)); }
+}

@@ -1,0 +1,751 @@
+/* Dense print controls for both half-screen configurators. */
+.cube-store:is(.wall-page, .photo-page) .size-picker.is-compact {
+  gap: 13px;
+}
+.cube-store:is(.wall-page, .photo-page)
+  .size-picker.is-compact
+  .size-picker-group {
+  margin: 0;
+}
+.cube-store:is(.wall-page, .photo-page)
+  .size-picker.is-compact
+  .size-picker-group
+  legend {
+  margin-bottom: 7px;
+  font-size: 11px;
+}
+.cube-store:is(.wall-page, .photo-page) .size-picker.is-compact .size-cards,
+.cube-store:is(.wall-page, .photo-page) .size-picker.is-compact .finish-cards {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
+  display: flex;
+  flex-wrap: wrap;
+}
+.cube-store:is(.wall-page, .photo-page)
+  .size-picker.is-compact
+  .size-cards
+  button,
+.cube-store:is(.wall-page, .photo-page)
+  .size-picker.is-compact
+  .finish-cards
+  button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  min-width: 0;
+  min-height: 34px;
+  padding: 7px 9px;
+  border-radius: 7px;
+}
+.cube-store:is(.wall-page, .photo-page)
+  .size-picker.is-compact
+  .size-card-shape,
+.cube-store:is(.wall-page, .photo-page)
+  .size-picker.is-compact
+  .size-cards
+  small {
+  display: none;
+}
+.cube-store:is(.wall-page, .photo-page)
+  .size-picker.is-compact
+  .size-cards
+  strong,
+.cube-store:is(.wall-page, .photo-page)
+  .size-picker.is-compact
+  .finish-cards
+  strong {
+  font-size: 10px;
+  font-weight: 550;
+  line-height: 1.35;
+}
+.cube-store:is(.wall-page, .photo-page) .size-picker.is-compact .size-cards em,
+.cube-store:is(.wall-page, .photo-page)
+  .size-picker.is-compact
+  .finish-cards
+  small {
+  font-size: 9px;
+  margin: 0;
+  white-space: nowrap;
+}
+.cube-store:is(.wall-page, .photo-page) .size-picker.is-compact .finish-swatch {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  border-radius: 3px;
+}
+.cube-store:is(.wall-page, .photo-page)
+  .size-picker.is-compact
+  .finish-cards
+  strong {
+  flex: 1;
+}
+.cube-store:is(.wall-page, .photo-page)
+  .size-picker.is-compact
+  .size-cards
+  .quality-low::after,
+.cube-store:is(.wall-page, .photo-page)
+  .size-picker.is-compact
+  .size-cards
+  .quality-ok::after {
+  top: 3px;
+  right: 3px;
+  width: 4px;
+  height: 4px;
+}
+.cube-store.photo-page .photo-panel-content {
+  padding: 14px 18px;
+}
+.cube-store.photo-page .photo-steps button {
+  padding-top: 10px;
+  padding-bottom: 9px;
+  font-size: 11px;
+}
+.cube-store.photo-page .photo-steps button > span {
+  width: 19px;
+  height: 19px;
+  font-size: 9px;
+}
+.cube-store.photo-page .photo-drop {
+  min-height: 88px;
+  padding: 12px;
+  gap: 4px;
+  border-radius: 10px;
+}
+.cube-store.photo-page .photo-drop > svg {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 3px;
+}
+.cube-store.photo-page .photo-drop strong {
+  font-size: 13px;
+}
+.cube-store.photo-page .photo-drop.has-photo {
+  min-height: 58px;
+  padding: 8px 10px;
+}
+.cube-store.photo-page .photo-upload-thumbnail {
+  width: 31px;
+  height: 36px;
+}
+.cube-store.photo-page .photo-control-label {
+  margin: 11px 0 6px;
+  font-size: 11px;
+}
+.cube-store.photo-page .photo-orientation button {
+  min-height: 33px;
+  padding: 8px 10px;
+  font-size: 11px;
+  border-radius: 7px;
+}
+.cube-store.photo-page .photo-orientation svg {
+  width: 14px;
+  height: 14px;
+}
+.cube-store.photo-page .photo-crop-actions {
+  margin-top: 12px;
+}
+.cube-store.photo-page .photo-hint {
+  margin: 10px 0;
+  font-size: 10px;
+}
+.cube-store.photo-page .photo-material-description {
+  margin-top: 12px;
+  font-size: 10px;
+}
+.cube-store.photo-page .photo-quality {
+  margin-top: 10px;
+  padding: 7px 9px;
+  border-radius: 8px;
+}
+.cube-store.photo-page .photo-privacy {
+  margin-top: 8px;
+  font-size: 9px;
+}
+.cube-store.photo-page .photo-panel-footer {
+  padding: 11px 18px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(175px, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+.cube-store.photo-page .photo-price {
+  margin-bottom: 9px;
+  margin: 0;
+  gap: 8px;
+}
+.cube-store.photo-page .photo-price strong {
+  font-size: 22px;
+}
+.cube-store.photo-page .photo-footer-actions .cube-button {
+  min-height: 34px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+.cube-store.photo-page .photo-back {
+  width: 34px;
+  border-radius: 8px;
+}
+.cube-store.wall-page .wall-tabs {
+  padding: 10px 14px;
+  gap: 5px;
+}
+.cube-store.wall-page .wall-tabs > button {
+  min-height: 34px;
+  padding: 6px;
+  font-size: 10px;
+  border-radius: 7px;
+}
+.cube-store.wall-page .wall-tabs > button > span {
+  width: 18px;
+  height: 18px;
+  font-size: 8px;
+}
+.cube-store.wall-page .wall-panel-scroll {
+  padding: 14px 18px;
+}
+.cube-store.wall-page .wall-size-fields {
+  gap: 12px;
+}
+.cube-store.wall-page .wall-size-control label {
+  gap: 7px;
+}
+.cube-store.wall-page .wall-size-control input[type="number"] {
+  height: 42px;
+  padding: 8px 31px 8px 12px;
+  font-size: 20px;
+  border-radius: 7px;
+}
+.cube-store.wall-page .wall-size-control label > div > span {
+  top: 15px;
+}
+.cube-store.wall-page .wall-size-control > input[type="range"] {
+  margin: 8px 0 5px;
+}
+.cube-store.wall-page .wall-size-summary {
+  padding: 9px 11px;
+  margin: 12px 0 16px;
+}
+.cube-store.wall-page .wall-settings fieldset {
+  margin: 16px 0;
+}
+.cube-store.wall-page .wall-settings legend {
+  margin-bottom: 9px;
+}
+.cube-store.wall-page .wall-swatches {
+  gap: 10px;
+}
+.cube-store.wall-page .wall-swatches button {
+  width: 27px;
+  height: 27px;
+}
+.cube-store.wall-page .wall-toggles {
+  padding-top: 13px;
+  gap: 10px;
+}
+.cube-store.wall-page .wall-selected {
+  padding: 10px;
+  border-radius: 9px;
+  margin-bottom: 10px;
+}
+.cube-store.wall-page .wall-selected-head {
+  margin-bottom: 9px;
+}
+.cube-store.wall-page .wall-selected-head strong {
+  font-size: 14px;
+}
+.cube-store.wall-page .wall-position-fields {
+  margin: 12px 0 10px;
+  gap: 9px;
+}
+.cube-store.wall-page .wall-position-fields label {
+  gap: 5px;
+}
+.cube-store.wall-page .wall-position-fields input {
+  padding: 8px;
+  font-size: 11px;
+}
+.cube-store.wall-page .wall-selected-actions button,
+.cube-store.wall-page .wall-selected-actions a {
+  min-height: 29px;
+  padding: 5px 8px;
+  font-size: 10px;
+  border-radius: 6px;
+}
+.cube-store.wall-page .wall-picker {
+  gap: 10px;
+}
+.cube-store.wall-page .wall-picker-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 11px 8px;
+}
+.cube-store.wall-page .wall-picker-grid img {
+  border-radius: 5px;
+}
+.cube-store.wall-page .wall-upload {
+  padding: 9px 11px;
+  gap: 9px;
+  border-radius: 8px;
+}
+.cube-store.wall-page .wall-upload strong {
+  margin-bottom: 2px;
+}
+.cube-store.wall-page .wall-search input {
+  height: 33px;
+}
+.cube-store.wall-page .wall-panel-footer {
+  padding: 11px 18px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(175px, 1fr);
+  gap: 8px 12px;
+  align-items: center;
+}
+.cube-store.wall-page .wall-panel-footer .cube-button {
+  min-height: 34px;
+  padding: 7px 10px;
+  font-size: 11px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+.cube-store.wall-page .wall-group-options {
+  border: 0;
+  padding: 0;
+  margin: 0 0 12px;
+}
+.cube-store.wall-page .wall-group-options legend {
+  font-size: 10px;
+  margin-bottom: 7px;
+}
+.cube-store.wall-page .wall-group-options .wall-chips {
+  gap: 5px;
+}
+.cube-store.wall-page .wall-group-options button {
+  min-height: 29px;
+  border-radius: 6px;
+  padding: 5px 9px;
+  font-size: 10px;
+}
+@media (max-width: 1000px) {
+  .cube-store:is(.wall-page, .photo-page)
+    .size-picker.is-compact
+    .finish-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .cube-store.wall-page .wall-picker-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+@media (max-width: 820px) {
+  .cube-store.wall-page .wall-tabs {
+    padding: 9px 16px;
+  }
+  .cube-store.wall-page .wall-panel-scroll {
+    padding: 15px 20px;
+  }
+  .cube-store.wall-page .wall-panel-footer {
+    padding: 10px 20px;
+  }
+}
+@media (max-width: 700px) {
+  .cube-store.photo-page .photo-panel-content {
+    padding: 15px 20px;
+  }
+  .cube-store.photo-page .photo-steps button {
+    padding: 9px 3px;
+    font-size: 10px;
+  }
+  .cube-store.photo-page .photo-panel-footer {
+    padding: 10px 20px 12px;
+  }
+  .cube-store.photo-page .photo-price strong {
+    font-size: 21px;
+  }
+  .cube-store.photo-page .photo-footer-actions .cube-button {
+    min-height: 34px;
+  }
+  .cube-store.photo-page .photo-back {
+    width: 34px;
+  }
+  .cube-store:is(.wall-page, .photo-page)
+    .size-picker.is-compact
+    .size-cards
+    button {
+    padding: 7px;
+  }
+  .cube-store:is(.wall-page, .photo-page)
+    .size-picker.is-compact
+    .size-cards
+    em {
+    display: none;
+  }
+}
+@media (max-width: 380px) {
+  .cube-store.wall-page .wall-toolbar button {
+    min-width: 26px;
+    min-height: 28px;
+    padding: 5px;
+  }
+  .cube-store.wall-page .wall-toolbar-group {
+    gap: 3px;
+  }
+}
+@media (max-width: 700px) {
+  .cube-store.wall-page .wall-group-selected .wall-selected-head small {
+    display: none;
+  }
+}
+.cube-store.photo-page .photo-size-modes {
+  display: flex;
+  gap: 5px;
+  margin: 0 0 13px;
+  margin-bottom: 10px;
+}
+.cube-store.photo-page .photo-size-modes button {
+  flex: 0 1 auto;
+  min-height: 29px;
+  padding: 5px 10px;
+  border: 1px solid #dedee3;
+  border-radius: 7px;
+  background: #fff;
+  color: #54545c;
+  font-size: 10px;
+  cursor: pointer;
+  min-width: 80px;
+}
+.cube-store.photo-page .photo-size-modes button[aria-pressed="true"] {
+  background: #252526;
+  color: #fff;
+  border-color: #252526;
+}
+.cube-store.photo-page .photo-custom-size {
+  margin-bottom: 10px;
+}
+.cube-store.photo-page .photo-custom-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 170px));
+  gap: 8px;
+}
+.cube-store.photo-page .photo-custom-fields label > span {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 10px;
+  color: #56565e;
+}
+.cube-store.photo-page .photo-custom-fields label > div {
+  display: flex;
+  align-items: center;
+  border: 1px solid #dcdce2;
+  border-radius: 7px;
+  padding-right: 11px;
+  background: #fff;
+}
+.cube-store.photo-page .photo-custom-fields input {
+  width: 100%;
+  min-width: 0;
+  padding: 7px 9px;
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  font-size: 13px;
+  color: #252526;
+}
+.cube-store.photo-page .photo-custom-fields input[aria-invalid="true"] {
+  outline: 1px solid #b74b3d;
+  background: #fff7f4;
+}
+.cube-store.photo-page .photo-custom-fields label > div > span {
+  font-size: 10px;
+  color: #65656d;
+}
+.cube-store.photo-page .photo-ratio-lock,
+.cube-store.photo-page .photo-native-ratio {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  margin-top: 8px;
+  padding: 4px 0;
+  background: none;
+  border: 0;
+  color: #55555e;
+  font-size: 10px;
+  cursor: pointer;
+}
+.cube-store.photo-page .photo-ratio-lock[aria-pressed="true"] {
+  color: #2458b9;
+}
+.cube-store.photo-page .photo-ratio-lock svg {
+  width: 13px;
+  height: 13px;
+}
+.cube-store.photo-page .photo-custom-hint {
+  font-size: 9px;
+  line-height: 1.6;
+  color: #6a6a72;
+  margin: 4px 0 0;
+}
+.cube-store.photo-page .photo-custom-hint.is-invalid {
+  color: #a53828;
+}
+.cube-store.photo-page {
+  --photo-bars: calc(var(--site-header) + var(--shop-bar));
+  --photo-intro: 0px;
+}
+.cube-store.photo-page .photo-intro {
+  height: var(--photo-intro);
+  padding: 0 18px;
+}
+.cube-store.photo-page .photo-intro h1 {
+  font-size: 22px;
+  margin: 0;
+  font-weight: 560;
+}
+.cube-store.photo-page .photo-workspace {
+  height: calc(100svh - var(--photo-bars) - var(--photo-intro));
+  min-height: 0;
+}
+.cube-store.photo-page .photo-steps {
+  padding: 0 14px;
+}
+.cube-store.photo-page .photo-status {
+  margin-top: 10px;
+  font-size: 10px;
+  line-height: 1.5;
+}
+.cube-store.photo-page .photo-price > span {
+  font-size: 10px;
+  min-width: 0;
+}
+.cube-store.photo-page .photo-footer-actions {
+  gap: 6px;
+  min-width: 0;
+}
+.cube-store.photo-page .photo-summary {
+  padding: 12px;
+  gap: 14px;
+}
+.cube-store.photo-page .photo-order-details {
+  margin: 12px 0;
+}
+.cube-store.photo-page .photo-order-details > div {
+  padding: 6px 0;
+}
+.cube-store.photo-page .photo-details {
+  margin-top: 10px;
+  color: #65656d;
+  font-size: 10px;
+  line-height: 1.6;
+}
+.cube-store.photo-page .photo-details summary {
+  cursor: pointer;
+  font-size: 10px;
+  color: #4d4d56;
+}
+.cube-store.photo-page .photo-details p {
+  margin: 6px 0 0;
+}
+.cube-store.photo-page .photo-preview-bar {
+  top: 12px;
+  left: 14px;
+  right: 14px;
+}
+.cube-store.photo-page .photo-preview-info {
+  bottom: 12px;
+  left: 14px;
+  right: 14px;
+  padding: 7px 10px;
+  font-size: 10px;
+}
+.cube-store.photo-page .photo-preview-modes button {
+  padding: 7px 10px;
+  font-size: 10px;
+}
+.cube-store.photo-page .photo-preview-modes {
+  padding: 3px;
+  border-radius: 10px;
+}
+.cube-store.photo-page .photo-scene-note {
+  top: 58px;
+  left: 16px;
+  padding: 5px 8px;
+  font-size: 8px;
+}
+.cube-store.wall-page {
+  --wall-intro-height: 0px;
+}
+.cube-store.wall-page .wall-intro {
+  padding: 0 18px;
+}
+.cube-store.wall-page .wall-intro h1 {
+  font-size: 22px;
+  margin: 0;
+  font-weight: 560;
+}
+.cube-store.wall-page .wall-workspace {
+  min-height: 0;
+}
+.cube-store.wall-page .wall-stage-column {
+  padding: 14px;
+}
+.cube-store.wall-page .wall-toolbar {
+  margin-bottom: 8px;
+}
+.cube-store.wall-page .wall-starter-note {
+  padding: 0;
+  background: none;
+  border-radius: 0;
+}
+.cube-store.wall-page .wall-starter-note .cube-text-link {
+  font-size: 11px;
+  margin: 0;
+}
+.cube-store.wall-page .wall-hint {
+  margin: 8px 0 0;
+  font-size: 8px;
+}
+.cube-store.wall-page .wall-footer-total {
+  margin: 0;
+  gap: 8px;
+}
+.cube-store.wall-page .wall-footer-total strong {
+  font-size: 22px;
+}
+.cube-store.wall-page .wall-step-actions {
+  gap: 6px;
+  min-width: 0;
+}
+.cube-store.wall-page .wall-step-back {
+  width: 34px;
+  min-width: 34px;
+  min-height: 34px;
+  padding: 6px;
+}
+.cube-store.wall-page .wall-panel-footer > p {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 9px;
+}
+.cube-store.wall-page .wall-summary-caption {
+  margin: 0 0 12px;
+  font-size: 11px;
+  color: #65656d;
+}
+.cube-store.wall-page .wall-summary ul {
+  gap: 8px;
+  margin-bottom: 0;
+}
+.cube-store.wall-page .wall-summary li {
+  padding: 9px;
+  gap: 10px;
+}
+.cube-store:is(.wall-page, .photo-page)
+  .size-picker.is-compact
+  .size-cards
+  button,
+.cube-store:is(.wall-page, .photo-page)
+  .size-picker.is-compact
+  .finish-cards
+  button {
+  flex: 0 1 auto;
+  min-height: 30px;
+  padding: 6px 9px;
+}
+.cube-store:is(.wall-page, .photo-page)
+  .size-picker.is-compact
+  .finish-cards
+  strong {
+  white-space: nowrap;
+}
+@media (max-width: 820px) {
+  .cube-store.photo-page {
+    --photo-intro: 0px;
+  }
+  .cube-store.wall-page {
+    --wall-intro-height: 0px;
+  }
+}
+@media (max-width: 700px) {
+  .cube-store.photo-page {
+  }
+  .cube-store.photo-page .photo-intro h1,
+  .cube-store.wall-page .wall-intro h1 {
+    font-size: 20px;
+  }
+  .cube-store.photo-page .photo-panel-content,
+  .cube-store.wall-page .wall-panel-scroll {
+    padding: 12px 14px;
+  }
+  .cube-store.photo-page .photo-panel-footer,
+  .cube-store.wall-page .wall-panel-footer {
+    grid-template-columns: minmax(0, 1fr) minmax(155px, 1fr);
+    padding: 9px 14px;
+    gap: 8px;
+  }
+  .cube-store.photo-page .photo-price > span,
+  .cube-store.wall-page .wall-footer-total > span {
+    font-size: 9px;
+    line-height: 1.4;
+  }
+  .cube-store.photo-page .photo-price strong,
+  .cube-store.wall-page .wall-footer-total strong {
+    font-size: 20px;
+  }
+  .cube-store.photo-page .photo-preview-bar {
+    top: 8px;
+    left: 10px;
+    right: 10px;
+  }
+  .cube-store.photo-page .photo-preview-modes button {
+    padding: 5px 8px;
+    font-size: 9px;
+    min-height: 25px;
+  }
+  .cube-store.photo-page .photo-preview-info {
+    bottom: 8px;
+    left: 10px;
+    right: 10px;
+    padding: 6px 8px;
+    font-size: 8px;
+  }
+  .cube-store.photo-page .photo-scene-note {
+    top: 46px;
+    left: 12px;
+    padding: 4px 6px;
+    font-size: 7px;
+  }
+  .cube-store.wall-page .wall-stage-column {
+    padding: 10px 14px;
+  }
+  .cube-store:is(.wall-page, .photo-page)
+    .size-picker.is-compact
+    .size-cards
+    button,
+  .cube-store:is(.wall-page, .photo-page)
+    .size-picker.is-compact
+    .finish-cards
+    button {
+    min-height: 31px;
+    padding: 6px 8px;
+  }
+}
+/* Keep short forms and their action together; long lists still scroll. */
+.cube-store.photo-page .photo-panel,
+.cube-store.wall-page .wall-panel {
+  background: #f7f7f8;
+}
+.cube-store.photo-page .photo-panel-content,
+.cube-store.wall-page .wall-panel-scroll {
+  flex: 0 1 auto;
+  background: #fff;
+}
+.cube-store.photo-page .photo-steps,
+.cube-store.wall-page .wall-tabs {
+  background: #fff;
+}
+.cube-store.photo-page .photo-panel-footer,
+.cube-store.wall-page .wall-panel-footer {
+  border-bottom: 1px solid #e9e9eb;
+}

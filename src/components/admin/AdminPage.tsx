@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react"
-import { ExternalLink, Inbox, LogOut, Package, ShoppingBag } from "lucide-react"
+import { ExternalLink, Heart, Inbox, LogOut, Package, ShoppingBag } from "lucide-react"
 
 import { apiRequest } from "@/lib/api"
 import { OrdersPanel } from "@/components/admin/OrdersPanel"
+import { InvitationsPanel } from "@/components/admin/InvitationsPanel"
 import { ProductsPanel } from "@/components/admin/ProductsPanel"
 import { SubmissionsPanel } from "@/components/admin/SubmissionsPanel"
 import type { Order, Submission } from "@/components/admin/types"
 import "@/components/admin/admin.css"
 
-type Tab = "submissions" | "orders" | "products"
+type Tab = "submissions" | "orders" | "products" | "invitations"
 
 function useNoIndex() {
   useEffect(() => {
@@ -81,6 +82,7 @@ export default function AdminPage() {
   const [submissions, setSubmissions] = useState<Submission[] | null>(null)
   const [orders, setOrders] = useState<Order[] | null>(null)
   const [loadError, setLoadError] = useState("")
+  const onUnauthorized = useCallback(() => setAuthState("out"), [])
 
   useEffect(() => {
     void apiRequest<{ authenticated: boolean }>("/api/admin/session").then((result) => {
@@ -133,6 +135,7 @@ export default function AdminPage() {
   const tabs: Array<{ key: Tab; label: string; icon: typeof Inbox; badge?: number }> = [
     { key: "submissions", label: "Kërkesat", icon: Inbox, badge: newSubmissions },
     { key: "orders", label: "Porositë", icon: ShoppingBag, badge: newOrders },
+    { key: "invitations", label: "Ftesat", icon: Heart },
     { key: "products", label: "Produktet", icon: Package },
   ]
 
@@ -183,6 +186,7 @@ export default function AdminPage() {
           <OrdersPanel orders={orders} onChange={setOrders} onRefresh={loadInbox} />
         )}
         {tab === "products" && <ProductsPanel />}
+        {tab === "invitations" && <InvitationsPanel onUnauthorized={onUnauthorized} />}
       </main>
     </div>
   )

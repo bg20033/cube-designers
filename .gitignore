@@ -17,6 +17,9 @@ test-results
 .codex-preview
 .wrangler
 
+# Print-ready order files (npm run print)
+print
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

@@ -1,0 +1,553 @@
+/* A photographed room replaces the diagram; the print remains a live surface. */
+.photo-page .photo-editor {
+  background: #dedbd5;
+}
+.photo-page .photo-preview-body {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+.photo-page .photo-preview-bar {
+  position: absolute;
+  top: 20px;
+  left: 24px;
+  right: 24px;
+  padding: 0;
+}
+.photo-page .photo-preview-modes {
+  padding: 4px;
+  border: 1px solid #ffffffbf;
+  border-radius: 13px;
+  background: #ffffffde;
+  box-shadow: 0 2px 14px #30271d0a;
+  backdrop-filter: blur(20px);
+}
+.photo-page .photo-preview-modes button {
+  padding: 10px 13px;
+  font-size: 11px;
+  border-radius: 9px;
+  color: #55565c;
+}
+.photo-page .photo-preview-modes button[aria-pressed="true"] {
+  background: #fff;
+  color: #202124;
+  box-shadow: 0 1px 5px #30271d17;
+}
+.photo-page .photo-preview-info {
+  position: absolute;
+  z-index: 3;
+  left: 24px;
+  right: 24px;
+  bottom: 20px;
+  padding: 11px 14px;
+  border: 1px solid #ffffffad;
+  border-radius: 10px;
+  color: #414248;
+  background: #ffffffed;
+  backdrop-filter: blur(20px);
+  font-size: 10px;
+}
+.photo-page .photo-preview-info > span:first-child {
+  font-weight: 550;
+}
+.photo-page .photo-room-preview {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #dedbd5;
+}
+.photo-page .photo-room-backdrop {
+  position: absolute;
+  inset: -30px;
+  background-image: var(--room-photo);
+  background-size: cover;
+  background-position: center;
+  filter: blur(22px);
+  transform: scale(1.05);
+  opacity: 0.8;
+}
+.photo-page .photo-room-stage {
+  position: absolute;
+  overflow: hidden;
+}
+.photo-page .photo-room-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+.photo-page .photo-room-placement {
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+.photo-page .photo-room-print {
+  transition: filter 0.35s ease;
+}
+.photo-page .photo-room-print.is-frame {
+  background-blend-mode: multiply;
+}
+.photo-page .photo-room-print.is-frame::before {
+  border-color: #ffffff38;
+  box-shadow:
+    inset -0.7px -1px 0 #0005,
+    inset 0.7px 1px 0 #ffffff4d;
+}
+.photo-page .photo-room-print.is-kanavace .print-surface-face::after {
+  background:
+    repeating-linear-gradient(0deg, #00000006 0 0.5px, transparent 0.5px 2px),
+    repeating-linear-gradient(90deg, #ffffff0a 0 0.5px, transparent 0.5px 2px);
+}
+.photo-page .photo-room-preview.is-detail {
+  display: grid;
+  place-items: center;
+  background-image: var(--room-photo);
+  background-size: 300% auto;
+  background-position: 50% 12%;
+}
+.photo-page .photo-detail-object {
+  position: relative;
+  margin-top: 5px;
+}
+.photo-page .photo-detail-object > .photo-room-print {
+  transform: perspective(1800px) rotateY(-4deg);
+  transform-origin: center;
+  box-shadow:
+    3px 5px 3px #201b1440,
+    12px 20px 35px #201b1426;
+}
+.photo-page .photo-detail-object > .photo-room-print.is-leter {
+  box-shadow:
+    1px 2px 2px #201b1440,
+    3px 7px 10px #201b1426;
+}
+.photo-page .photo-detail-object > .photo-room-print.is-pleksi {
+  box-shadow:
+    3px 6px 2px #ffffff3b,
+    9px 17px 18px #201b1459;
+}
+.photo-page .photo-detail-object > .photo-room-print.is-kanavace {
+  box-shadow:
+    5px 3px 0 #685e50,
+    8px 7px 3px #201b1430,
+    12px 20px 30px #201b1426;
+}
+.photo-page .photo-detail-size {
+  position: absolute;
+  top: calc(100% + 23px);
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  padding: 6px 10px;
+  background: #ffffffe6;
+  color: #48494e;
+  border: 1px solid #ffffffa3;
+  border-radius: 20px;
+  font-size: 10px;
+  box-shadow: 0 1px 8px #00000006;
+}
+.photo-page .photo-detail-size svg {
+  width: 11px;
+  height: 11px;
+  stroke-width: 1.4;
+}
+.photo-page .photo-scene-note {
+  position: absolute;
+  top: 76px;
+  left: 26px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 9px;
+  padding: 7px 10px;
+  color: #4b4b4e;
+  border-radius: 6px;
+  background: #ffffffe0;
+  font-size: 9px;
+  line-height: 1.4;
+  pointer-events: none;
+}
+.photo-page .photo-scene-note small {
+  font-size: inherit;
+  color: #656569;
+}
+.photo-page .preview-crop .photo-preview-body {
+  top: 72px;
+  bottom: 63px;
+}
+.photo-page .preview-crop .photo-preview-info {
+  background: #ffffffd9;
+}
+.photo-page .preview-crop .photo-cropper {
+  height: 100%;
+  padding: 4px 28px;
+}
+.photo-page .preview-crop .photo-cropper-stage {
+  background: #d5d5d3;
+  border-color: #c9c9c7;
+  box-shadow: inset 0 1px 12px #00000006;
+}
+.photo-page .photo-cropper-frame {
+  box-shadow: 0 8px 24px #1d1a152e;
+}
+.photo-page .photo-intro {
+  padding-left: 32px;
+  padding-right: 32px;
+  background: #fff;
+}
+.photo-page .photo-intro h1 {
+  font-size: 30px;
+  font-weight: 580;
+}
+.photo-page .photo-intro .cube-eyebrow {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+}
+.photo-page .photo-intro p {
+  font-size: 12px;
+}
+.photo-page .photo-panel {
+  background: #fff;
+}
+.photo-page .photo-panel-content {
+  padding: 36px clamp(28px, 4.2vw, 64px) 26px;
+}
+.photo-page .photo-step-heading > span {
+  font-size: 9px;
+  letter-spacing: 0.13em;
+}
+.photo-page .photo-step-heading h2 {
+  max-width: 410px;
+  margin: 12px 0;
+  font-size: clamp(28px, 2.65vw, 39px);
+  line-height: 1.1;
+  font-weight: 560;
+  letter-spacing: -0.047em;
+}
+.photo-page .photo-step-heading p {
+  font-size: 13px;
+  line-height: 1.7;
+  max-width: 400px;
+  margin-bottom: 27px;
+  color: #65656c;
+}
+.photo-page .photo-steps {
+  padding: 0 clamp(22px, 3vw, 44px);
+}
+.photo-page .photo-steps button {
+  padding: 22px 4px 20px;
+  font-size: 12px;
+  gap: 8px;
+}
+.photo-page .photo-steps button > span {
+  width: 22px;
+  height: 22px;
+  font-size: 10px;
+}
+.photo-page .photo-drop {
+  min-height: 210px;
+  gap: 10px;
+  border-color: #cfcfd6;
+  border-radius: 16px;
+  background: #fafafb;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+}
+.photo-page .photo-drop:hover {
+  border-color: #8b919d;
+  background: #f4f5f7;
+}
+.photo-page .photo-drop > svg {
+  width: 34px;
+  height: 34px;
+  margin-bottom: 9px;
+  color: #41434a;
+  stroke-width: 1.1;
+}
+.photo-page .photo-drop strong {
+  font-size: 15px;
+  font-weight: 560;
+}
+.photo-page .photo-drop span {
+  font-size: 12px;
+}
+.photo-page .photo-drop small {
+  font-size: 10px;
+}
+.photo-page .photo-drop.has-photo {
+  min-height: 92px;
+  padding: 16px;
+  background: #fafafb;
+}
+.photo-page .photo-drop.has-photo > svg {
+  width: 19px;
+  height: 19px;
+}
+.photo-page .photo-drop.has-photo strong {
+  font-size: 13px;
+}
+.photo-page .photo-upload-thumbnail {
+  width: 52px;
+  height: 58px;
+  border-radius: 6px;
+}
+.photo-page .photo-control-label {
+  font-size: 12px;
+  margin-top: 25px;
+}
+.photo-page .photo-orientation button {
+  padding: 14px 12px;
+  font-size: 12px;
+  border-radius: 11px;
+}
+.photo-page .photo-crop-actions button {
+  font-size: 11px;
+}
+.photo-page .photo-hint {
+  font-size: 11px;
+  line-height: 1.7;
+}
+.photo-page .photo-status {
+  font-size: 11px;
+  line-height: 1.7;
+  margin-top: 18px;
+}
+.photo-page .photo-privacy {
+  font-size: 10px;
+  line-height: 1.7;
+  margin-top: 19px;
+}
+.photo-page .photo-quality {
+  border-radius: 11px;
+  padding: 14px;
+}
+.photo-page .photo-quality strong {
+  font-size: 11px;
+}
+.photo-page .photo-quality small {
+  font-size: 10px;
+}
+.photo-page .photo-panel-footer {
+  padding: 20px clamp(28px, 4.2vw, 64px) 24px;
+  box-shadow: 0 -8px 24px #ffffffb3;
+}
+.photo-page .photo-price {
+  margin-bottom: 16px;
+}
+.photo-page .photo-price strong {
+  font-size: 29px;
+}
+.photo-page .photo-price > span {
+  font-size: 12px;
+}
+.photo-page .photo-footer-actions .cube-button {
+  min-height: 48px;
+  font-size: 12px;
+  border-radius: 12px;
+}
+.photo-page .photo-back {
+  width: 48px;
+  border-radius: 12px;
+}
+.photo-page .size-cards button,
+.photo-page .finish-cards button {
+  border-radius: 11px;
+  padding: 11px;
+  cursor: pointer;
+}
+.photo-page .size-cards button[aria-pressed="true"],
+.photo-page .finish-cards button[aria-pressed="true"] {
+  background: #f8f8fa;
+  border-color: #292a30;
+  box-shadow: inset 0 0 0 0.5px #292a30;
+}
+.photo-page .size-picker-group legend {
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+.photo-page .size-cards strong,
+.photo-page .finish-cards strong {
+  font-size: 12px;
+  font-weight: 550;
+}
+.photo-page .finish-swatch {
+  width: 34px;
+  height: 25px;
+  margin-bottom: 9px;
+}
+@media (min-width: 701px) and (max-width: 1050px) {
+  .photo-page .photo-panel-content {
+    padding: 26px;
+  }
+  .photo-page .photo-panel-footer {
+    padding: 18px 26px;
+  }
+  .photo-page .photo-step-heading h2 {
+    font-size: 29px;
+  }
+  .photo-page .photo-preview-bar {
+    left: 16px;
+    right: 16px;
+  }
+  .photo-page .photo-preview-modes button {
+    padding: 9px;
+    font-size: 10px;
+  }
+  .photo-page .photo-preview-info {
+    left: 16px;
+    right: 16px;
+    font-size: 9px;
+  }
+}
+@media (max-width: 700px) {
+  .photo-page .photo-intro {
+    padding: 9px 16px;
+  }
+  .photo-page .photo-intro h1 {
+    font-size: 22px;
+  }
+  .photo-page .photo-intro .cube-eyebrow {
+    font-size: 7px;
+    letter-spacing: 0.1em;
+  }
+  .photo-page .photo-intro p {
+    max-width: 100px;
+    font-size: 9px;
+    line-height: 1.5;
+  }
+  .photo-page .photo-preview-bar {
+    top: 9px;
+    left: 12px;
+    right: 12px;
+  }
+  .photo-page .photo-preview-modes {
+    padding: 3px;
+    border-radius: 10px;
+  }
+  .photo-page .photo-preview-modes button {
+    padding: 6px 9px;
+    font-size: 9px;
+    border-radius: 7px;
+    gap: 5px;
+  }
+  .photo-page .photo-preview-modes svg {
+    width: 12px;
+    height: 12px;
+  }
+  .photo-page .photo-preview-info {
+    left: 12px;
+    right: 12px;
+    bottom: 9px;
+    padding: 7px 9px;
+    font-size: 8px;
+    border-radius: 7px;
+  }
+  .photo-page .photo-preview-info > span:last-child {
+    max-width: 45%;
+  }
+  .photo-page .photo-scene-note {
+    top: 48px;
+    left: 14px;
+    padding: 4px 7px;
+    font-size: 7px;
+  }
+  .photo-page .photo-scene-note small {
+    display: none;
+  }
+  .photo-page .photo-panel-content {
+    padding: 20px 22px;
+  }
+  .photo-page .photo-steps {
+    padding: 0 14px;
+  }
+  .photo-page .photo-steps button {
+    padding: 11px 3px 10px;
+    font-size: 10px;
+    gap: 6px;
+  }
+  .photo-page .photo-steps button > span {
+    width: 18px;
+    height: 18px;
+    font-size: 8px;
+  }
+  .photo-page .photo-step-heading h2 {
+    font-size: 26px;
+    max-width: 290px;
+    margin: 8px 0 10px;
+  }
+  .photo-page .photo-step-heading p {
+    font-size: 11px;
+    margin-bottom: 18px;
+  }
+  .photo-page .photo-drop {
+    min-height: 160px;
+    gap: 7px;
+    border-radius: 12px;
+    padding: 17px;
+  }
+  .photo-page .photo-drop > svg {
+    width: 27px;
+    height: 27px;
+    margin-bottom: 4px;
+  }
+  .photo-page .photo-drop strong {
+    font-size: 14px;
+  }
+  .photo-page .photo-drop span {
+    font-size: 11px;
+  }
+  .photo-page .photo-drop small {
+    font-size: 9px;
+  }
+  .photo-page .photo-panel-footer {
+    padding: 11px 20px 13px;
+  }
+  .photo-page .photo-price {
+    margin-bottom: 9px;
+  }
+  .photo-page .photo-price strong {
+    font-size: 22px;
+  }
+  .photo-page .photo-price > span {
+    font-size: 10px;
+  }
+  .photo-page .photo-footer-actions .cube-button {
+    min-height: 38px;
+    font-size: 11px;
+    border-radius: 9px;
+  }
+  .photo-page .photo-back {
+    width: 38px;
+    border-radius: 9px;
+  }
+  .photo-page .photo-detail-size {
+    display: none;
+    top: calc(100% + 12px);
+    font-size: 8px;
+    padding: 4px 8px;
+  }
+  .photo-page .preview-crop .photo-preview-body {
+    top: 46px;
+    bottom: 43px;
+  }
+  .photo-page .preview-crop .photo-cropper {
+    padding: 0 20px;
+  }
+  .photo-page .size-cards button,
+  .photo-page .finish-cards button {
+    padding: 10px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .photo-page .photo-room-print,
+  .photo-page .photo-drop {
+    transition: none;
+  }
+}
+.photo-page .photo-cropper-zoom output {
+  color: #4a4a50;
+}

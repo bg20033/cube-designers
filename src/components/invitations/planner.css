@@ -1,0 +1,110 @@
+/* Planifikimi: one simple page for contacts, prices, payments and tasks. */
+.inv-plan { display:grid; gap:18px; }
+.inv-heading-actions { display:flex; flex-wrap:wrap; gap:10px; }
+.inv-plan-summary { display:grid; grid-template-columns:1.4fr 1fr 1fr 1.2fr; border:1px solid #e0e0e0; border-radius:4px; background:#fff; }
+.inv-plan-summary>* { padding:20px 22px; border-left:1px solid #ececec; display:flex; flex-direction:column; gap:6px; min-width:0; }
+.inv-plan-summary>:first-child { border-left:0; }
+.inv-plan-summary span { font-size:11px; color:#666; }
+.inv-plan-summary strong { font-size:22px; font-weight:600; letter-spacing:-.5px; color:#222; overflow-wrap:anywhere; }
+.inv-plan-summary .inv-plan-total strong { font-size:30px; letter-spacing:-1px; color:#111; }
+.inv-plan-target input { font:inherit; font-size:16px; padding:8px 10px; border:1px solid #d8d8d8; border-radius:3px; background:#fafafa; width:100%; }
+.inv-plan-target small { font-size:11px; color:#555; }
+.inv-plan-target small.is-over { color:#b42318; }
+.inv-plan-guests { margin:0; font-size:12px; color:#555; display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+.inv-plan-guests select,.inv-plan-guests input { font:inherit; padding:5px 8px; border:1px solid #d8d8d8; border-radius:3px; background:#fff; }
+.inv-plan-guests input { width:90px; }
+.inv-plan-guests strong { font-weight:550; color:#222; }
+.inv-plan-groups { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+.inv-plan-group { border:1px solid #e0e0e0; border-radius:4px; background:#fff; display:flex; flex-direction:column; }
+.inv-plan-group>header { display:flex; align-items:center; gap:10px; padding:14px 16px; border-bottom:1px solid #ececec; }
+.inv-plan-group>header .inv-service-icon { width:32px; height:32px; }
+.inv-app .inv-plan-group h2 { margin:0; font-size:14px; font-weight:600; color:#222; }
+.inv-plan-group>header strong { margin-left:auto; font-size:13px; font-weight:600; color:#222; }
+.inv-plan-group>header button { padding:7px 11px; }
+.inv-plan-group>header h2+button { margin-left:auto; }
+.inv-plan-row { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px 12px; padding:14px 16px; border-top:1px solid #f0f0f0; }
+.inv-plan-row:first-of-type { border-top:0; }
+.inv-plan-who { display:flex; flex-wrap:wrap; align-items:center; gap:4px 8px; min-width:0; }
+.inv-plan-who strong { font-size:13px; font-weight:600; color:#222; overflow-wrap:anywhere; }
+.inv-plan-who small { flex-basis:100%; display:flex; flex-wrap:wrap; gap:4px 10px; font-size:11px; color:#666; }
+.inv-plan-who small:empty { display:none; }
+.inv-plan-who a { display:inline-flex; align-items:center; gap:4px; color:#333; }
+.inv-plan-actions { display:flex; gap:4px; grid-row:1; grid-column:2; }
+.inv-plan-deal { grid-column:1/-1; margin:0; font-size:12px; line-height:1.5; color:#444; white-space:pre-line; background:#fafafa; border-left:2px solid #ddd; padding:6px 10px; }
+.inv-plan-deal span { color:#999; }
+.inv-plan-money { grid-column:1/-1; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:0; }
+.inv-plan-money dt { font-size:10px; color:#777; }
+.inv-plan-money dd { margin:2px 0 0; font-size:14px; font-weight:550; color:#222; }
+.inv-plan-money dd.inv-amount-due { color:#b42318; }
+.inv-plan-money small { font-size:10px; color:#777; }
+.inv-plan-empty { margin:14px 16px; padding:14px; border:1px dashed #d6d6d6; border-radius:4px; background:#fcfcfc; color:#555; font:inherit; font-size:12px; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; }
+.inv-plan-empty:hover { background:#f5f5f5; border-color:#aaa; }
+.inv-plan-tasks { border:1px solid #e0e0e0; border-radius:4px; background:#fff; }
+.inv-plan-tasks>header { display:flex; align-items:baseline; justify-content:space-between; padding:14px 16px; border-bottom:1px solid #ececec; }
+.inv-app .inv-plan-tasks h2 { margin:0; font-size:14px; font-weight:600; color:#222; }
+.inv-plan-tasks>header span { font-size:11px; color:#666; }
+.inv-plan-tasks form { display:flex; gap:8px; padding:12px 16px; }
+.inv-plan-tasks form input { flex:1; min-width:0; font:inherit; font-size:13px; padding:9px 11px; border:1px solid #d8d8d8; border-radius:3px; }
+.inv-plan-tasks ul { list-style:none; margin:0; padding:0; }
+.inv-plan-tasks li { display:flex; align-items:center; gap:12px; padding:10px 16px; border-top:1px solid #f0f0f0; font-size:13px; color:#222; }
+.inv-plan-tasks li>span { flex:1; min-width:0; overflow-wrap:anywhere; }
+.inv-plan-tasks li.is-done>span { color:#999; text-decoration:line-through; }
+@media (max-width:1000px) {
+  .inv-plan-summary { grid-template-columns:1fr 1fr; }
+  .inv-plan-summary>:nth-child(3) { border-left:0; }
+  .inv-plan-summary>:nth-child(n+3) { border-top:1px solid #ececec; }
+  .inv-plan-groups { grid-template-columns:1fr; }
+}
+@media (max-width:560px) {
+  .inv-plan-summary>* { padding:14px 16px; }
+  .inv-plan-summary>:first-child,.inv-plan-summary>:last-child { grid-column:1/-1; border-left:0; }
+  .inv-plan-summary>:nth-child(2) { border-left:0; border-top:1px solid #ececec; }
+  .inv-plan-summary>:nth-child(3) { border-left:1px solid #ececec; }
+  .inv-plan-summary strong { font-size:18px; }
+  .inv-plan-money dd { font-size:13px; }
+}
+
+/* Ftesa: design, names and message with a live preview. */
+.inv-editor { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:20px; align-items:start; }
+.inv-editor-form { padding:20px; display:grid; gap:18px; }
+.inv-editor-form fieldset { border:0; margin:0; padding:0; display:grid; gap:14px; min-width:0; }
+.inv-editor-form legend { font-size:12px; color:#444; margin-bottom:8px; padding:0; }
+.inv-editor-designs { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+.inv-editor-designs button { display:flex; align-items:center; gap:10px; text-align:left; padding:10px 12px; border:1px solid #ddd; border-radius:4px; background:#fff; color:#333; font:inherit; cursor:pointer; min-width:0; }
+.inv-editor-designs button:hover { border-color:#aaa; }
+.inv-editor-designs button[aria-pressed=true] { border-color:#222; background:#f6f6f6; }
+.inv-editor-designs button>span:nth-child(2) { display:flex; flex-direction:column; gap:2px; flex:1; min-width:0; }
+.inv-editor-designs strong { font-size:12px; font-weight:600; }
+.inv-editor-designs small { font-size:10px; color:#777; line-height:1.4; }
+.inv-editor-actions { display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
+.inv-editor-actions .inv-unsaved-badge { font-size:10px; }
+.inv-editor-note { margin:0; font-size:11px; color:#777; }
+.inv-editor-preview { position:sticky; top:20px; display:flex; justify-content:center; padding:28px; background:#f1f1f1; border-radius:4px; }
+.inv-editor-preview>.inv-card { width:100%; max-width:400px; }
+@media (max-width:1000px) {
+  .inv-editor { grid-template-columns:1fr; }
+  .inv-editor-preview { position:static; order:-1; padding:18px; }
+}
+
+/* Eventet: a card to add another event; delete sits apart from save. */
+.inv-event-add { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; min-height:180px; border:1px dashed #cfcfcf; border-radius:4px; background:#fcfcfc; color:#444; font:inherit; cursor:pointer; padding:20px; text-align:center; }
+.inv-event-add:hover { background:#f5f5f5; border-color:#999; }
+.inv-event-add strong { font-size:14px; font-weight:600; color:#222; }
+.inv-event-add span { font-size:11px; color:#777; }
+.inv-form-actions>.inv-event-delete { margin-right:auto; }
+.inv-dialog .inv-form>fieldset { border:0; margin:0; padding:0; min-width:0; display:grid; gap:inherit; }
+@media (max-width:700px) {
+  .inv-dialog .inv-form-actions { flex-wrap:wrap; }
+  .inv-dialog .inv-form-actions>.inv-button.inv-event-delete { flex:1 1 100%; order:2; margin-right:0; min-height:40px; }
+}
+.inv-event-card.is-editable { cursor:pointer; transition:border-color .15s; }
+.inv-event-card.is-editable:hover { border-color:#999; }
+.inv-event-card .inv-event-edit { padding:7px 11px; gap:6px; }
+.inv-dialog .inv-form>fieldset>.inv-location-fields { border:1px solid #e6e6e6; border-radius:4px; padding:14px; display:grid; gap:14px; margin:0; min-width:0; }
+.inv-location-fields>legend { padding:0 6px; font-size:12px; font-weight:600; color:#333; }
+.inv-location-fields small { font-weight:400; color:#777; }
+.inv-event-card-venue>a { display:inline-flex; align-items:center; gap:3px; margin-left:8px; color:var(--inv-accent-dark,#1b45ad); font-size:11px; }
+
+/* Paid more than the price: a visible warning, never a blocker. */
+.inv-plan-warning { margin:0; padding:8px 11px; border:1px solid #e7c46a; border-radius:6px; background:#fff8e6; color:#6b4d00; font-size:12px; line-height:1.5; }
+.inv-plan-money .inv-plan-over { display:block; color:#8a5a00; font-size:11px; }

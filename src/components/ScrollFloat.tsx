@@ -47,7 +47,7 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
 
     const charElements = el.querySelectorAll('.inline-block');
 
-    gsap.fromTo(
+    const tween = gsap.fromTo(
       charElements,
       {
         willChange: 'opacity, transform',
@@ -74,6 +74,11 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
         }
       }
     );
+
+    return () => {
+      tween.scrollTrigger?.kill();
+      tween.kill();
+    };
   }, [scrollContainerRef, animationDuration, ease, scrollStart, scrollEnd, stagger]);
 
   return (

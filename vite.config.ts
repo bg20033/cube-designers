@@ -73,6 +73,8 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [vercelApiDev(), react(), tailwindcss(), cloudflare()],
+    // scripts/prerender.mjs reads it to link each page's CSS and chunks.
+    build: { manifest: true },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),

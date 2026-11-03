@@ -1,92 +1,105 @@
-import { useEffect, useMemo, useState } from "react"
+import {
+  addCartItem,
+  cartLineKey,
+  getSelection,
+  getProductVariant,
+  resolveCart,
+  sanitizeCart,
+} from "@/data/commerce"
+import { ProductOptions } from "@/components/store/ProductOptions"
+import { OrderEmail } from "@/components/store/OrderEmail"
+import { useOrderAvailability } from "@/components/shop/useOrderAvailability"
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type FormEvent,
+} from "react"
 import {
   ArrowRight,
-  Eye,
+  Check,
+  Frame,
   Heart,
   Minus,
   PackageCheck,
   Plus,
-  RotateCcw,
   Search,
-  ShieldCheck,
   ShoppingBag,
   SlidersHorizontal,
-  Sparkles,
   Trash2,
-  Truck,
   X,
 } from "lucide-react"
-import { AnimatePresence, motion } from "motion/react"
 import { ResponsiveImage } from "@/components/ResponsiveImage"
-
+import Storefront from "@/components/store/Storefront"
+import { ShopOverview } from "@/components/store/ShopOverview"
+import { ShopProductCard } from "@/components/store/ShopProductCard"
+import { StoreDialog } from "@/components/store/StoreDialog"
+import { readStoredJson, writeStoredJson } from "@/components/shop/persistence"
+import { cropStyle } from "@/components/store/PrintSurface"
+import { FilterMenu } from "@/components/store/FilterMenu"
+import { MAX_ITEMS } from "@/components/shop/wall-layout"
 import {
-  SiteFooter,
-  SiteHeader,
-  SiteNoise,
-} from "@/components/SiteChrome"
+  facetGroups,
+  matchesFilters,
+  readFilters,
+  writeFilters,
+  type FilterValue,
+} from "@/components/store/poster-filters"
 import {
-  readStoredJson,
-  writeStoredJson,
-} from "@/components/shop/persistence"
-import {
-  getProductBySlug,
   products,
-  type CartItem,
+  productCategories,
+  getProductBySlug,
+  getPosterSize,
+  parseVariantId,
   type Product,
+  type CartItem,
   type ProductCategory,
-  type ProductionSpeed,
 } from "@/data/products"
 import { useShopProducts } from "@/components/shop/useShopProducts"
-import { apiRequest, type SubmitStatus } from "@/lib/api"
+import { apiRequest } from "@/lib/api"
+import { businessCategories, getShopCategoryOptions, matchesShopCategory, shopCategoryLabel, parentShopCategory } from "@/data/shop-navigation"
 
 export {
-  getProductBySlug,
   products,
-  type CartItem,
+  getProductBySlug,
   type Product,
+  type CartItem,
   type ProductCategory,
-  type ProductionSpeed,
 }
-
-const categories: Array<"Krejt" | ProductCategory> = [
-  "Krejt",
-  "Print",
-  "Promo",
-  "Textile",
-  "Packaging",
-  "Signage",
-]
-
-const productionOptions: ProductionSpeed[] = ["Fast", "Standard", "Custom"]
-
+export type { ProductionSpeed } from "@/data/products"
 const currency = new Intl.NumberFormat("de-DE", {
   style: "currency",
   currency: "EUR",
-  maximumFractionDigits: 0,
+  maximumFractionDigits: 2,
+  minimumFractionDigits: 0,
 })
-
+const BUSINESS = "Biznes"
+const PAGE_SIZE = 24
+const matchesCategory = matchesShopCategory
+const categories = ["Krejt", "Biznes", "Postera", "Paketa", ...businessCategories.map((item) => item.value)]
 
 export default function ShopPage() {
   const catalog = useShopProducts()
-  const [orderStatus, setOrderStatus] = useState<SubmitStatus>("idle")
-  const [orderError, setOrderError] = useState("")
-  const [placedOrder, setPlacedOrder] = useState<string | null>(null)
-  const [filter, setFilter] = useState<(typeof categories)[number]>("Krejt")
+  const availability = useOrderAvailability()
+  const [variantId, setVariantId] = useState<string | undefined>()
+  const [emailReady, setEmailReady] = useState(false)
+  const [category, setCategory] = useState<string>("Krejt")
+  const [filters, setFilters] = useState<FilterValue>({})
   const [search, setSearch] = useState("")
-  const [maxPrice, setMaxPrice] = useState(300)
-  const [productionFilters, setProductionFilters] = useState<ProductionSpeed[]>(
-    [],
-  )
   const [sort, setSort] = useState("featured")
-  const [favoritesOnly, setFavoritesOnly] = useState(false)
+  const [maxPrice, setMaxPrice] = useState<number | null>(null)
+  const [savedOnly, setSavedOnly] = useState(false)
   const [filtersOpen, setFiltersOpen] = useState(false)
+  const posterCategory = parentShopCategory(category) === "Postera"
   const [quickView, setQuickView] = useState<Product | null>(null)
   const [cartOpen, setCartOpen] = useState(false)
-  const [checkoutOpen, setCheckoutOpen] = useState(false)
-  const [queryHydrated, setQueryHydrated] = useState(false)
-  const [orderRef] = useState(
-    () => `CUBE-${Date.now().toString().slice(-6)}`,
-  )
+  const [checkout, setCheckout] = useState(false)
+  const [hydrated, setHydrated] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [error, setError] = useState("")
+  const [placedOrder, setPlacedOrder] = useState("")
   const [customer, setCustomer] = useState({
     name: "",
     email: "",
@@ -94,351 +107,362 @@ export default function ShopPage() {
     address: "",
     notes: "",
   })
-  const [cart, setCart] = useState<CartItem[]>(() => {
-    return readStoredJson<CartItem[]>("cube-shop-cart-v1", [])
-  })
-  const [favorites, setFavorites] = useState<string[]>(() => {
-    return readStoredJson<string[]>("cube-shop-favorites-v1", [])
-  })
+  const [cart, setCart] = useState<CartItem[]>(() =>
+    sanitizeCart(readStoredJson("cube-shop-cart-v1", [])),
+  )
+  const [favorites, setFavorites] = useState<string[]>(() =>
+    (() => {
+      const saved = readStoredJson<unknown>("cube-shop-favorites-v1", [])
+      return Array.isArray(saved)
+        ? saved
+            .filter((id): id is string => typeof id === "string")
+            .slice(0, 200)
+        : []
+    })(),
+  )
+  const initialQueryRead = useRef(false)
+  const pendingAdd = useRef<{ id: string; variant?: string } | null>(null)
+  const orderReference = useRef("")
+  const requestAttempt = useRef<{ payload: string; id: string } | null>(null)
 
+  const addToCart = useCallback(
+    (id: string, option?: string) => {
+      const product = catalog.find((candidate) => candidate.id === id)
+      if (!product) return
+      setCart((current) => addCartItem(current, product, option))
+      setEmailReady(false)
+      setPlacedOrder("")
+      setError("")
+      setCheckout(false)
+      setCartOpen(true)
+      setQuickView(null)
+    },
+    [catalog],
+  )
+  useEffect(() => {
+    if (initialQueryRead.current) return
+    initialQueryRead.current = true
+    const params = new URLSearchParams(window.location.search)
+    // Old links still say "Maica".
+    const requested =
+      params.get("category") === "Maica" ? "Veshje" : params.get("category")
+    if (requested?.toLowerCase() === "smart glass") {
+      window.location.replace("/shop/smart-glass")
+      return
+    }
+    if (categories.includes(requested as (typeof categories)[number]))
+      setCategory(requested!)
+    else if (productCategories.includes(requested as ProductCategory))
+      setCategory(BUSINESS)
+    if (requested && parentShopCategory(requested) === "Postera")
+      setFilters(readFilters(params))
+    setSearch(params.get("q") ?? "")
+    setSort(params.get("sort") ?? "featured")
+    setSavedOnly(params.get("saved") === "1")
+    const max = Number(params.get("max"))
+    if (params.has("max") && Number.isFinite(max) && max >= 0) setMaxPrice(max)
+    if (params.get("cart") === "1") setCartOpen(true)
+    if (params.has("category"))
+      requestAnimationFrame(() =>
+        document
+          .getElementById("catalog")
+          ?.scrollIntoView({ behavior: "instant" }),
+      )
+    const id = params.get("add")
+    pendingAdd.current = id
+      ? { id, variant: params.get("variant") ?? undefined }
+      : null
+    setHydrated(true)
+  }, [catalog])
+  useEffect(() => {
+    const pending = pendingAdd.current
+    const product = catalog.find((candidate) => candidate.id === pending?.id)
+    if (pending && product) {
+      pendingAdd.current = null
+      if (pending.variant && !getProductVariant(product, pending.variant))
+        return
+      addToCart(pending.id, pending.variant)
+    }
+  }, [catalog, addToCart])
   useEffect(() => {
     writeStoredJson("cube-shop-cart-v1", cart)
   }, [cart])
-
   useEffect(() => {
     writeStoredJson("cube-shop-favorites-v1", favorites)
   }, [favorites])
-
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const nextCategory = params.get("category")
-    const nextProduction = params
-      .get("production")
-      ?.split(",")
-      .filter((value): value is ProductionSpeed =>
-        productionOptions.includes(value as ProductionSpeed),
-      )
-
-    if (nextCategory && categories.includes(nextCategory as (typeof categories)[number])) {
-      setFilter(nextCategory as (typeof categories)[number])
-    }
-    setSearch(params.get("q") ?? "")
-    setSort(params.get("sort") ?? "featured")
-    setFavoritesOnly(params.get("saved") === "1")
-    setProductionFilters(nextProduction ?? [])
-
-    const nextMaxPrice = Number(params.get("max"))
-    if (Number.isFinite(nextMaxPrice) && nextMaxPrice >= 35 && nextMaxPrice <= 300) {
-      setMaxPrice(nextMaxPrice)
-    }
-
-    setQueryHydrated(true)
-  }, [])
-
-  useEffect(() => {
-    if (!queryHydrated) return
-
+    if (!hydrated) return
     const params = new URLSearchParams()
-    if (filter !== "Krejt") params.set("category", filter)
-    if (search.trim()) params.set("q", search.trim())
+    if (category !== "Krejt") params.set("category", category)
+    if (parentShopCategory(category) === "Postera") writeFilters(params, filters)
+    if (search) params.set("q", search)
     if (sort !== "featured") params.set("sort", sort)
-    if (maxPrice < 300) params.set("max", String(maxPrice))
-    if (productionFilters.length) {
-      params.set("production", productionFilters.join(","))
-    }
-    if (favoritesOnly) params.set("saved", "1")
+    if (savedOnly) params.set("saved", "1")
+    if (maxPrice !== null) params.set("max", String(maxPrice))
+    window.history.replaceState(
+      null,
+      "",
+      `/shop${params.size ? `?${params}` : ""}${window.location.hash}`,
+    )
+  }, [category, filters, search, sort, savedOnly, maxPrice, hydrated])
 
-    const query = params.toString()
-    const nextUrl = `${window.location.pathname}${query ? `?${query}` : ""}`
-    window.history.replaceState(null, "", nextUrl)
-  }, [
-    favoritesOnly,
-    filter,
-    maxPrice,
-    productionFilters,
-    queryHydrated,
+  const categoryProducts = useMemo(
+    () => catalog.filter((product) => matchesCategory(product, category)),
+    [catalog, category],
+  )
+  const priceCeiling = Math.max(5, Math.ceil(
+    categoryProducts.reduce((highest, product) => Math.max(highest, product.price), 0) / 5,
+  ) * 5)
+  const priceLimit = Math.min(maxPrice ?? priceCeiling, priceCeiling)
+  const savedCount = categoryProducts.filter((product) => favorites.includes(product.id)).length
+  const searchPlaceholder = {
+    Postera: "Kërko postera…",
+    Paketa: "Kërko paketa…",
+    Veshje: "Kërko veshje…",
+    Print: "Kërko printime…",
+    Textile: "Kërko çanta e tekstil…",
+    Promo: "Kërko produkte promocionale…",
+    Packaging: "Kërko ambalazh e paketim…",
+    Signage: "Kërko reklama e sinjalistikë…",
+    Biznes: "Kërko produkte për biznese…",
+  }[category] ?? `Kërko në ${category === "Krejt" ? "koleksion" : shopCategoryLabel(category)}…`
+
+  const visibleProducts = useMemo(
+    () =>
+      categoryProducts
+        .filter(
+          (product) =>
+            (parentShopCategory(category) !== "Postera" || matchesFilters(product, filters)) &&
+            product.price <= priceLimit &&
+            (!savedOnly || favorites.includes(product.id)) &&
+            `${product.name} ${product.category} ${shopCategoryLabel(product.category)} ${product.description} ${product.material}`
+              .toLowerCase()
+              .includes(search.trim().toLowerCase()),
+        )
+        .sort((a, b) =>
+          sort === "price-low"
+            ? a.price - b.price
+            : sort === "price-high"
+              ? b.price - a.price
+              : sort === "name"
+                ? a.name.localeCompare(b.name)
+                : Number(!!b.featured) - Number(!!a.featured),
+        ),
+    [categoryProducts, category, filters, priceLimit, savedOnly, favorites, search, sort],
+  )
+  // Any filter change starts again from the first page.
+  const filterKey = [
+    category,
+    JSON.stringify(filters),
     search,
     sort,
-  ])
-
-  useEffect(() => {
-    if (!cartOpen && !quickView && !filtersOpen) return
-
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = "hidden"
-
-    return () => {
-      document.body.style.overflow = previousOverflow
-    }
-  }, [cartOpen, filtersOpen, quickView])
-
-  const visibleProducts = useMemo(() => {
-    const normalizedSearch = search.trim().toLowerCase()
-    const filtered = catalog.filter((product) => {
-      const matchesCategory =
-        filter === "Krejt" || product.category === filter
-      const matchesSearch =
-        !normalizedSearch ||
-        `${product.name} ${product.category} ${product.description} ${product.material}`
-          .toLowerCase()
-          .includes(normalizedSearch)
-      const matchesPrice = product.price <= maxPrice
-      const matchesProduction =
-        !productionFilters.length ||
-        productionFilters.includes(product.production)
-      const matchesFavorite =
-        !favoritesOnly || favorites.includes(product.id)
-
-      return (
-        matchesCategory &&
-        matchesSearch &&
-        matchesPrice &&
-        matchesProduction &&
-        matchesFavorite
-      )
-    })
-
-    return [...filtered].sort((a, b) => {
-      if (sort === "price-low") return a.price - b.price
-      if (sort === "price-high") return b.price - a.price
-      if (sort === "name") return a.name.localeCompare(b.name)
-      return Number(Boolean(b.featured)) - Number(Boolean(a.featured))
-    })
-  }, [
-    catalog,
-    favorites,
-    favoritesOnly,
-    filter,
     maxPrice,
-    productionFilters,
-    search,
-    sort,
-  ])
-
-  const activeFilterCount =
-    Number(filter !== "Krejt") +
-    Number(Boolean(search)) +
-    Number(maxPrice < 300) +
-    productionFilters.length +
-    Number(favoritesOnly)
-
-  const cartDetails = cart.flatMap((item) => {
-    const product = catalog.find((candidate) => candidate.id === item.productId)
-    return product ? [{ ...item, product }] : []
-  })
-
-  const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0)
-  const subtotal = cartDetails.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
+    savedOnly,
+  ].join("|")
+  const [paging, setPaging] = useState({ key: filterKey, shown: PAGE_SIZE })
+  const shown = paging.key === filterKey ? paging.shown : PAGE_SIZE
+  const filterGroups = useMemo(
+    () =>
+      parentShopCategory(category) === "Postera" ? facetGroups(categoryProducts) : [],
+    [categoryProducts, category],
+  )
+  const { lines: cartDetails, unavailable } = resolveCart(cart, catalog)
+  // Prints that can be previewed on the wall planner (A6 cards cannot).
+  const wallCount = cartDetails.reduce((count, line) => {
+    const size = line.product.includeVariants
+      ? "set"
+      : parseVariantId(line.selection.variantId)?.size
+    const prints =
+      line.product.includes?.length ??
+      (line.product.category === "Postera" || line.product.customImage ? 1 : 0)
+    return size && size !== "a6" ? count + prints * line.quantity : count
+  }, 0)
+  const itemCount = cartDetails.reduce(
+    (total, item) => total + item.quantity,
     0,
   )
-
-  const orderHref = useMemo(() => {
-    const items = cartDetails
-      .map(
-        ({ product, quantity }) =>
-          `- ${product.name} × ${quantity}: ${currency.format(
-            product.price * quantity,
-          )}`,
-      )
-      .join("\n")
-
-    const body = [
-      `Porosia: ${orderRef}`,
-      "",
-      items,
-      "",
-      `Totali orientues: ${currency.format(subtotal)}`,
-      "",
-      `Emri: ${customer.name}`,
-      `Email: ${customer.email}`,
-      `Telefoni: ${customer.phone}`,
-      `Adresa: ${customer.address}`,
-      `Shënime: ${customer.notes || "—"}`,
-    ].join("\n")
-
-    return `mailto:info@cube-designers.com?subject=${encodeURIComponent(
-      `Porosi e re ${orderRef}`,
-    )}&body=${encodeURIComponent(body)}`
-  }, [cartDetails, customer, orderRef, subtotal])
-
-  function addToCart(productId: string) {
-    setCart((current) => {
-      const existing = current.find((item) => item.productId === productId)
-
-      if (existing) {
-        return current.map((item) =>
-          item.productId === productId
-            ? { ...item, quantity: item.quantity + 1 }
-            : item,
-        )
-      }
-
-      return [...current, { productId, quantity: 1 }]
-    })
-    setCartOpen(true)
-    setCheckoutOpen(false)
-  }
-
-  function toggleFavorite(productId: string) {
-    setFavorites((current) =>
-      current.includes(productId)
-        ? current.filter((id) => id !== productId)
-        : [...current, productId],
-    )
-  }
-
-  function toggleProduction(speed: ProductionSpeed) {
-    setProductionFilters((current) =>
-      current.includes(speed)
-        ? current.filter((item) => item !== speed)
-        : [...current, speed],
-    )
-  }
-
-  function clearFilters() {
-    setFilter("Krejt")
+  const subtotal = cartDetails.reduce(
+    (total, item) => total + item.quantity * item.selection.price,
+    0,
+  )
+  const orderText = [
+    "KËRKESË PËR POROSI — CUBE",
+    "",
+    `Emri: ${customer.name}`,
+    `Telefoni: ${customer.phone}`,
+    `Email: ${customer.email || "—"}`,
+    `Adresa: ${customer.address}`,
+    `Personalizimi: ${customer.notes || "—"}`,
+    "",
+    ...cartDetails.map(
+      (item) =>
+        `${item.quantity} × ${item.product.name} (${item.selection.label}) — ${currency.format(item.quantity * item.selection.price)}${item.photo ? ` · foto: ${item.photo.image}` : ""}`,
+    ),
+    "",
+    `Totali i produkteve: ${currency.format(subtotal)}`,
+    "Dërgesa, afati dhe çmimi final konfirmohen nga studioja.",
+  ].join("\n")
+  const orderHref = `mailto:info@cube-designers.com?subject=${encodeURIComponent("Porosi CUBE")}&body=${encodeURIComponent(orderText)}`
+  function resetFilters() {
+    setFilters({})
     setSearch("")
-    setMaxPrice(300)
-    setProductionFilters([])
-    setFavoritesOnly(false)
+    setSort("featured")
+    setMaxPrice(null)
+    setSavedOnly(false)
   }
-
-  function changeQuantity(productId: string, change: number) {
+  function selectCategory(nextCategory: string) {
+    setCategory(nextCategory)
+    resetFilters()
+    setFiltersOpen(false)
+  }
+  function renderSortControl(showLabel = false) {
+    return <label className="cube-sort">
+      <span className={showLabel ? undefined : "sr-only"}>Rendit produktet: {shopCategoryLabel(category)}</span>
+      <select value={sort} onChange={(event) => setSort(event.target.value)}>
+        <option value="featured">Të zgjedhurat</option>
+        <option value="price-low">Çmimi: i ulët → i lartë</option>
+        <option value="price-high">Çmimi: i lartë → i ulët</option>
+        <option value="name">Emri A–Z</option>
+      </select>
+    </label>
+  }
+  function renderPriceControls() {
+    return <>
+      <label><span>Çmimi maksimal <strong>{currency.format(priceLimit)}</strong></span>
+        <input type="range" aria-label="Çmimi maksimal" min="0" max={priceCeiling} step="5" value={priceLimit} onChange={(event) => setMaxPrice(Number(event.target.value))} />
+      </label>
+      <button type="button" aria-pressed={savedOnly} onClick={() => setSavedOnly(!savedOnly)}>
+        <Heart size={17} fill={savedOnly ? "currentColor" : "none"} /> Vetëm të ruajturat ({savedCount})
+      </button>
+    </>
+  }
+  function renderProduct(product: Product, slider = false) {
+    return <ShopProductCard
+      key={product.id}
+      product={product}
+      favorite={favorites.includes(product.id)}
+      onFavorite={() => toggleFavorite(product.id)}
+      onQuickView={() => { setVariantId(product.defaultVariantId); setQuickView(product) }}
+      onAdd={() => addToCart(product.id)}
+      slider={slider}
+    />
+  }
+  function toggleFavorite(id: string) {
+    setFavorites((current) =>
+      current.includes(id)
+        ? current.filter((item) => item !== id)
+        : [...current, id],
+    )
+  }
+  // Lines never drop below their option's minimum; the bin removes them.
+  function changeQuantity(id: string, change: number, minimum = 1) {
     setCart((current) =>
       current.flatMap((item) => {
-        if (item.productId !== productId) return [item]
-        const quantity = item.quantity + change
-        return quantity > 0 ? [{ ...item, quantity }] : []
+        if (cartLineKey(item) !== id) return [item]
+        const next = Math.max(item.quantity, minimum) + change
+        if (next <= 0) return []
+        return [{ ...item, quantity: Math.min(Math.max(next, minimum), 999) }]
       }),
     )
   }
-
-  function removeFromCart(productId: string) {
-    setCart((current) =>
-      current.filter((item) => item.productId !== productId),
-    )
-  }
-
-  async function submitOrder(event: React.FormEvent<HTMLFormElement>) {
+  async function submitOrder(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (orderStatus === "sending") return
-
-    setOrderStatus("sending")
-    setOrderError("")
+    if (
+      sending ||
+      !cartDetails.length ||
+      unavailable.length ||
+      availability === "checking"
+    )
+      return
+    if (availability === "email") {
+      setEmailReady(true)
+      return
+    }
+    const items = cartDetails.map(
+      ({ productId, quantity, selection, photo }) => ({
+        productId,
+        quantity,
+        ...(selection.variantId ? { variantId: selection.variantId } : {}),
+        ...(photo ? { photo } : {}),
+      }),
+    )
+    const payload = JSON.stringify({ customer, items })
+    if (requestAttempt.current?.payload !== payload)
+      requestAttempt.current = { payload, id: crypto.randomUUID() }
+    orderReference.current ||= `CUBE-${Math.floor(100000 + Math.random() * 900000)}`
+    setSending(true)
+    setError("")
     const result = await apiRequest<{ reference: string }>("/api/orders", {
       method: "POST",
       body: {
-        reference: orderRef,
+        reference: orderReference.current,
+        requestId: requestAttempt.current.id,
+        website: new FormData(event.currentTarget).get("website") ?? "",
         customer,
-        items: cart.map(({ productId, quantity }) => ({ productId, quantity })),
+        items,
       },
     })
-
-    if (result.ok) {
-      setOrderStatus("sent")
-      setPlacedOrder(result.data.reference ?? orderRef)
+    setSending(false)
+    if (result.ok && /^CUBE-\d{6}$/.test(result.data.reference)) {
+      setEmailReady(false)
+      setPlacedOrder(result.data.reference)
       setCart([])
-      return
-    }
-
-    // Fall back to the email order so a customer is never stuck.
-    setOrderStatus("error")
-    setOrderError(`${result.error} Po hapet email-i si alternativë.`)
-    window.location.assign(orderHref)
+      orderReference.current = ""
+      requestAttempt.current = null
+    } else
+      setError(
+        "Porosia nuk u dërgua. Provo përsëri ose dërgoje me email më poshtë.",
+      )
   }
 
+  const overview = category === "Krejt" && !search && !savedOnly && maxPrice === null && sort === "featured"
+
   return (
-    <div className="agency-site shop-page">
-      <SiteNoise />
-      <SiteHeader />
-
-      <main className="shop-main">
-        <div className="shop-compact-head" id="top">
-          <div>
-            <span>K/06 · CUSTOM PRINT & MERCHANDISE</span>
-            <h1>SHOP.</h1>
-          </div>
-          <p>Zgjidhe produktin, sasinë dhe dërgoje për konfirmim.</p>
-          <button type="button" onClick={() => setCartOpen(true)}>
-            <ShoppingBag />
-            Cart
-            <span>{String(itemCount).padStart(2, "0")}</span>
-          </button>
-        </div>
-
-        <section className="shop-assurance" aria-label="Shop benefits">
-          <article>
-            <PackageCheck />
-            <span>01</span>
-            <strong>Artwork check</strong>
-          </article>
-          <article>
-            <Truck />
-            <span>02</span>
-            <strong>Dërgesë Kosovë</strong>
-          </article>
-          <article>
-            <ShieldCheck />
-            <span>03</span>
-            <strong>Para prodhimit</strong>
-          </article>
-        </section>
-
-        <section className="shop-category-browser">
-          <header>
-            <span>Shfleto sipas kategorisë</span>
-            <strong>20 produkte / 05 koleksione</strong>
-          </header>
-          <div>
-            {categories.slice(1).map((category, index) => (
+    <>
+      <Storefront onCart={() => setCartOpen(true)} count={itemCount} overview={overview}>
+        {overview ? <ShopOverview catalog={catalog} renderProduct={(product) => renderProduct(product, true)} /> : (
+        <section
+          className="cube-shop-main"
+          id="catalog"
+          aria-labelledby="catalog-title"
+        >
+          <h1 className="sr-only" id="catalog-title">Shop</h1>
+          <nav
+            className="cube-shop-categories"
+            aria-label={`Kategoritë: ${shopCategoryLabel(parentShopCategory(category))}`}
+          >
+            {getShopCategoryOptions(category).map((item) => item.href ? (
+              <a href={item.href} key={item.href}>{item.label}</a>
+            ) : (
               <button
-                className={filter === category ? "active" : ""}
-                data-category={category.toLowerCase()}
+                key={item.value}
                 type="button"
-                key={category}
+                className={category === item.value ? "active" : ""}
+                aria-pressed={category === item.value}
                 onClick={() => {
-                  setFilter(category)
-                  document
-                    .querySelector(".shop-catalog")
-                    ?.scrollIntoView({ behavior: "smooth" })
+                  selectCategory(item.value!)
                 }}
               >
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                <strong>{category}</strong>
-                <small>
-                  {catalog.filter((product) => product.category === category).length}{" "}
-                  products
-                </small>
-                <ArrowRight />
+                {item.label}
+                <span>
+                  {catalog.filter((p) => matchesCategory(p, item.value!, "")).length}
+                </span>
               </button>
             ))}
-          </div>
-        </section>
-
-        <section className="shop-catalog">
-          <header className="shop-catalog-heading">
-            <div>
-              <span>01 / Katalogu</span>
-              <h2>ZGJIDH FORMATIN.</h2>
-            </div>
-            <div>
-              <p>
-                Çmimet janë orientuese dhe bazohen në specifikat e listuara.
-                Para prodhimit e konfirmojmë materialin, artwork-un dhe afatin.
-              </p>
-            </div>
-          </header>
-
-          <div className="shop-commerce-toolbar">
-            <label className="shop-search">
-              <Search />
+          </nav>
+          {categoryProducts.length > 0 && <div
+            className="cube-shop-toolbar"
+            role="group"
+            aria-label={`Kërkimi dhe filtrat: ${shopCategoryLabel(category)}`}
+          >
+            <label className="cube-search">
+              <Search size={18} />
               <input
                 type="search"
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder="Kërko produkte, material, kategori..."
-                aria-label="Kërko produktet"
+                placeholder={searchPlaceholder}
+                aria-label={`Kërko te ${shopCategoryLabel(category)}`}
               />
               {search && (
                 <button
@@ -446,599 +470,488 @@ export default function ShopPage() {
                   aria-label="Pastro kërkimin"
                   onClick={() => setSearch("")}
                 >
-                  <X />
+                  <X size={16} />
                 </button>
               )}
             </label>
-
-            <button
-              className="shop-mobile-filter"
-              type="button"
-              onClick={() => setFiltersOpen(true)}
-            >
-              <SlidersHorizontal />
-              Filtrat
-              {activeFilterCount > 0 && <span>{activeFilterCount}</span>}
-            </button>
-
-            <label className="shop-sort">
-              <span>Sort</span>
-              <select value={sort} onChange={(event) => setSort(event.target.value)}>
-                <option value="featured">Featured first</option>
-                <option value="price-low">Price: low to high</option>
-                <option value="price-high">Price: high to low</option>
-                <option value="name">Name: A–Z</option>
-              </select>
-            </label>
-
-            <button
-              className={favoritesOnly ? "shop-saved active" : "shop-saved"}
-              type="button"
-              onClick={() => setFavoritesOnly((current) => !current)}
-              aria-pressed={favoritesOnly}
-            >
-              <Heart />
-              Saved
-              <span>{favorites.length}</span>
-            </button>
-          </div>
-
-          <div className="shop-results-bar">
-            <p>
-              <strong>{String(visibleProducts.length).padStart(2, "0")}</strong>
-              rezultate
-              {filter !== "Krejt" && <span>në {filter}</span>}
-            </p>
-            {activeFilterCount > 0 && (
-              <button type="button" onClick={clearFilters}>
-                <RotateCcw />
-                Pastro {activeFilterCount} filtra
-              </button>
-            )}
-          </div>
-
-          <div className="shop-catalog-layout">
-            <aside
-              className={filtersOpen ? "shop-filters open" : "shop-filters"}
-              aria-label="Filtrat e produkteve"
-            >
-              <header>
-                <div>
-                  <SlidersHorizontal />
-                  <strong>FILTERS</strong>
-                </div>
-                <button
-                  type="button"
-                  aria-label="Mbylli filtrat"
-                  onClick={() => setFiltersOpen(false)}
-                >
-                  <X />
-                </button>
-              </header>
-
-              <fieldset>
-                <legend>Category</legend>
-                {categories.map((category) => (
-                  <label key={category}>
-                    <input
-                      type="radio"
-                      name="shop-category"
-                      checked={filter === category}
-                      onChange={() => setFilter(category)}
-                    />
-                    <span>{category}</span>
-                    <small>
-                      {category === "Krejt"
-                        ? catalog.length
-                        : catalog.filter(
-                            (product) => product.category === category,
-                          ).length}
-                    </small>
-                  </label>
-                ))}
-              </fieldset>
-
-              <fieldset>
-                <legend>Production time</legend>
-                {productionOptions.map((speed) => (
-                  <label key={speed}>
-                    <input
-                      type="checkbox"
-                      checked={productionFilters.includes(speed)}
-                      onChange={() => toggleProduction(speed)}
-                    />
-                    <span>{speed}</span>
-                    <small>
-                      {speed === "Fast"
-                        ? "1–3 days"
-                        : speed === "Standard"
-                          ? "4–7 days"
-                          : "8+ days"}
-                    </small>
-                  </label>
-                ))}
-              </fieldset>
-
-              <fieldset className="shop-price-filter">
-                <legend>Max price</legend>
-                <div>
-                  <span>€35</span>
-                  <strong>{currency.format(maxPrice)}</strong>
-                </div>
-                <input
-                  type="range"
-                  min="35"
-                  max="300"
-                  step="5"
-                  value={maxPrice}
-                  onChange={(event) => setMaxPrice(Number(event.target.value))}
-                  aria-label="Çmimi maksimal"
-                />
-              </fieldset>
-
-              <button
-                className={favoritesOnly ? "shop-filter-saved active" : "shop-filter-saved"}
-                type="button"
-                onClick={() => setFavoritesOnly((current) => !current)}
+            {posterCategory ? (
+              <FilterMenu
+                key={category}
+                label="Seria"
+                groups={filterGroups}
+                value={filters}
+                onChange={setFilters}
+                extraActiveCount={Number(maxPrice !== null) + Number(savedOnly) + Number(sort !== "featured")}
+                onReset={() => { setFilters({}); setMaxPrice(null); setSavedOnly(false); setSort("featured") }}
               >
-                <Heart />
-                Vetëm të ruajturat
-                <span>{favorites.length}</span>
-              </button>
-
-              <footer>
-                <button type="button" onClick={clearFilters}>
-                  Reset all
-                </button>
-                <button type="button" onClick={() => setFiltersOpen(false)}>
-                  Shiko {visibleProducts.length} rezultate
-                </button>
-              </footer>
-            </aside>
-
-            <div className="shop-results">
-              {!visibleProducts.length && (
-                <div className="shop-no-results">
-                  <Search />
-                  <strong>S’gjetëm asnjë produkt.</strong>
-                  <p>Provo një term tjetër ose pastro filtrat aktivë.</p>
-                  <button type="button" onClick={clearFilters}>
-                    Pastro filtrat
-                  </button>
+                <div className="poster-menu-controls">
+                  {renderSortControl(true)}
+                  {renderPriceControls()}
                 </div>
-              )}
-
-              <div className="shop-product-grid">
-                {visibleProducts.map((product) => {
-                  const saved = favorites.includes(product.id)
-                  const cartQuantity =
-                    cart.find((item) => item.productId === product.id)?.quantity ??
-                    0
-
-                  return (
-                      <article
-                        className="shop-product"
-                        data-tone={product.tone}
-                        key={product.id}
-                      >
-                        <div className="shop-product-visual">
-                          {product.image && (
-                            <ResponsiveImage
-                              image={product.image}
-                              sizes="(max-width: 760px) 50vw, (max-width: 1100px) 50vw, 33vw"
-                            />
-                          )}
-                          <div className="shop-product-topline">
-                            <span>{product.number}</span>
-                            <div>
-                              <button
-                                className={saved ? "active" : ""}
-                                type="button"
-                                aria-label={
-                                  saved
-                                    ? `Largo ${product.name} nga saved`
-                                    : `Ruaje ${product.name}`
-                                }
-                                onClick={() => toggleFavorite(product.id)}
-                              >
-                                <Heart />
-                              </button>
-                              <button
-                                type="button"
-                                aria-label={`Quick view ${product.name}`}
-                                onClick={() => setQuickView(product)}
-                              >
-                                <Eye />
-                              </button>
-                            </div>
-                          </div>
-                          {product.badge && (
-                            <span className="shop-product-badge">{product.badge}</span>
-                          )}
-                          <strong aria-hidden="true">{product.name}</strong>
-                          <i>{product.category}</i>
-                        </div>
-                        <div className="shop-product-info">
-                          <div>
-                            <span>
-                              {product.category} / {product.quantityLabel}
-                            </span>
-                            <strong>
-                              <a href={`/shop/${product.id}`}>{product.name}</a>
-                            </strong>
-                          </div>
-                          <p>{product.description}</p>
-                          <div className="shop-product-meta">
-                            <span>{product.production}</span>
-                            <span>{product.material}</span>
-                            <span>Logo-ready</span>
-                          </div>
-                          <footer>
-                            <div>
-                              <span>Nga</span>
-                              <strong>{currency.format(product.price)}</strong>
-                            </div>
-                            <button
-                              type="button"
-                              aria-label={`${
-                                cartQuantity > 0
-                                  ? `${cartQuantity} në cart — shto edhe një`
-                                  : "Shto"
-                              } ${product.name}`}
-                              onClick={() => addToCart(product.id)}
-                            >
-                              <span>{cartQuantity > 0 ? cartQuantity : "Shto"}</span>
-                              <Plus />
-                            </button>
-                          </footer>
-                        </div>
-                      </article>
-                  )
-                })}
-              </div>
+              </FilterMenu>
+            ) : <>
+              <button type="button" className={`cube-filter-button ${filtersOpen ? "active" : ""}`} aria-expanded={filtersOpen} onClick={() => setFiltersOpen(!filtersOpen)}>
+                <SlidersHorizontal size={16} /> Filtrat
+              </button>
+              {renderSortControl()}
+            </>}
+          </div>}
+          {!posterCategory && categoryProducts.length > 0 && filtersOpen && (
+            <div className="cube-filter-panel">
+              {renderPriceControls()}
+              <button type="button" onClick={resetFilters}>Pastro filtrat</button>
             </div>
+          )}
+          <div className="cube-result-count" role="status">
+            <span>
+              {visibleProducts.length} produkte
+              {category !== "Krejt"
+                ? ` · ${shopCategoryLabel(category)}`
+                : ""}
+              {category === "Postera" && filters.seria?.length
+                ? ` · ${filters.seria.join(", ")}`
+                : ""}
+            </span>
+            <span>Çmime orientuese · Konfirmohen para prodhimit</span>
+          </div>
+          <div className="cube-shop-grid">
+            {visibleProducts.slice(0, shown).map((product) => renderProduct(product))}
+          </div>
+          {visibleProducts.length > shown && (
+            <div className="cube-load-more">
+              <button
+                className="cube-button cube-button-dark"
+                type="button"
+                onClick={() =>
+                  setPaging({ key: filterKey, shown: shown + PAGE_SIZE })
+                }
+              >
+                Shfaq më shumë <Plus size={16} />
+              </button>
+              <span>
+                {shown} nga {visibleProducts.length} produkte
+              </span>
+            </div>
+          )}
+          {!visibleProducts.length && (
+            <div className="cube-empty">
+              <Search />
+              <h2>S’gjetëm asnjë produkt.</h2>
+              <p>Provo një kërkim tjetër ose pastro filtrat.</p>
+              <button
+                className="cube-button"
+                type="button"
+                onClick={resetFilters}
+              >
+                Pastro filtrat
+              </button>
+            </div>
+          )}
+          {category === "Krejt" && !search && (
+            <div className="cube-business-strip">
+              <div>
+                <strong>Print për biznese</strong>
+                <p>
+                  Kartëvizita, banera, ambalazh, stickers dhe merch për ekipin.
+                </p>
+              </div>
+              <button
+                className="cube-text-link"
+                type="button"
+                onClick={() => {
+                  selectCategory(BUSINESS)
+                  document
+                    .getElementById("catalog")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }}
+              >
+                Shiko printin për biznese <ArrowRight size={16} />
+              </button>
+            </div>
+          )}
+          <div className="cube-shop-help">
+            <p>Ke një ide tjetër në mendje?</p>
+            <a className="cube-text-link" href="/start-project">
+              Ta krijojmë bashkë <ArrowRight size={16} />
+            </a>
           </div>
         </section>
-      </main>
-
-      <SiteFooter />
-
-      <AnimatePresence>
-        {quickView && (
-          <>
-            <motion.button
-              className="shop-quick-backdrop"
-              type="button"
-              aria-label="Mbylle quick view"
-              onClick={() => setQuickView(null)}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            />
-            <motion.section
-              className="shop-quick-view"
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="shop-quick-title"
-              initial={{ opacity: 0, y: 30, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 18, scale: 0.98 }}
-              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <button
-                className="shop-quick-close"
-                type="button"
-                aria-label="Mbylle"
-                onClick={() => setQuickView(null)}
-              >
-                <X />
-              </button>
-              <div className="shop-quick-visual" data-tone={quickView.tone}>
-                {quickView.image && (
-                  <ResponsiveImage
-                    image={quickView.image}
-                    sizes="(max-width: 760px) 100vw, 50vw"
-                  />
-                )}
-                <span>{quickView.number}</span>
-                <strong aria-hidden="true">{quickView.name}</strong>
-                <i>{quickView.category}</i>
-              </div>
-              <div className="shop-quick-copy">
-                <div className="shop-quick-kicker">
-                  <span>{quickView.category}</span>
-                  {quickView.badge && <strong>{quickView.badge}</strong>}
-                </div>
-                <h2 id="shop-quick-title">{quickView.name}</h2>
-                <p>{quickView.description}</p>
-                <dl>
-                  <div>
-                    <dt>Package</dt>
-                    <dd>{quickView.quantityLabel}</dd>
-                  </div>
-                  <div>
-                    <dt>Material</dt>
-                    <dd>{quickView.material}</dd>
-                  </div>
-                  <div>
-                    <dt>Production</dt>
-                    <dd>{quickView.production}</dd>
-                  </div>
-                  <div>
-                    <dt>Personalization</dt>
-                    <dd>Logo-ready</dd>
-                  </div>
-                </dl>
-                <div className="shop-quick-price">
-                  <div>
-                    <span>Starting at</span>
-                    <strong>{currency.format(quickView.price)}</strong>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      addToCart(quickView.id)
-                      setQuickView(null)
-                    }}
-                  >
-                    Add to cart
-                    <Plus />
-                  </button>
-                </div>
-                <small>
-                  <Sparkles />
-                  Artwork check dhe konfirmimi i materialit përfshihen.
-                </small>
-              </div>
-            </motion.section>
-          </>
         )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {cartOpen && (
-          <>
-            <motion.button
-              className="shop-cart-backdrop"
-              type="button"
-              aria-label="Mbylle cart-in"
-              onClick={() => setCartOpen(false)}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            />
-            <motion.aside
-              className="shop-cart"
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="shop-cart-title"
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <header>
+      </Storefront>
+      {quickView && (
+        <StoreDialog title={quickView.name} onClose={() => setQuickView(null)}>
+          <div className="cube-quick-view">
+            <div className="cube-quick-image">
+              {quickView.image && (
+                <ResponsiveImage image={quickView.image} alt={quickView.name} />
+              )}
+            </div>
+            <div className="cube-quick-copy">
+              <span className="cube-eyebrow">{quickView.category}</span>
+              <h2>{quickView.name}</h2>
+              <p>{quickView.description}</p>
+              <dl>
                 <div>
-                  <span>{checkoutOpen ? "Checkout" : "Your selection"}</span>
-                  <h2 id="shop-cart-title">
-                    {checkoutOpen ? "POROSIA." : "CART."}
-                  </h2>
+                  <dt>Formati</dt>
+                  <dd>{quickView.quantityLabel}</dd>
                 </div>
+                <div>
+                  <dt>Materiali</dt>
+                  <dd>{quickView.material}</dd>
+                </div>
+              </dl>
+              <ProductOptions
+                product={quickView}
+                value={variantId}
+                onChange={setVariantId}
+              />
+              <strong className="cube-detail-price">
+                {currency.format(getSelection(quickView, variantId).price)}
+              </strong>
+              <span className="cube-product-note">
+                Çmim orientues · Pamje ilustruese
+              </span>
+              <button
+                className="cube-button cube-button-dark"
+                type="button"
+                onClick={() => addToCart(quickView.id, variantId)}
+              >
+                Shto në shportë <Plus size={17} />
+              </button>
+              <a className="cube-text-link" href={`/shop/${quickView.id}`}>
+                Shiko detajet <ArrowRight size={15} />
+              </a>
+            </div>
+          </div>
+        </StoreDialog>
+      )}
+      {cartOpen && (
+        <StoreDialog
+          title={checkout ? "Përfundo porosinë" : "Shporta jote"}
+          drawer
+          onClose={() => setCartOpen(false)}
+        >
+          <div className="cube-cart">
+            <span className="cube-eyebrow">ZGJEDHJET E TUA</span>
+            <h2>
+              {placedOrder
+                ? "U krye."
+                : checkout
+                  ? "Edhe pak."
+                  : "Shporta jote."}
+            </h2>
+            {!!unavailable.length && (
+              <div className="cube-order-error" role="alert">
+                <p>
+                  {unavailable.length} zgjedhje nuk janë më të disponueshme.
+                  Largoji për të vazhduar me porosinë.
+                </p>
                 <button
+                  className="cube-text-link"
                   type="button"
-                  aria-label="Mbylle"
+                  onClick={() => {
+                    const keys = new Set(unavailable.map(cartLineKey))
+                    setCart((current) =>
+                      current.filter((item) => !keys.has(cartLineKey(item))),
+                    )
+                  }}
+                >
+                  Largo zgjedhjet e padisponueshme
+                </button>
+              </div>
+            )}
+            {placedOrder ? (
+              <div className="cube-order-success" role="status">
+                <PackageCheck size={40} />
+                <h3>Porosia u pranua.</h3>
+                <strong>{placedOrder}</strong>
+                <p>
+                  Të kontaktojmë{" "}
+                  {customer.email
+                    ? `te ${customer.email}`
+                    : `në ${customer.phone}`}{" "}
+                  për të konfirmuar specifikat, afatin dhe totalin final.
+                </p>
+                <button
+                  className="cube-button"
+                  type="button"
                   onClick={() => setCartOpen(false)}
                 >
-                  <X />
+                  Vazhdo te produktet <ArrowRight size={17} />
                 </button>
-              </header>
-
-              {placedOrder ? (
-                <div className="shop-order-done" role="status">
-                  <PackageCheck />
-                  <span>{placedOrder}</span>
-                  <strong>Porosia u pranua.</strong>
-                  <p>
-                    Të kontaktojmë te {customer.email} për me konfirmu
-                    artwork-un, afatin dhe totalin final.
+              </div>
+            ) : !cartDetails.length ? (
+              <div className="cube-cart-empty">
+                <ShoppingBag size={42} />
+                <h3>Diçka e mirë po të pret.</h3>
+                <p>Shporta është ende bosh.</p>
+                <button
+                  className="cube-button"
+                  type="button"
+                  onClick={() => setCartOpen(false)}
+                >
+                  Zbulo produktet <ArrowRight size={17} />
+                </button>
+              </div>
+            ) : checkout ? (
+              <form className="cube-checkout" onSubmit={submitOrder}>
+                <button
+                  className="cube-text-link"
+                  type="button"
+                  onClick={() => setCheckout(false)}
+                >
+                  ← Kthehu te shporta
+                </button>
+                {(
+                  [
+                    {
+                      key: "name",
+                      label: "Emri dhe mbiemri",
+                      type: "text",
+                      auto: "name",
+                    },
+                    {
+                      key: "phone",
+                      label: "Telefoni",
+                      type: "tel",
+                      auto: "tel",
+                      placeholder: "+383 4x xxx xxx",
+                    },
+                    {
+                      key: "address",
+                      label: "Adresa e dërgesës",
+                      type: "text",
+                      auto: "street-address",
+                      placeholder: "Rruga, numri, qyteti",
+                    },
+                    {
+                      key: "email",
+                      label: "Email (opsionale)",
+                      type: "email",
+                      auto: "email",
+                      placeholder: "Për konfirmimin me shkrim",
+                    },
+                  ] as const
+                ).map((field) => (
+                  <label key={field.key}>
+                    {field.label}
+                    <input
+                      required={field.key !== "email"}
+                      type={field.type}
+                      placeholder={
+                        "placeholder" in field ? field.placeholder : undefined
+                      }
+                      autoComplete={field.auto}
+                      maxLength={
+                        field.key === "address"
+                          ? 300
+                          : field.key === "phone"
+                            ? 40
+                            : field.key === "email"
+                              ? 254
+                              : 160
+                      }
+                      value={customer[field.key]}
+                      onChange={(event) =>
+                        setCustomer({
+                          ...customer,
+                          [field.key]: event.target.value,
+                        })
+                      }
+                    />
+                  </label>
+                ))}
+                {availability === "email" && (
+                  <p className="cube-checkout-notice">
+                    Për momentin kërkesat për porosi i përgatisim me email.
+                    Plotëso të dhënat; në hapin tjetër e dërgon nga email-i yt.
                   </p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setPlacedOrder(null)
-                      setOrderStatus("idle")
-                      setCheckoutOpen(false)
-                      setCartOpen(false)
-                    }}
-                  >
-                    Vazhdo me shiku produktet
-                    <ArrowRight />
-                  </button>
+                )}
+                <label className="cube-honeypot" aria-hidden="true">
+                  Lëre bosh
+                  <input name="website" tabIndex={-1} autoComplete="off" />
+                </label>
+                <label>
+                  Shënime / Personalizim
+                  <textarea
+                    rows={3}
+                    maxLength={2000}
+                    placeholder="Madhësia e maicës, korniza, ngjyra ose ideja jote…"
+                    value={customer.notes}
+                    onChange={(event) =>
+                      setCustomer({ ...customer, notes: event.target.value })
+                    }
+                  />
+                </label>
+                <div className="cube-checkout-lines">
+                  {cartDetails.map((item) => (
+                    <div key={item.key}>
+                      <span>
+                        {item.quantity} × {item.product.name}
+                        <small>{item.selection.label}</small>
+                      </span>
+                      <strong>
+                        {currency.format(item.quantity * item.selection.price)}
+                      </strong>
+                    </div>
+                  ))}
                 </div>
-              ) : !checkoutOpen ? (
-                <>
-                  <div className="shop-cart-items">
-                    {!cartDetails.length && (
-                      <div className="shop-cart-empty">
-                        <ShoppingBag />
-                        <strong>Cart-i është bosh.</strong>
-                        <p>Zgjidhe një produkt për me fillu porosinë.</p>
-                        <button type="button" onClick={() => setCartOpen(false)}>
-                          Shiko produktet
-                          <ArrowRight />
-                        </button>
-                      </div>
-                    )}
-
-                    {cartDetails.map(({ product, quantity }) => (
-                      <article key={product.id}>
-                        <div
-                          className="shop-cart-thumb"
-                          data-tone={product.tone}
-                          aria-hidden="true"
-                        >
-                          {product.number}
+                <div className="cube-cart-total">
+                  <span>Totali, pa dërgesën</span>
+                  <strong>{currency.format(subtotal)}</strong>
+                </div>
+                {error && (
+                  <div className="cube-order-error" role="alert">
+                    <p>{error}</p>
+                    <a href={orderHref}>Dërgo porosinë me email ↗</a>
+                  </div>
+                )}
+                <button
+                  className="cube-button cube-button-dark"
+                  type="submit"
+                  disabled={
+                    sending ||
+                    availability === "checking" ||
+                    !!unavailable.length
+                  }
+                >
+                  {sending
+                    ? "Po dërgohet…"
+                    : availability === "checking"
+                      ? "Po kontrollohet…"
+                      : availability === "email"
+                        ? "Përgatit porosinë me email"
+                        : "Dërgo porosinë"}
+                  <ArrowRight size={17} />
+                </button>
+                {emailReady && <OrderEmail text={orderText} href={orderHref} />}
+                <p className="cube-product-note">
+                  Nuk paguan tani. Studioja të kontakton për ta konfirmuar
+                  dërgesën dhe afatin; pastaj nis prodhimi.
+                </p>
+              </form>
+            ) : (
+              <>
+                <div className="cube-cart-items">
+                  {cartDetails.map(
+                    ({ product, quantity, key, selection, photo }) => (
+                      <article key={key}>
+                        <div className="cube-cart-thumb">
+                          {photo ? (
+                            <span
+                              className="cube-cart-photo"
+                              style={{
+                                aspectRatio: (() => {
+                                  const cm = getPosterSize(
+                                    parseVariantId(selection.variantId)?.size,
+                                  )?.cm ?? [30, 40]
+                                  return photo.landscape
+                                    ? cm[1] / cm[0]
+                                    : cm[0] / cm[1]
+                                })(),
+                                ...cropStyle(photo.image, photo.crop),
+                              }}
+                            />
+                          ) : (
+                            product.image && (
+                              <ResponsiveImage image={product.image} alt="" />
+                            )
+                          )}
                         </div>
-                        <div>
-                          <span>{product.quantityLabel}</span>
-                          <strong>{product.name}</strong>
-                          <small>{currency.format(product.price)} / paketë</small>
+                        <div className="cube-cart-item-copy">
+                          <h3>{product.name}</h3>
+                          <span>
+                            {selection.label}
+                            {selection.minQuantity > 1 &&
+                              ` · min. ${selection.minQuantity} copë`}
+                          </span>
+                          <strong>
+                            {currency.format(selection.price * quantity)}
+                          </strong>
+                          <div className="cube-quantity">
+                            <button
+                              type="button"
+                              aria-label={`Zvogëlo ${product.name}${selection.variantId ? `, ${selection.label}` : ""}`}
+                              disabled={
+                                selection.minQuantity > 1 &&
+                                quantity <= selection.minQuantity
+                              }
+                              onClick={() =>
+                                changeQuantity(key, -1, selection.minQuantity)
+                              }
+                            >
+                              <Minus size={13} />
+                            </button>
+                            <span>{quantity}</span>
+                            <button
+                              type="button"
+                              aria-label={`Rrite ${product.name}${selection.variantId ? `, ${selection.label}` : ""}`}
+                              onClick={() =>
+                                changeQuantity(key, 1, selection.minQuantity)
+                              }
+                            >
+                              <Plus size={13} />
+                            </button>
+                          </div>
                         </div>
-                        <div className="shop-cart-quantity">
-                          <button
-                            type="button"
-                            aria-label={`Zvogëlo ${product.name}`}
-                            onClick={() => changeQuantity(product.id, -1)}
-                          >
-                            <Minus />
-                          </button>
-                          <span>{quantity}</span>
-                          <button
-                            type="button"
-                            aria-label={`Rrite ${product.name}`}
-                            onClick={() => changeQuantity(product.id, 1)}
-                          >
-                            <Plus />
-                          </button>
-                        </div>
-                        <strong className="shop-cart-line-price">
-                          {currency.format(product.price * quantity)}
-                        </strong>
                         <button
-                          className="shop-cart-remove"
+                          className="cube-cart-remove"
                           type="button"
-                          aria-label={`Largo ${product.name}`}
-                          onClick={() => removeFromCart(product.id)}
+                          aria-label={`Largo ${product.name}${selection.variantId ? `, ${selection.label}` : ""}`}
+                          onClick={() =>
+                            setCart((current) =>
+                              current.filter(
+                                (item) => cartLineKey(item) !== key,
+                              ),
+                            )
+                          }
                         >
-                          <Trash2 />
+                          <Trash2 size={16} />
                         </button>
                       </article>
-                    ))}
-                  </div>
-
-                  {!!cartDetails.length && (
-                    <footer className="shop-cart-total">
-                      <div>
-                        <span>Totali orientues</span>
-                        <strong>{currency.format(subtotal)}</strong>
-                      </div>
-                      <button type="button" onClick={() => setCheckoutOpen(true)}>
-                        Vazhdo në checkout
-                        <ArrowRight />
-                      </button>
-                    </footer>
+                    ),
                   )}
-                </>
-              ) : (
-                <form className="shop-checkout" onSubmit={submitOrder}>
-                  <button
-                    className="shop-checkout-back"
-                    type="button"
-                    onClick={() => setCheckoutOpen(false)}
-                  >
-                    ← Kthehu te cart-i
-                  </button>
-
-                  <div className="shop-checkout-fields">
-                    <label>
-                      <span>Emri dhe mbiemri *</span>
-                      <input
-                        required
-                        value={customer.name}
-                        onChange={(event) =>
-                          setCustomer((current) => ({
-                            ...current,
-                            name: event.target.value,
-                          }))
-                        }
-                      />
-                    </label>
-                    <label>
-                      <span>Email *</span>
-                      <input
-                        required
-                        type="email"
-                        value={customer.email}
-                        onChange={(event) =>
-                          setCustomer((current) => ({
-                            ...current,
-                            email: event.target.value,
-                          }))
-                        }
-                      />
-                    </label>
-                    <label>
-                      <span>Telefoni *</span>
-                      <input
-                        required
-                        type="tel"
-                        value={customer.phone}
-                        onChange={(event) =>
-                          setCustomer((current) => ({
-                            ...current,
-                            phone: event.target.value,
-                          }))
-                        }
-                      />
-                    </label>
-                    <label>
-                      <span>Adresa e dërgesës *</span>
-                      <input
-                        required
-                        value={customer.address}
-                        onChange={(event) =>
-                          setCustomer((current) => ({
-                            ...current,
-                            address: event.target.value,
-                          }))
-                        }
-                      />
-                    </label>
-                    <label>
-                      <span>Shënime</span>
-                      <textarea
-                        rows={4}
-                        value={customer.notes}
-                        onChange={(event) =>
-                          setCustomer((current) => ({
-                            ...current,
-                            notes: event.target.value,
-                          }))
-                        }
-                        placeholder="Afati, ngjyrat ose informata tjera..."
-                      />
-                    </label>
-                  </div>
-
-                  <div className="shop-checkout-summary">
-                    <span>{orderRef}</span>
-                    <strong>{itemCount} produkte</strong>
+                </div>
+                <div className="cube-cart-bottom">
+                  <div className="cube-cart-total">
+                    <span>Totali, pa dërgesën</span>
                     <strong>{currency.format(subtotal)}</strong>
                   </div>
-
-                  {orderError && (
-                    <p className="shop-order-error" role="alert">
-                      {orderError}
-                    </p>
+                  <p className="cube-product-note">
+                    Dërgesa dhe specifikat konfirmohen me ty.
+                  </p>
+                  {wallCount > 0 && (
+                    <a className="cube-cart-wall" href="/shop/muri?shporta=1">
+                      <Frame size={17} />
+                      <span>
+                        <strong>Shiko si duken në mur</strong>
+                        <small>
+                          {wallCount === 1
+                            ? "1 poster"
+                            : `${Math.min(wallCount, MAX_ITEMS)} postera`}{" "}
+                          në madhësinë reale, mbi një divan
+                        </small>
+                      </span>
+                      <ArrowRight size={15} />
+                    </a>
                   )}
                   <button
-                    className="shop-order-submit"
-                    type="submit"
-                    disabled={orderStatus === "sending"}
+                    className="cube-button cube-button-dark"
+                    type="button"
+                    disabled={!!unavailable.length}
+                    onClick={() => setCheckout(true)}
                   >
-                    {orderStatus === "sending" ? "Po dërgohet…" : "Dërgo porosinë"}
-                    <ArrowRight />
+                    Vazhdo me porosinë <ArrowRight size={17} />
                   </button>
-                  <p>
-                    Pagesa nuk merret online ende. Pas porosisë e konfirmojmë
-                    artwork-un, afatin dhe totalin final.
-                  </p>
-                </form>
-              )}
-            </motion.aside>
-          </>
-        )}
-      </AnimatePresence>
-    </div>
+                  <span className="cube-cart-assurance">
+                    <Check size={14} /> Pa pagesë deri në konfirmim
+                  </span>
+                </div>
+              </>
+            )}
+          </div>
+        </StoreDialog>
+      )}
+    </>
   )
 }

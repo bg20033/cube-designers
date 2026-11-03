@@ -433,3 +433,6 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Over the light service pages a mostly see-through header reads as muddy grey. */
+.svc-page .agency-header { background: rgb(11 11 13 / 94%); }

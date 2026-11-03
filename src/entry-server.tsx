@@ -1,34 +1,20 @@
-import type { ReactNode } from "react"
+import { storeFaqs } from "@/data/store-faqs"
+import { matchesShopCategory } from "@/data/shop-navigation"
 import { renderToString } from "react-dom/server"
 
-import { HomePage } from "@/App"
-import { socialProfiles } from "@/data/site"
+import App, { preloadPage } from "@/App"
 import { faqs as homeFaqs } from "@/components/GrowthSections"
-import { RoutePathProvider } from "@/app/RouteContext"
+import { socialProfiles } from "@/data/site"
 import {
   getRouteSeo,
   matchRoute,
   SHOP_ENABLED,
   siteRoutes,
+  type RouteKey,
   type RouteSeo,
 } from "@/app/routes"
-import AboutPage from "@/components/AboutPage"
-import NotFoundPage from "@/components/NotFoundPage"
-import ProductDetailPage from "@/components/shop/ProductDetailPage"
-import ProjectBriefPage from "@/components/ProjectBriefPage"
-import RoadmapPage from "@/components/RoadmapPage"
-import ShopPage, {
-  getProductBySlug,
-  products,
-} from "@/components/ShopPage"
-import WorkPage from "@/components/WorkPage"
-import ServicePage from "@/components/services/ServicePage"
-import ServicesPage from "@/components/services/ServicesPage"
-import {
-  getServiceBySlug,
-  serviceCategories,
-  services,
-} from "@/data/services"
+import { getProductBySlug, products } from "@/data/products"
+import { getServiceBySlug, serviceCategories, services } from "@/data/services"
 
 type StructuredData = Record<string, unknown>
 
@@ -51,35 +37,35 @@ const notFoundSeo: RouteSeo = {
 const breadcrumbNames: Record<string, string> = {
   "/about": "Rreth nesh",
   "/work": "Projektet",
-  "/roadmap": "Roadmap",
   "/shop": "Shop",
+  "/shop/smart-glass": "Smart Glass",
+  "/shop/muri": "Konfiguro murin",
+  "/shop/foto": "Printo foton tënde",
   "/start-project": "Fillo një projekt",
   "/sherbime": "Shërbimet",
 }
 
-function renderRouteNode(pathname: string): {
-  node: ReactNode
+function routeMeta(pathname: string): {
   seo: RouteSeo
   status: 200 | 404
 } {
   const route = matchRoute(pathname)
 
   if (!route) {
-    return { node: <NotFoundPage />, seo: notFoundSeo, status: 404 }
+    return { seo: notFoundSeo, status: 404 }
   }
 
   if (route.key === "product") {
     const product = getProductBySlug(route.params.slug)
     if (!product) {
-      return { node: <NotFoundPage />, seo: notFoundSeo, status: 404 }
+      return { seo: notFoundSeo, status: 404 }
     }
 
     return {
-      node: <ProductDetailPage slug={route.params.slug} />,
       seo: {
         title: `${product.name} | CUBE DESIGNERS Shop`,
         description: `${product.description} ${product.quantityLabel}, material ${product.material}. Kërko ofertë nga CUBE DESIGNERS.`,
-        canonicalPath: `/shop/${product.id}`,
+        canonicalPath: product.id === "smart-film" ? "/shop/smart-glass" : `/shop/${product.id}`,
         index: true,
         sitemap: true,
         ogImage: "/og.png",
@@ -91,11 +77,10 @@ function renderRouteNode(pathname: string): {
   if (route.key === "service") {
     const service = getServiceBySlug(route.params.slug)
     if (!service) {
-      return { node: <NotFoundPage />, seo: notFoundSeo, status: 404 }
+      return { seo: notFoundSeo, status: 404 }
     }
 
     return {
-      node: <ServicePage slug={route.params.slug} />,
       seo: {
         title: service.seoTitle,
         description: service.description,
@@ -108,21 +93,13 @@ function renderRouteNode(pathname: string): {
     }
   }
 
-  const seo = getRouteSeo(route.key) ?? notFoundSeo
-  const nodes: Record<typeof route.key, ReactNode> = {
-    home: <HomePage />,
-    about: <AboutPage />,
-    work: <WorkPage />,
-    roadmap: <RoadmapPage />,
-    shop: <ShopPage />,
-    "start-project": <ProjectBriefPage />,
-    services: <ServicesPage />,
-  }
-
-  return { node: nodes[route.key], seo, status: 200 }
+  return { seo: getRouteSeo(route.key) ?? notFoundSeo, status: 200 }
 }
 
-function buildStructuredData(pathname: string, siteUrl: string): StructuredData[] {
+function buildStructuredData(
+  pathname: string,
+  siteUrl: string,
+): StructuredData[] {
   const normalizedSiteUrl = siteUrl.replace(/\/+$/, "")
   const route = matchRoute(pathname)
   const data: StructuredData[] = [
@@ -159,7 +136,8 @@ function buildStructuredData(pathname: string, siteUrl: string): StructuredData[
         latitude: 42.362702,
         longitude: 20.835396,
       },
-      hasMap: "https://www.google.com/maps/search/?api=1&query=Cube+Design&query_place_id=0x13539bd1887a1095:0x6f42ef9b2893ba2c",
+      hasMap:
+        "https://www.google.com/maps/search/?api=1&query=Cube+Design&query_place_id=0x13539bd1887a1095:0x6f42ef9b2893ba2c",
       areaServed: [
         { "@type": "City", name: "Suharekë" },
         { "@type": "City", name: "Prishtinë" },
@@ -183,6 +161,34 @@ function buildStructuredData(pathname: string, siteUrl: string): StructuredData[
     return data
   }
 
+  if (route?.key === "shop") {
+    data.push({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: storeFaqs.map((faq) => ({
+        "@type": "Question",
+        name: faq.question,
+        acceptedAnswer: { "@type": "Answer", text: faq.answer },
+      })),
+    })
+    data.push({
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      name: "Postera dhe produkte të personalizuara CUBE",
+      // The first page of the collection; every product page is in the
+      // sitemap, so listing all ~2,000 here only bloats the HTML.
+      itemListElement: products
+        .filter((product) => matchesShopCategory(product, "Krejt"))
+        .slice(0, 30)
+        .map((product, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          name: product.name,
+          url: `${normalizedSiteUrl}/shop/${product.id}`,
+        })),
+    })
+  }
+
   if (!route) return data
 
   const breadcrumbLabel =
@@ -202,7 +208,7 @@ function buildStructuredData(pathname: string, siteUrl: string): StructuredData[
       },
     ]
 
-    if (route.key === "product") {
+    if (["product", "wall", "photo"].includes(route.key)) {
       items.push({
         "@type": "ListItem",
         position: 2,
@@ -304,14 +310,39 @@ function buildStructuredData(pathname: string, siteUrl: string): StructuredData[
   return data
 }
 
-export function render(pathname: string, siteUrl: string): RenderedRoute {
-  const rendered = renderRouteNode(pathname)
+// Source module of each page, as keyed in the client build manifest. The
+// prerenderer links its CSS and preloads its JS so the HTML is styled on
+// first paint instead of after the page chunk loads.
+const pageSources: Record<RouteKey | "not-found", string> = {
+  home: "src/components/HomePage.tsx",
+  about: "src/components/AboutPage.tsx",
+  work: "src/components/WorkPage.tsx",
+  shop: "src/components/ShopPage.tsx",
+  "smart-glass": "src/components/shop/SmartGlassPage.tsx",
+  invitations: "src/components/invitations/OnlineInvitationsPage.tsx",
+  wall: "src/components/shop/WallPlannerPage.tsx",
+  photo: "src/components/shop/PhotoPrintPage.tsx",
+  product: "src/components/shop/ProductDetailPage.tsx",
+  "start-project": "src/components/ProjectBriefPage.tsx",
+  services: "src/components/services/ServicesPage.tsx",
+  service: "src/components/services/ServicePage.tsx",
+  "not-found": "src/components/NotFoundPage.tsx",
+}
+
+export function getPageSource(pathname: string) {
+  return pageSources[matchRoute(pathname)?.key ?? "not-found"]
+}
+
+// Renders the same tree the browser hydrates (App), with the page module
+// loaded first so nothing suspends during renderToString.
+export async function render(
+  pathname: string,
+  siteUrl: string,
+): Promise<RenderedRoute> {
+  const rendered = routeMeta(pathname)
+  await preloadPage(pathname)
   return {
-    html: renderToString(
-      <RoutePathProvider pathname={pathname}>
-        {rendered.node}
-      </RoutePathProvider>,
-    ),
+    html: renderToString(<App pathname={pathname} />),
     seo: rendered.seo,
     structuredData: buildStructuredData(pathname, siteUrl),
     status: rendered.status,
@@ -332,6 +363,7 @@ export function getLlmsTxt(siteUrl: string) {
     "## Faqet kryesore",
     "",
     `- [Ballina](${base}/): Prezantimi i studios dhe shërbimeve`,
+    `- [Shop](${base}/shop): Koleksioni i parë dhe katalogu i printit; çmime orientuese`,
     `- [Shërbimet](${base}/sherbime): Katalogu i plotë i shërbimeve`,
     `- [Projektet](${base}/work): Punë të zgjedhura`,
     `- [Rreth nesh](${base}/about): Kush jemi dhe ku ndodhemi`,
@@ -341,17 +373,25 @@ export function getLlmsTxt(siteUrl: string) {
   for (const [key, category] of Object.entries(serviceCategories)) {
     lines.push("", `## ${category.label}`, "")
     for (const service of services.filter((item) => item.category === key)) {
-      lines.push(`- [${service.name}](${base}/sherbime/${service.slug}): ${service.description}`)
+      lines.push(
+        `- [${service.name}](${base}/sherbime/${service.slug}): ${service.description}`,
+      )
     }
   }
 
   return `${lines.join("\n")}\n`
 }
 
+// The photo product's page is the photo editor (/shop/foto), so it appears
+// once even though it is also in the catalog.
 export function getPrerenderPaths() {
   return [
-    ...siteRoutes.filter((route) => route.seo.sitemap).map((route) => route.path),
-    ...services.map((service) => `/sherbime/${service.slug}`),
-    ...(SHOP_ENABLED ? products.map((product) => `/shop/${product.id}`) : []),
+    ...new Set([
+      ...siteRoutes
+        .filter((route) => route.seo.sitemap)
+        .map((route) => route.path),
+      ...services.map((service) => `/sherbime/${service.slug}`),
+      ...(SHOP_ENABLED ? products.map((product) => `/shop/${product.id}`) : []),
+    ]),
   ]
 }

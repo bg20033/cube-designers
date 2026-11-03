@@ -15,21 +15,69 @@ export const POST = handle(async (request) => {
   await requireAdmin(request)
   const sql = await db()
 
-  if (new URL(request.url).searchParams.get("action") === "import") {
-    for (const [index, product] of staticProducts.entries()) {
+  const action = new URL(request.url).searchParams.get("action")
+  // The collection has thousands of products: rows go in batches.
+  const batches = staticProducts
+    .map((product, index) => ({ id: product.id, data: product, ord: index }))
+    .reduce<{ id: string; data: unknown; ord: number }[][]>(
+      (all, row, index) => {
+        if (index % 250 === 0) all.push([])
+        all[all.length - 1].push(row)
+        return all
+      },
+      [],
+    )
+
+  if (action === "import") {
+    for (const rows of batches)
       await sql`
         insert into products (id, data, active, sort_order)
-        values (${product.id}, ${JSON.stringify(product)}::jsonb, true, ${index})
+        select id, data, true, ord
+        from jsonb_to_recordset(${JSON.stringify(rows)}::jsonb)
+          as row(id text, data jsonb, ord int)
         on conflict (id) do nothing
       `
-    }
+    return json({ products: await listProducts(sql) })
+  }
+
+  // Brings sizes, finishes, prices and categories of collection products
+  // already in the database up to date with the code, keeping names, texts
+  // and images edited in the dashboard. A product with no image, or still on
+  // an old portfolio mockup (a manifest key, not a URL), gets the code's.
+  if (action === "sync-options") {
+    for (const rows of batches)
+      await sql`
+        update products
+        set data = products.data || jsonb_strip_nulls(jsonb_build_object(
+              'variants', row.data -> 'variants',
+              'variantLabel', row.data -> 'variantLabel',
+              'defaultVariantId', row.data -> 'defaultVariantId',
+              'price', row.data -> 'price',
+              'quantityLabel', row.data -> 'quantityLabel',
+              'includes', row.data -> 'includes',
+              'includeVariants', row.data -> 'includeVariants',
+              'customImage', row.data -> 'customImage',
+              'category', row.data -> 'category',
+              'video', row.data -> 'video',
+              'image', case
+                when products.data ->> 'image' ~ '^(/|https?://)' then null
+                else row.data -> 'image'
+              end
+            )),
+            updated_at = now()
+        from jsonb_to_recordset(${JSON.stringify(rows)}::jsonb)
+          as row(id text, data jsonb)
+        where products.id = row.id
+      `
     return json({ products: await listProducts(sql) })
   }
 
   const body = await readJson(request)
   const product = parseProduct(body.product)
   const active = body.active !== false
-  const sortOrder = Number.isInteger(body.sortOrder) ? Number(body.sortOrder) : 0
+  const sortOrder = Number.isInteger(body.sortOrder)
+    ? Number(body.sortOrder)
+    : 0
   const previousId = text(body.previousId, "previousId", { max: 60 })
 
   if (previousId && previousId !== product.id) {

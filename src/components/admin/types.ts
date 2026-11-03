@@ -1,12 +1,8 @@
-import type { Product } from "@/data/products"
+import type { PhotoSpec, Product } from "@/data/products"
 
 export type SubmissionStatus = "new" | "in_progress" | "done" | "archived"
 export type OrderStatus =
-  | "new"
-  | "confirmed"
-  | "in_production"
-  | "delivered"
-  | "cancelled"
+  "new" | "confirmed" | "in_production" | "delivered" | "cancelled"
 
 export type Submission = {
   id: number
@@ -28,7 +24,10 @@ export type Submission = {
 }
 
 export type OrderItem = {
+  variantId?: string
   productId: string
+  includes?: { productId: string; name: string; variantId?: string }[]
+  photo?: PhotoSpec
   name: string
   quantityLabel: string
   price: number

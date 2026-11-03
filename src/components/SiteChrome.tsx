@@ -3,11 +3,11 @@ import { ArrowUpRight, Menu } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 
 import Noise from "@/components/Noise"
-import RotatingText, {
-  type RotatingTextRef,
-} from "@/components/RotatingText"
+import RotatingText, { type RotatingTextRef } from "@/components/RotatingText"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { ShopNavigation } from "@/components/ShopNavigation"
+import { HeaderCart } from "@/components/HeaderCart"
 import {
   Sheet,
   SheetClose,
@@ -29,15 +29,16 @@ import {
 const headerTexts = ["CUBE DESIGNERS", "DESIGN", "PRINT", "DIGITAL"]
 
 const navItems = [
-  { label: "Shërbimet", href: "/sherbime", path: "/sherbime" },
+  { label: "Shërbimet", href: "/about#sherbimet", path: "/sherbime" },
   { label: "Puna", href: "/work", path: "/work" },
   ...(SHOP_ENABLED ? [{ label: "Shop", href: "/shop", path: "/shop" }] : []),
   { label: "Rreth nesh", href: "/about", path: "/about" },
-  { label: "Roadmap", href: "/roadmap", path: "/roadmap" },
 ]
 
 type SiteHeaderProps = {
   serviceLabel?: string | null
+  cartCount?: number
+  onCart?: () => void
 }
 
 export function SiteNoise() {
@@ -48,7 +49,11 @@ export function SiteNoise() {
   )
 }
 
-export function SiteHeader({ serviceLabel = null }: SiteHeaderProps) {
+export function SiteHeader({
+  serviceLabel = null,
+  cartCount,
+  onCart,
+}: SiteHeaderProps) {
   const headerTextRef = useRef<RotatingTextRef>(null)
   const currentPath = useRoutePath()
 
@@ -105,11 +110,15 @@ export function SiteHeader({ serviceLabel = null }: SiteHeaderProps) {
 
       <nav className="agency-nav" aria-label="Navigimi kryesor">
         {navItems.map((item) => (
-          <a
+          item.path === "/shop" ? (
+            <ShopNavigation key={item.path} active={currentPath === "/shop" || currentPath.startsWith("/shop/") || currentPath === "/ftesa"} />
+          ) : <a
             href={item.href}
             key={item.href}
             aria-current={
-              item.path && (currentPath === item.path || currentPath.startsWith(`${item.path}/`))
+              item.path &&
+              (currentPath === item.path ||
+                currentPath.startsWith(`${item.path}/`))
                 ? "page"
                 : undefined
             }
@@ -119,42 +128,45 @@ export function SiteHeader({ serviceLabel = null }: SiteHeaderProps) {
         ))}
       </nav>
 
-      <Button className="header-project" size="lg" onClick={openProjectBrief}>
-        Nis një projekt
-        <ArrowUpRight data-icon="inline-end" />
-      </Button>
+      <div className="header-actions">
+        <Button className="header-project" size="lg" onClick={openProjectBrief}>
+          Nis një projekt
+          <ArrowUpRight data-icon="inline-end" />
+        </Button>
+        {SHOP_ENABLED && <HeaderCart count={cartCount} onCart={onCart} />}
 
-      <Sheet>
-        <SheetTrigger
-          render={
-            <Button
-              className="agency-menu"
-              variant="outline"
-              size="icon-lg"
-              aria-label="Hap menynë"
-            />
-          }
-        >
-          <Menu />
-        </SheetTrigger>
-        <SheetContent className="agency-sheet">
-          <SheetHeader>
-            <SheetTitle className="sheet-logo">CUBE®</SheetTitle>
-            <SheetDescription>
-              Design, print & digital — krejt në një vend.
-            </SheetDescription>
-          </SheetHeader>
-          <nav className="sheet-links">
-            {navItems.map((item, index) => (
-              <SheetClose key={item.href} render={<a href={item.href} />}>
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                {item.label}
-                <ArrowUpRight />
-              </SheetClose>
-            ))}
-          </nav>
-        </SheetContent>
-      </Sheet>
+        <Sheet>
+          <SheetTrigger
+            render={
+              <Button
+                className="agency-menu"
+                variant="outline"
+                size="icon-lg"
+                aria-label="Hap menynë"
+              />
+            }
+          >
+            <Menu />
+          </SheetTrigger>
+          <SheetContent className="agency-sheet">
+            <SheetHeader>
+              <SheetTitle className="sheet-logo">CUBE®</SheetTitle>
+              <SheetDescription>
+                Design, print & digital — krejt në një vend.
+              </SheetDescription>
+            </SheetHeader>
+            <nav className="sheet-links">
+              {navItems.map((item, index) => (
+                item.path === "/shop" ? <ShopNavigation mobile key={item.path} /> : <SheetClose key={item.href} render={<a href={item.href} />}>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  {item.label}
+                  <ArrowUpRight />
+                </SheetClose>
+              ))}
+            </nav>
+          </SheetContent>
+        </Sheet>
+      </div>
     </header>
   )
 }
@@ -210,7 +222,7 @@ export function SiteFooter() {
       <nav className="footer-services" aria-label="Shërbimet">
         {(Object.keys(serviceCategories) as ServiceCategory[]).map((key) => (
           <div key={key}>
-            <a className="footer-services__title" href={`/sherbime#${key}`}>
+            <a className="footer-services__title" href={`/about#${key}`}>
               {serviceCategories[key].label}
             </a>
             <ul>

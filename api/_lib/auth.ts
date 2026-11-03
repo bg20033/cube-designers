@@ -59,8 +59,10 @@ export function clearSessionCookie() {
 }
 
 export async function isAdmin(request: Request) {
-  const [expires, signature] = readCookie(request).split(".")
-  if (!expires || !signature) return false
+  const [expires, signature, extra] = readCookie(request).split(".")
+  // Only the exact `<unix seconds>.<signature>` shape is accepted; a
+  // non-numeric expiry would otherwise compare as NaN and never expire.
+  if (!expires || !signature || extra !== undefined || !/^\d{1,12}$/.test(expires)) return false
   if (Number(expires) < Date.now() / 1000) return false
   return safeEqual(signature, await sign(`session:${expires}`))
 }

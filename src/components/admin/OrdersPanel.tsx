@@ -1,9 +1,11 @@
 import { useState } from "react"
-import { Mail, Phone, RefreshCw } from "lucide-react"
+import { Copy, Mail, Phone, Printer, RefreshCw } from "lucide-react"
 
 import { apiRequest } from "@/lib/api"
 import { SHOP_ENABLED } from "@/app/routes"
 import { RecordControls, StatusPill } from "@/components/admin/RecordControls"
+import { printCommand } from "@/components/admin/print-command"
+import { cropStyle } from "@/components/store/PrintSurface"
 import {
   currency,
   formatDate,
@@ -19,7 +21,9 @@ type Props = {
 }
 
 export function OrdersPanel({ orders, onChange, onRefresh }: Props) {
-  const [statusFilter, setStatusFilter] = useState<OrderStatus | "open" | "all">("open")
+  const [statusFilter, setStatusFilter] = useState<
+    OrderStatus | "open" | "all"
+  >("open")
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const [error, setError] = useState("")
 
@@ -37,7 +41,10 @@ export function OrdersPanel({ orders, onChange, onRefresh }: Props) {
     .filter((item) => item.status !== "cancelled")
     .reduce((sum, item) => sum + item.total, 0)
 
-  async function save(item: Order, changes: { status?: OrderStatus; notes?: string }) {
+  async function save(
+    item: Order,
+    changes: { status?: OrderStatus; notes?: string },
+  ) {
     const result = await apiRequest("/api/admin/orders", {
       method: "PATCH",
       body: { id: item.id, ...changes },
@@ -47,13 +54,22 @@ export function OrdersPanel({ orders, onChange, onRefresh }: Props) {
       return false
     }
     setError("")
-    onChange(orders!.map((row) => (row.id === item.id ? { ...row, ...changes } : row)))
+    onChange(
+      orders!.map((row) => (row.id === item.id ? { ...row, ...changes } : row)),
+    )
     return true
   }
 
   async function remove(item: Order) {
-    if (!window.confirm(`Me fshi porosinë ${item.reference}? Kjo s'kthehet mbrapsht.`)) return
-    const result = await apiRequest(`/api/admin/orders?id=${item.id}`, { method: "DELETE" })
+    if (
+      !window.confirm(
+        `Me fshi porosinë ${item.reference}? Kjo s'kthehet mbrapsht.`,
+      )
+    )
+      return
+    const result = await apiRequest(`/api/admin/orders?id=${item.id}`, {
+      method: "DELETE",
+    })
     if (!result.ok) return setError(result.error)
     onChange(orders!.filter((row) => row.id !== item.id))
     setSelectedId(null)
@@ -65,23 +81,32 @@ export function OrdersPanel({ orders, onChange, onRefresh }: Props) {
         <div>
           <h1>Porositë</h1>
           <p>
-            {orders.length} porosi · {currency.format(openTotal)} gjithsej (pa të anuluarat)
+            {orders.length} porosi · {currency.format(openTotal)} gjithsej (pa
+            të anuluarat)
           </p>
         </div>
         <div className="admin-toolbar">
           <select
             className="admin-select"
             value={statusFilter}
-            onChange={(event) => setStatusFilter(event.target.value as typeof statusFilter)}
+            onChange={(event) =>
+              setStatusFilter(event.target.value as typeof statusFilter)
+            }
             aria-label="Filtro sipas statusit"
           >
             <option value="open">Të hapura</option>
             <option value="all">Të gjitha</option>
             {(Object.keys(orderStatusLabels) as OrderStatus[]).map((key) => (
-              <option key={key} value={key}>{orderStatusLabels[key]}</option>
+              <option key={key} value={key}>
+                {orderStatusLabels[key]}
+              </option>
             ))}
           </select>
-          <button className="admin-button is-ghost" type="button" onClick={() => void onRefresh()}>
+          <button
+            className="admin-button is-ghost"
+            type="button"
+            onClick={() => void onRefresh()}
+          >
             <RefreshCw />
             <span>Rifresko</span>
           </button>
@@ -90,11 +115,15 @@ export function OrdersPanel({ orders, onChange, onRefresh }: Props) {
 
       {!SHOP_ENABLED && (
         <p className="admin-note">
-          Shop-i është i fshehur në faqe (SHOP_ENABLED = false), prandaj porosi të reja
-          nuk vijnë derisa ta aktivizoni.
+          Shop-i është i fshehur në faqe (SHOP_ENABLED = false), prandaj porosi
+          të reja nuk vijnë derisa ta aktivizoni.
         </p>
       )}
-      {error && <p className="admin-error" role="alert">{error}</p>}
+      {error && (
+        <p className="admin-error" role="alert">
+          {error}
+        </p>
+      )}
 
       {!visible.length ? (
         <p className="admin-empty">Asnjë porosi këtu.</p>
@@ -110,7 +139,10 @@ export function OrdersPanel({ orders, onChange, onRefresh }: Props) {
                 >
                   <span className="admin-list-top">
                     <strong>{item.reference}</strong>
-                    <StatusPill status={item.status} label={orderStatusLabels[item.status]} />
+                    <StatusPill
+                      status={item.status}
+                      label={orderStatusLabels[item.status]}
+                    />
                   </span>
                   <span className="admin-list-meta">
                     {item.customer.name} · {formatDate(item.created_at)}
@@ -132,28 +164,78 @@ export function OrdersPanel({ orders, onChange, onRefresh }: Props) {
               </header>
 
               <dl className="admin-fields">
-                <div><dt>Klienti</dt><dd>{selected.customer.name}</dd></div>
+                <div>
+                  <dt>Klienti</dt>
+                  <dd>{selected.customer.name}</dd>
+                </div>
                 <div>
                   <dt>Email</dt>
-                  <dd><a href={`mailto:${selected.customer.email}`}>{selected.customer.email}</a></dd>
+                  <dd>
+                    {selected.customer.email ? (
+                      <a href={`mailto:${selected.customer.email}`}>
+                        {selected.customer.email}
+                      </a>
+                    ) : (
+                      "—"
+                    )}
+                  </dd>
                 </div>
                 <div>
                   <dt>Telefoni</dt>
-                  <dd><a href={`tel:${selected.customer.phone}`}>{selected.customer.phone}</a></dd>
+                  <dd>
+                    <a href={`tel:${selected.customer.phone}`}>
+                      {selected.customer.phone}
+                    </a>
+                  </dd>
                 </div>
-                <div><dt>Adresa</dt><dd>{selected.customer.address}</dd></div>
+                <div>
+                  <dt>Adresa</dt>
+                  <dd>{selected.customer.address}</dd>
+                </div>
               </dl>
 
               <table className="admin-table">
                 <thead>
-                  <tr><th>Produkti</th><th>Sasia</th><th>Çmimi</th><th>Totali</th></tr>
+                  <tr>
+                    <th>Produkti</th>
+                    <th>Sasia</th>
+                    <th>Çmimi</th>
+                    <th>Totali</th>
+                  </tr>
                 </thead>
                 <tbody>
                   {selected.items.map((line) => (
-                    <tr key={line.productId}>
+                    <tr key={`${line.productId}:${line.variantId ?? ""}`}>
                       <td>
+                        {line.photo && (
+                          <span
+                            className="admin-photo-thumb"
+                            style={{
+                              aspectRatio: line.photo.landscape
+                                ? "4 / 3"
+                                : "3 / 4",
+                              ...cropStyle(line.photo.image, line.photo.crop),
+                            }}
+                          />
+                        )}
                         {line.name}
                         <small>{line.quantityLabel}</small>
+                        {line.photo && (
+                          <small>
+                            {line.photo.name && `${line.photo.name} · `}
+                            <a
+                              href={`/api/admin/photo?url=${encodeURIComponent(line.photo.original)}`}
+                            >
+                              Shkarko origjinalin
+                            </a>
+                          </small>
+                        )}
+                        {line.includes && (
+                          <small>
+                            Përfshin:{" "}
+                            {line.includes.map((item) => item.name).join(", ")}
+                          </small>
+                        )}
                       </td>
                       <td>× {line.quantity}</td>
                       <td>{currency.format(line.price)}</td>
@@ -169,6 +251,31 @@ export function OrdersPanel({ orders, onChange, onRefresh }: Props) {
                 </tfoot>
               </table>
 
+              {printCommand(selected) && (
+                <div className="admin-message admin-print">
+                  <span>
+                    <Printer /> Skedarët për print
+                  </span>
+                  <p>
+                    Hape terminalin në folderin e projektit dhe ekzekuto këtë.
+                    Skedarët (JPG + PDF, 300 dpi, me 3 mm bleed) dalin te print/
+                    {selected.reference}/. Sasinë e printon sipas tabelës më
+                    lart.
+                  </p>
+                  <code>{printCommand(selected)}</code>
+                  <button
+                    className="admin-button is-secondary"
+                    type="button"
+                    onClick={() =>
+                      void navigator.clipboard.writeText(printCommand(selected))
+                    }
+                  >
+                    <Copy />
+                    Kopjo komandën
+                  </button>
+                </div>
+              )}
+
               {selected.customer.notes && (
                 <div className="admin-message">
                   <span>Shënimet e klientit</span>
@@ -177,16 +284,21 @@ export function OrdersPanel({ orders, onChange, onRefresh }: Props) {
               )}
 
               <div className="admin-inline-actions">
+                {selected.customer.email && (
+                  <a
+                    className="admin-button is-secondary"
+                    href={`mailto:${selected.customer.email}?subject=${encodeURIComponent(
+                      `Porosia ${selected.reference} — CUBE DESIGNERS`,
+                    )}`}
+                  >
+                    <Mail />
+                    Email
+                  </a>
+                )}
                 <a
                   className="admin-button is-secondary"
-                  href={`mailto:${selected.customer.email}?subject=${encodeURIComponent(
-                    `Porosia ${selected.reference} — CUBE DESIGNERS`,
-                  )}`}
+                  href={`tel:${selected.customer.phone}`}
                 >
-                  <Mail />
-                  Email
-                </a>
-                <a className="admin-button is-secondary" href={`tel:${selected.customer.phone}`}>
                   <Phone />
                   Thirr
                 </a>

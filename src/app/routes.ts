@@ -2,12 +2,15 @@ export type RouteKey =
   | "home"
   | "about"
   | "work"
-  | "roadmap"
   | "shop"
+  | "smart-glass"
+  | "wall"
+  | "photo"
   | "product"
   | "start-project"
   | "services"
   | "service"
+  | "invitations"
 
 type ParamRouteKey = "product" | "service"
 
@@ -27,13 +30,29 @@ export type SiteRoute = {
 }
 
 export type RouteMatch =
-  | { key: Exclude<RouteKey, ParamRouteKey>; pathname: string; params: Record<string, never> }
+  | {
+      key: Exclude<RouteKey, ParamRouteKey>
+      pathname: string
+      params: Record<string, never>
+    }
   | { key: ParamRouteKey; pathname: string; params: { slug: string } }
 
-// Shop is hidden until launch: no nav link, no /shop routes, not prerendered.
-export const SHOP_ENABLED = false
+// The launch collection and the existing studio catalog are available together.
+export const SHOP_ENABLED = true
 
 const allRoutes: SiteRoute[] = [
+  {
+    key: "invitations",
+    path: "/ftesa",
+    seo: {
+      title: "Ftesa online për dasmën tuaj | CUBE DESIGNERS",
+      description: "Ftesa të personalizuara për dasmën tuaj. Zgjidhni dizajnin, ndani linke personale dhe menaxhoni mysafirët e konfirmimet online.",
+      canonicalPath: "/ftesa",
+      index: false,
+      sitemap: false,
+      ogImage: "/og.png",
+    },
+  },
   {
     key: "home",
     path: "/",
@@ -74,26 +93,51 @@ const allRoutes: SiteRoute[] = [
     },
   },
   {
-    key: "roadmap",
-    path: "/roadmap",
+    key: "shop",
+    path: "/shop",
     seo: {
-      title: "Roadmap 90-ditor | Nga ideja te sistemi",
+      title: "Shop — Postera, print & personalizim | CUBE",
       description:
-        "Procesi 90-ditor i CUBE DESIGNERS për të lidhur brandin, printin, digitalin dhe e-commerce.",
-      canonicalPath: "/roadmap",
+        "Postera, print për biznese, veshje të personalizuara, smart glass dhe ftesa online nga CUBE DESIGNERS.",
+      canonicalPath: "/shop",
       index: true,
       sitemap: true,
       ogImage: "/og.png",
     },
   },
   {
-    key: "shop",
-    path: "/shop",
+    key: "smart-glass",
+    path: "/shop/smart-glass",
     seo: {
-      title: "Shop | Print dhe produkte të personalizuara",
+      title: "Smart Glass — Privatësi me një klik | CUBE",
+      description: "Smart Glass: xham inteligjent që kalon nga i mjegullt në transparent me telekomandë. Matje dhe montim në vend nga CUBE DESIGNERS.",
+      canonicalPath: "/shop/smart-glass",
+      index: true,
+      sitemap: true,
+      ogImage: "/media/collections/blanks/smart-film-off.webp",
+    },
+  },
+  {
+    key: "wall",
+    path: "/shop/muri",
+    seo: {
+      title: "Konfiguro murin — Postera në përmasa reale | CUBE",
       description:
-        "Porosit materiale printi, packaging, textile, signage dhe produkte promocionale nga CUBE DESIGNERS.",
-      canonicalPath: "/shop",
+        "Zgjidh posterat, madhësinë dhe kornizën, rregulloji në murin tënd me përmasa reale dhe shtoji krejt në shportë me një klik.",
+      canonicalPath: "/shop/muri",
+      index: true,
+      sitemap: true,
+      ogImage: "/og.png",
+    },
+  },
+  {
+    key: "photo",
+    path: "/shop/foto",
+    seo: {
+      title: "Printo foton tënde — Letër, pleksiglas, kanavacë | CUBE",
+      description:
+        "Ngarko foton, zgjidh pjesën që do dhe printoje nga A6 deri 50 × 70 cm në letër, pleksiglas, kanavacë ose me kornizë.",
+      canonicalPath: "/shop/foto",
       index: true,
       sitemap: true,
       ogImage: "/og.png",
@@ -106,9 +150,9 @@ const allRoutes: SiteRoute[] = [
       title: "Shërbimet | Print, Branding, Web & Social Media | CUBE",
       description:
         "Të gjitha shërbimet e CUBE DESIGNERS: printim, kartvizita, banera, dizajn logo, branding, web design, e-commerce, SEO dhe menaxhim rrjete sociale në Kosovë.",
-      canonicalPath: "/sherbime",
-      index: true,
-      sitemap: true,
+      canonicalPath: "/about",
+      index: false,
+      sitemap: false,
       ogImage: "/og.png",
     },
   },
@@ -128,7 +172,7 @@ const allRoutes: SiteRoute[] = [
 ]
 
 export const siteRoutes = allRoutes.filter(
-  (route) => SHOP_ENABLED || route.key !== "shop",
+  (route) => SHOP_ENABLED || !["shop", "wall", "photo", "smart-glass"].includes(route.key),
 )
 
 export function normalizePathname(pathname: string) {

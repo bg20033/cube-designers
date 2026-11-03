@@ -1,0 +1,48 @@
+.shop-overview { max-width: 1500px; margin-inline: auto; padding: 32px 5.6vw 60px; }
+.shop-slider { min-width: 0; margin-top: 36px; scroll-margin-top: 100px; }
+.shop-overview > .shop-slider:first-of-type { margin-top: 0; }
+.shop-slider + .shop-slider { padding-top: 32px; border-top: 1px solid var(--cube-line); }
+.shop-slider-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 20px; }
+.shop-slider-heading > div:first-child { min-width: 0; }
+.shop-slider-heading h2 { margin: 0; font-size: clamp(25px, 3vw, 35px); font-weight: 550; letter-spacing: -.055em; line-height: 1.2; }
+.shop-slider-heading p { max-width: 460px; margin: 10px 0 0; color: var(--cube-muted); font-size: 12px; line-height: 1.7; }
+.shop-slider-tools { display: flex; flex-wrap: wrap; gap: 10px 20px; margin-top: 12px; }
+.shop-slider-tools a { padding: 3px 0; border-bottom: 1px solid var(--cube-line); font-size: 11px; }
+.shop-slider-actions { display: flex; align-items: center; flex-shrink: 0; gap: 20px; }
+.shop-slider-link { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 550; }
+.shop-slider-link:hover, .shop-slider-tools a:hover { color: #2458d6; }
+.shop-slider-controls { display: flex; gap: 7px; }
+.shop-slider-controls button { display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border: 1px solid var(--cube-line); border-radius: 50%; background: #fff; color: var(--cube-ink); }
+.shop-slider-controls button:hover:not(:disabled) { background: var(--cube-surface); border-color: #999; }
+.shop-slider-controls button:disabled { opacity: .35; cursor: default; }
+.shop-slider-track { display: grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 48px) / 3.5); gap: 16px; min-width: 0; margin: 0; padding: 6px 2px 18px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: 2px; scrollbar-width: thin; scrollbar-color: #c5c5ca transparent; list-style: none; }
+.shop-slider-track:focus-visible { outline-offset: 0; }
+.shop-slider-item { min-width: 0; scroll-snap-align: start; }
+.shop-slider .cube-card-info { padding-bottom: 6px; }
+.shop-slider-wide .shop-slider-track { grid-auto-columns: calc((100% - 24px) / 2.25); }
+.overview-service-art { position: relative; aspect-ratio: 16 / 10; overflow: hidden; border-radius: 12px; background: var(--cube-surface); }
+.overview-service-art > img { width: 100%; height: 100%; object-fit: cover; }
+.overview-service-card h3, .overview-invitation-card h3 { display: flex; justify-content: space-between; align-items: center; gap: 15px; margin: 18px 0 8px; font-size: 16px; font-weight: 550; letter-spacing: -.035em; }
+.overview-service-card h3 svg, .overview-invitation-card h3 svg { flex-shrink: 0; }
+.overview-service-card p, .overview-invitation-card p { margin: 0; color: var(--cube-muted); font-size: 11px; line-height: 1.7; }
+.overview-play { position: absolute; inset: 0; display: grid; place-content: center; margin: auto; width: 56px; height: 56px; border-radius: 50%; background: #fffffff2; color: #202522; }
+.overview-invitation-art { display: grid; grid-template: minmax(0, 1fr) / minmax(0, 1fr); place-items: center; height: 330px; overflow: hidden; border-radius: 12px; background: #edf0f3; }
+.shop-overview .overview-invitation-art .inv-card.couture-card { grid-area: 1 / 1; width: 300px; min-height: 410px; transform: scale(.64); transform-origin: center; }
+@media (max-width: 1000px) {
+  .shop-overview { padding-inline: 24px; }
+  .shop-slider-track { grid-auto-columns: calc((100% - 24px) / 2.35); }
+  .shop-slider-wide .shop-slider-track { grid-auto-columns: 68%; }
+  .shop-slider-actions { gap: 12px; }
+}
+@media (max-width: 600px) {
+  .shop-overview { padding: 24px 16px 35px; }
+  .shop-slider { margin-top: 28px; }
+  .shop-slider + .shop-slider { padding-top: 26px; }
+  .shop-slider-heading { align-items: start; flex-wrap: wrap; gap: 14px; }
+  .shop-slider-heading p { font-size: 11px; }
+  .shop-slider-actions { width: 100%; justify-content: space-between; }
+  .shop-slider-controls button { width: 40px; height: 40px; }
+  .shop-slider-track, .shop-slider-wide .shop-slider-track { grid-auto-columns: 78%; gap: 12px; }
+  .overview-invitation-art { height: 320px; }
+  .overview-service-card h3, .overview-invitation-card h3 { font-size: 14px; }
+}

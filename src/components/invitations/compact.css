@@ -1,0 +1,95 @@
+/* Denser workspace: same hierarchy, tighter spacing and smaller controls. Loaded last. */
+.inv-app .inv-main { padding:24px 32px 28px; }
+.inv-app .inv-page-heading { margin-bottom:18px; gap:14px; }
+.inv-app .inv-page-heading h1 { font-size:24px; margin:4px 0; }
+.inv-app .inv-page-heading p { font-size:12px; line-height:1.6; }
+.inv-app .inv-button,.inv-dialog .inv-button,.inv-checkout .inv-button { min-height:34px; padding:7px 13px; gap:7px; border-radius:6px; }
+.inv-app .inv-button svg,.inv-dialog .inv-button svg { width:15px; height:15px; }
+.inv-app .inv-icon-button,.inv-dialog .inv-icon-button { width:28px; height:28px; }
+.inv-app .inv-panel-heading { padding:14px 16px 12px; }
+.inv-app .inv-sidebar { padding:26px 18px 16px; }
+.inv-app .inv-sidebar nav button { padding:10px 12px; }
+
+.inv-dialog .inv-dialog-header { padding:14px 20px; }
+.inv-dialog .inv-dialog-header h2 { font-size:17px; }
+.inv-app .inv-form,.inv-dialog .inv-form { padding:18px 20px; gap:14px; }
+.inv-app .inv-form label,.inv-dialog .inv-form label { gap:5px; }
+.inv-app .inv-form input:not([type=checkbox]),.inv-app .inv-form textarea,.inv-app .inv-form select,.inv-dialog .inv-form input:not([type=checkbox]),.inv-dialog .inv-form textarea,.inv-dialog .inv-form select { padding:8px 10px; }
+.inv-dialog .inv-form>fieldset>.inv-location-fields { padding:12px; gap:12px; }
+.inv-dialog .inv-kind-picker button { padding:8px; }
+
+.inv-app .inv-table th { padding:8px 13px; }
+.inv-app .inv-table td { padding:9px 13px; }
+.inv-app .inv-copy-guest { padding:6px 10px; }
+.inv-easy-toolbar { padding:0 16px 12px; }
+.inv-active-filter { margin:0 16px 10px; padding:7px 10px; }
+
+.inv-attendance { gap:10px; }
+.inv-attendance-card { padding:13px 14px; gap:8px; }
+.inv-attendance-main strong { font-size:25px; }
+.inv-attendance-add { min-height:120px; }
+
+.inv-plan { gap:12px; }
+.inv-plan-summary>* { padding:13px 16px; gap:4px; }
+.inv-plan-summary strong { font-size:19px; }
+.inv-plan-summary .inv-plan-total strong { font-size:25px; }
+.inv-plan-target input { padding:6px 9px; font-size:14px; }
+.inv-plan-groups { gap:12px; }
+.inv-plan-group>header { padding:9px 14px; gap:8px; }
+.inv-plan-group>header .inv-service-icon { width:28px; height:28px; }
+.inv-plan-row { padding:10px 14px; gap:6px 10px; }
+.inv-plan-deal { padding:5px 8px; font-size:11.5px; }
+.inv-plan-money dd { font-size:13px; }
+.inv-plan-empty { margin:10px 14px; padding:9px; }
+.inv-plan-tasks>header { padding:10px 14px; }
+.inv-plan-tasks form { padding:10px 14px; }
+.inv-plan-tasks form input { padding:7px 10px; }
+.inv-plan-tasks li { padding:7px 14px; }
+
+.inv-editor { gap:16px; }
+.inv-editor-form { padding:16px; gap:14px; }
+.inv-editor-designs button { padding:8px 10px; }
+.inv-editor-preview { padding:20px; }
+.inv-editor-preview>.inv-card { max-width:340px; }
+
+@media(max-width:700px) {
+  .inv-app .inv-main { padding:12px 14px calc(84px + env(safe-area-inset-bottom)); }
+  .inv-app .inv-page-heading { margin-bottom:12px; }
+  .inv-app .inv-page-heading h1 { font-size:22px; }
+  .inv-app .inv-page-heading>.inv-button,.inv-app .inv-heading-actions>.inv-button { min-height:40px; }
+  .inv-app .inv-sidebar { padding:10px 16px; }
+  .inv-app .inv-sidebar nav { bottom:calc(8px + env(safe-area-inset-bottom)); padding:4px; border-radius:16px; }
+  .inv-app .inv-sidebar nav button { min-height:46px; padding:5px 2px; gap:2px; font-size:10px; border-radius:12px; }
+  .inv-app .inv-sidebar nav button svg { width:18px; height:18px; }
+  .inv-dialog .inv-form { padding:14px 16px; }
+  .inv-dialog .inv-dialog-header { padding:12px 16px; }
+  .inv-dialog .inv-form-actions { margin:0 -16px -14px; padding:10px 16px calc(10px + env(safe-area-inset-bottom)); }
+  .inv-dialog .inv-form-actions>.inv-button { min-height:42px; }
+  .inv-easy-guests .inv-table tr { padding:9px 14px; }
+  .inv-attendance-card { padding:12px; }
+  .inv-editor-preview { padding:14px; }
+  .inv-editor-preview>.inv-card { max-width:220px; }
+  .inv-toast { bottom:calc(74px + env(safe-area-inset-bottom)); }
+}
+.inv-app .inv-copy-guest { gap:0; }
+.inv-app .inv-copy-guest>svg { margin-right:6px; }
+.inv-copy-word { margin-left:.3em; }
+.inv-plan-groups { align-items:start; }
+
+/* Focus, busy and touch polish (mobile first). */
+.inv-app summary:focus-visible,.inv-dialog summary:focus-visible,.inv-dialog select:focus-visible,.inv-checkout a:focus-visible,.inv-checkout input:focus-visible,.inv-checkout select:focus-visible,.inv-accountbar button:focus-visible,.inv-invalid a:focus-visible,.inv-invalid button:focus-visible { outline:2px solid var(--inv-accent,#2457d6); outline-offset:2px; }
+.inv-app button:disabled,.inv-dialog button:disabled,.inv-checkout button:disabled { cursor:not-allowed; }
+.inv-app[aria-busy=true],.inv-dialog form[aria-busy=true] { cursor:progress; }
+.inv-spinner { animation:inv-spin .9s linear infinite; flex-shrink:0; }
+@keyframes inv-spin { to { transform:rotate(360deg); } }
+.inv-loading svg { animation:inv-pulse 1.4s ease-in-out infinite; }
+@keyframes inv-pulse { 50% { opacity:.45; transform:scale(.92); } }
+@media (pointer:coarse) {
+  .inv-app .inv-icon-button,.inv-dialog .inv-icon-button { min-width:36px; min-height:36px; }
+  .inv-app .inv-guest-options>summary { min-width:36px; min-height:36px; }
+}
+@media (prefers-reduced-motion:reduce) { .inv-spinner,.inv-loading svg { animation:none; } }
+
+/* Dialog messages sit in the (sticky) actions bar, so a confirmation is never off screen. */
+.inv-dialog .inv-form-actions:has(>.inv-actions-message) { flex-wrap:wrap; }
+.inv-dialog .inv-form-actions>.inv-actions-message { flex:1 1 100%; order:-1; margin:0 0 2px; text-align:left; }

@@ -157,7 +157,7 @@ export function ServicesDirectory() {
       <div className="services-directory__grid">
         {directoryOrder.map((key) => (
           <div key={key}>
-            <a className="services-directory__title" href={`/sherbime#${key}`}>
+            <a className="services-directory__title" href={`/about#${key}`}>
               {serviceCategories[key].label}
               <ArrowRight aria-hidden="true" />
             </a>

@@ -38,7 +38,7 @@ export function ServiceDetail({ service }: { service: ServicePageData }) {
           <nav className="svc-breadcrumb" aria-label="Breadcrumb">
             <a href="/">Ballina</a>
             <span aria-hidden="true">/</span>
-            <a href="/sherbime">Shërbimet</a>
+            <a href="/about#sherbimet">Shërbimet</a>
             <span aria-hidden="true">/</span>
             <span aria-current="page">{service.name}</span>
           </nav>
@@ -158,7 +158,7 @@ export function ServiceDetail({ service }: { service: ServicePageData }) {
                 <ArrowUpRight aria-hidden="true" />
               </a>
             ))}
-            <a className="is-all" href="/sherbime">
+            <a className="is-all" href="/about#sherbimet">
               <small>Katalogu</small>
               <strong>Të gjitha shërbimet</strong>
               <ArrowRight aria-hidden="true" />
