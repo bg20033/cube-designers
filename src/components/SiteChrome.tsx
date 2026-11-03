@@ -29,9 +29,8 @@ import {
 const headerTexts = ["CUBE DESIGNERS", "DESIGN", "PRINT", "DIGITAL"]
 
 const navItems = [
-  { label: "Shërbimet", href: "/about#sherbimet", path: "/sherbime" },
-  { label: "Puna", href: "/work", path: "/work" },
   ...(SHOP_ENABLED ? [{ label: "Shop", href: "/shop", path: "/shop" }] : []),
+  { label: "Puna", href: "/work", path: "/work" },
   { label: "Rreth nesh", href: "/about", path: "/about" },
 ]
 

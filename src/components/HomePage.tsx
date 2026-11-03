@@ -2,9 +2,7 @@ import { lazy, Suspense, useState } from "react"
 
 import {
   CollaborationProof,
-  FaqSection,
   FeaturedWork,
-  ServicesDirectory,
 } from "@/components/GrowthSections"
 import ServiceStory, {
   type StoryGroup,
@@ -380,8 +378,6 @@ export default function HomePage({ effectsEnabled = true }: { effectsEnabled?: b
 
         <FeaturedWork />
         <CollaborationProof />
-        <ServicesDirectory />
-        <FaqSection />
         <DareContact />
       </main>
     </div>

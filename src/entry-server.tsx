@@ -3,7 +3,6 @@ import { matchesShopCategory } from "@/data/shop-navigation"
 import { renderToString } from "react-dom/server"
 
 import App, { preloadPage } from "@/App"
-import { faqs as homeFaqs } from "@/components/GrowthSections"
 import { socialProfiles } from "@/data/site"
 import {
   getRouteSeo,
@@ -149,15 +148,6 @@ function buildStructuredData(
   ]
 
   if (route?.key === "home") {
-    data.push({
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: homeFaqs.map((faq) => ({
-        "@type": "Question",
-        name: faq.question,
-        acceptedAnswer: { "@type": "Answer", text: faq.answer },
-      })),
-    })
     return data
   }
 
