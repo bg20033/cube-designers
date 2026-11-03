@@ -4,10 +4,9 @@ import {
   useRef,
   useState,
   type CSSProperties,
-  type PointerEvent as ReactPointerEvent,
 } from "react"
 import { ArrowRight, ArrowUpRight, Check, MoveDown } from "lucide-react"
-import { AnimatePresence, motion, MotionConfig } from "motion/react"
+import { motion, MotionConfig, useReducedMotion } from "motion/react"
 
 import OptionWheel from "@/components/OptionWheel"
 import { getPortfolioImage, ResponsiveImage } from "@/components/ResponsiveImage"
@@ -62,27 +61,8 @@ const scrollStepSvh = 17
 // Card swaps animate only opacity and transform: a blur filter on this large
 // image layer cost a full repaint every frame.
 const cardMotionVariants = {
-  enter: (direction: number) => ({
-    opacity: 0,
-    x: direction < 0 ? -42 : 42,
-    y: 12,
-    rotateZ: direction < 0 ? -0.7 : 0.7,
-    scale: 0.985,
-  }),
-  active: {
-    opacity: 1,
-    x: 0,
-    y: 0,
-    rotateZ: 0,
-    scale: 1,
-  },
-  exit: (direction: number) => ({
-    opacity: 0,
-    x: direction < 0 ? 34 : -34,
-    y: -8,
-    rotateZ: direction < 0 ? 0.45 : -0.45,
-    scale: 0.992,
-  }),
+  enter: (direction: number) => ({ opacity: 0, x: direction < 0 ? -16 : 16 }),
+  active: { opacity: 1, x: 0 },
 }
 
 export default function ServiceStory({
@@ -90,6 +70,7 @@ export default function ServiceStory({
   groups,
   onHeaderLabelChange,
 }: ServiceStoryProps) {
+  const reduceMotion = useReducedMotion()
   const sectionRef = useRef<HTMLElement>(null)
   const sectionActiveRef = useRef(false)
   const onHeaderLabelChangeRef = useRef(onHeaderLabelChange)
@@ -117,6 +98,7 @@ export default function ServiceStory({
       ),
     [groups],
   )
+  const wheelItems = useMemo(() => entries.map(({ item }) => item.title), [entries])
   const activeEntry = entries[activeIndex] ?? entries[0]
   const activeItem = activeEntry.item
   const activeGroup = activeEntry.group
@@ -144,28 +126,6 @@ export default function ServiceStory({
       preload.srcset = image.variants.map((variant) => `${variant.src} ${variant.width}w`).join(", ")
     }
   }, [activeIndex, entries])
-
-  const handleCardPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (event.pointerType === "touch") return
-    const card = event.currentTarget
-
-    const bounds = card.getBoundingClientRect()
-    const x = (event.clientX - bounds.left) / bounds.width
-    const y = (event.clientY - bounds.top) / bounds.height
-
-    card.style.setProperty("--card-rx", `${(0.5 - y) * 3.2}deg`)
-    card.style.setProperty("--card-ry", `${(x - 0.5) * 4.2}deg`)
-    card.style.setProperty("--glow-x", `${x * 100}%`)
-    card.style.setProperty("--glow-y", `${y * 100}%`)
-  }
-
-  const resetCardTilt = (event: ReactPointerEvent<HTMLDivElement>) => {
-    const card = event.currentTarget
-    card.style.setProperty("--card-rx", "0deg")
-    card.style.setProperty("--card-ry", "0deg")
-    card.style.setProperty("--glow-x", "50%")
-    card.style.setProperty("--glow-y", "50%")
-  }
 
   useEffect(() => {
     let frame = 0
@@ -282,7 +242,7 @@ export default function ServiceStory({
             aria-label={`${activeGroup.category} services`}
           >
             <OptionWheel
-              items={entries.map(({ item }) => item.title)}
+              items={wheelItems}
               selected={activeIndex}
               defaultSelected={0}
               soundUrl={wheelSound}
@@ -311,7 +271,7 @@ export default function ServiceStory({
               fade={0.25}
               minOpacity={0}
               inset={64}
-              smoothing={85}
+              smoothing={65}
               draggable
             />
           </div>
@@ -332,11 +292,6 @@ export default function ServiceStory({
 
         <div className="story-stage">
           <div className="story-card-stack">
-            <AnimatePresence
-              initial={false}
-              mode="sync"
-              custom={cardDirection}
-            >
               <motion.div
                 className="story-card-shell"
                 key={`${activeGroup.id}-${activeIndex}`}
@@ -344,13 +299,10 @@ export default function ServiceStory({
                 variants={variants}
                 initial="enter"
                 animate="active"
-                exit="exit"
                 transition={{
-                  duration: 0.34,
+                  duration: reduceMotion ? 0 : 0.22,
                   ease: [0.22, 1, 0.36, 1],
                 }}
-                onPointerMove={handleCardPointerMove}
-                onPointerLeave={resetCardTilt}
               >
           <article className="story-card">
             <div className="story-card-top">
@@ -454,21 +406,12 @@ export default function ServiceStory({
             </div>
               </article>
               </motion.div>
-            </AnimatePresence>
           </div>
 
           <div className="story-progress" aria-hidden="true">
             {entries.map(({ item, group }, index) => (
-              <motion.span
-                animate={{
-                  height: index === activeIndex ? 42 : 18,
-                  opacity: index === activeIndex ? 1 : 0.22,
-                }}
-                transition={{
-                  type: "spring",
-                  stiffness: 420,
-                  damping: 34,
-                }}
+              <span
+                className={index === activeIndex ? "is-active" : undefined}
                 key={`${group.id}-${item.title}`}
               />
             ))}

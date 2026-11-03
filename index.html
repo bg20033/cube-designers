@@ -12,6 +12,11 @@
         }
       } catch {}
     </script>
+    <script>
+      if (location.pathname === "/shop" && /[?&](category|q|saved|max|sort)=/.test(location.search)) {
+        document.documentElement.dataset.shopPending = "true"
+      }
+    </script>
     <!--app-head-->
   </head>
   <body>

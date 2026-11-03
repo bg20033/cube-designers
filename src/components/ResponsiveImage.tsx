@@ -39,6 +39,18 @@ type ResponsiveImageProps = Omit<
   sizes?: string
 }
 
+// Shop posters have light copies (scripts/build-poster-thumbs.mjs) so grids
+// and cards never download the full 1200 px file.
+const posterPath = /^\/media\/collections\/(archive|museum|bundles|blanks)\/[^/]+\.webp$/
+export function posterThumb(src: string | undefined, width: 480 | 800) {
+  return src && posterPath.test(src) ? src.replace("/media/collections/", `/media/collections/w${width}/`) : src
+}
+export function posterSrcSet(src: string) {
+  if (!posterPath.test(src)) return undefined
+  const light = (width: number) => src.replace("/media/collections/", `/media/collections/w${width}/`)
+  return `${light(480)} 480w, ${light(800)} 800w, ${src} 1200w`
+}
+
 export function ResponsiveImage({
   image: imageOrKey,
   alt,
@@ -62,6 +74,7 @@ export function ResponsiveImage({
         loading={loading}
         sizes={sizes}
         src={imageOrKey}
+        srcSet={posterSrcSet(imageOrKey)}
         style={{ objectFit: "cover", ...style }}
       />
     )

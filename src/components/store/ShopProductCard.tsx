@@ -1,14 +1,12 @@
-import { Eye, Heart, Plus } from "lucide-react"
+import { Eye, Plus } from "lucide-react"
 import { ResponsiveImage } from "@/components/ResponsiveImage"
 import type { Product } from "@/data/products"
 import { shopCategoryLabel } from "@/data/shop-navigation"
 
 const currency = new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 2, minimumFractionDigits: 0 })
 
-export function ShopProductCard({ product, favorite, onFavorite, onQuickView, onAdd, slider = false }: {
+export function ShopProductCard({ product, onQuickView, onAdd, slider = false }: {
   product: Product
-  favorite: boolean
-  onFavorite: () => void
   onQuickView: () => void
   onAdd: () => void
   slider?: boolean
@@ -26,7 +24,6 @@ export function ShopProductCard({ product, favorite, onFavorite, onQuickView, on
           /> : <span className="cube-product-placeholder">{product.name}<small>Print sipas idesë tënde</small></span>}
         </a>
         <div className="cube-card-tools">
-          <button type="button" aria-label={`${favorite ? "Largo" : "Ruaj"} ${product.name}`} aria-pressed={favorite} onClick={onFavorite}><Heart size={16} fill={favorite ? "currentColor" : "none"} /></button>
           <button type="button" aria-label={`Shiko shpejt ${product.name}`} onClick={onQuickView}><Eye size={17} /></button>
         </div>
       </div>

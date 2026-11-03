@@ -1,8 +1,7 @@
 import AxeBuilder from "@axe-core/playwright"
 import { expect, test } from "@playwright/test"
 
-test("Seria contains poster facets, sorting, price and favorites in one popup", async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("cube-shop-favorites-v1", JSON.stringify(["orbit"])))
+test("Seria contains poster facets, sorting and price in one popup, without favorites", async ({ page }) => {
   await page.goto("/shop?category=Postera")
   const toolbar = page.locator(".cube-shop-toolbar")
   const trigger = toolbar.getByRole("button", { name: /^Seria/ })
@@ -22,8 +21,7 @@ test("Seria contains poster facets, sorting, price and favorites in one popup", 
   await price.press("ArrowRight")
   await expect(page).toHaveURL(/max=10/)
   await expect(page.locator(".cube-shop-grid .cube-product-card").first()).toBeVisible()
-  await panel.getByRole("button", { name: "Vetëm të ruajturat (1)", exact: true }).click()
-  await expect(page).toHaveURL(/saved=1/)
+  await expect(panel.getByRole("button", { name: /të ruajturat/ })).toHaveCount(0)
   await panel.getByRole("button", { name: "Pastro", exact: true }).click()
   await expect(page).toHaveURL(/category=Postera$/)
   await expect(sort).toHaveValue("featured")
@@ -38,4 +36,19 @@ test("Seria contains poster facets, sorting, price and favorites in one popup", 
   await expect(trigger).toHaveClass(/is-active/)
   await page.reload()
   await expect(trigger).toHaveClass(/is-active/)
+})
+
+test("poster grids load the light copies, and quick view shows the whole poster with a size and finish picker", async ({ page }) => {
+  await page.goto("/shop?category=Postera")
+  const card = page.locator('.cube-shop-grid .cube-product-card:has(img[srcset*="/media/collections/w480/"])').first()
+  const image = card.locator("img")
+  await expect(image).toBeVisible()
+  // Light 480/800 px copies are offered; which one loads depends on screen density and cache.
+  await expect(image).toHaveAttribute("srcset", /\/w480\/.+ 480w, .+\/w800\/.+ 800w/)
+  await card.getByRole("button", { name: /^Shiko shpejt/ }).click()
+  const dialog = page.getByRole("dialog")
+  await expect(dialog.locator(".cube-quick-image img")).toHaveCSS("object-fit", "contain")
+  // Size and finish are picked separately instead of one button per combination.
+  expect(await dialog.getByRole("button").count()).toBeLessThan(16)
+  await expect(dialog.getByRole("button", { name: /Shto në shportë/ })).toBeInViewport()
 })

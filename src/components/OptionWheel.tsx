@@ -238,12 +238,17 @@ const OptionWheel = ({
     const el = rootRef.current;
     if (!el) return;
     const onWheel = (e: WheelEvent) => {
-      e.preventDefault();
+      if (e.ctrlKey) return;
       const cfg = cfgRef.current;
       const delta = e.deltaMode === 1 ? e.deltaY * 24 : e.deltaY;
       // Cap each event at one step so notchy mouse wheels move exactly one
       // option per click, while touchpads still scroll continuously.
       const step = Math.max(-1, Math.min(1, delta / cfg.rowH));
+      if (!step || (!cfg.loop && (
+        (targetRef.current <= 0 && step < 0) ||
+        (targetRef.current >= cfg.count - 1 && step > 0)
+      ))) return;
+      e.preventDefault();
       applyTarget(targetRef.current + step, false);
       if (wheelTimerRef.current) clearTimeout(wheelTimerRef.current);
       wheelTimerRef.current = setTimeout(() => applyTarget(targetRef.current, true), 140);

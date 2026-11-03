@@ -43,6 +43,8 @@ async function openShopMenu(page: Page, isMobile: boolean) {
   if (isMobile) await page.getByRole("button", { name: "Hap menynë" }).click()
   const menu = page.locator(`${isMobile ? ".sheet-links" : ".agency-nav"} .shop-dropdown`)
   await menu.locator("summary").click()
+  // Let the sheet and dropdown finish animating so contrast is measured on the final colours.
+  await page.waitForFunction(() => document.getAnimations().every((animation) => animation.playState !== "running"))
   return menu
 }
 
@@ -119,9 +121,6 @@ test("shop toolbar searches, sorts and clears filters within the selected catego
       { ...base, id: "scope-sign", name: "Reklamë ndriçuese", category: "Signage", price: 1200 },
     ] }),
   }))
-  await page.addInitScript(() => localStorage.setItem(
-    "cube-shop-favorites-v1", JSON.stringify(["scope-shirt", "scope-poster"]),
-  ))
   await page.goto("/shop?category=Veshje")
   const titles = page.locator(".cube-shop-grid h2")
   await expect(titles).toHaveText(["Maicë premium", "Maicë bazë"])
@@ -132,8 +131,8 @@ test("shop toolbar searches, sorts and clears filters within the selected catego
   await expect(titles).toHaveText(["Maicë bazë", "Maicë premium"])
   await page.locator(".cube-filter-button").click()
   await expect(page.getByRole("slider")).toHaveAttribute("max", "75")
-  await page.getByRole("button", { name: "Vetëm të ruajturat (1)", exact: true }).click()
-  await expect(titles).toHaveText(["Maicë premium"])
+  await page.getByRole("slider").fill("30")
+  await expect(titles).toHaveText(["Maicë bazë"])
   await search.fill("Poster")
   await expect(titles).toHaveCount(0)
   await page.locator(".cube-filter-panel").getByRole("button", { name: "Pastro filtrat" }).click()
@@ -146,7 +145,6 @@ test("shop toolbar searches, sorts and clears filters within the selected catego
   await expect(search).toHaveAttribute("placeholder", "Kërko postera…")
   await page.getByRole("button", { name: /^Seria/ }).click()
   await expect(page.getByRole("slider")).toHaveAttribute("max", "40")
-  await expect(page.getByRole("button", { name: "Vetëm të ruajturat (1)", exact: true })).toBeVisible()
   await search.fill("Maicë")
   await expect(titles).toHaveCount(0)
 })

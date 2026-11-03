@@ -1,3 +1,4 @@
+import { posterThumb } from "@/components/ResponsiveImage"
 import {
   useEffect,
   useMemo,
@@ -1940,7 +1941,7 @@ export default function WallPlannerPage() {
                         aria-label={`Shto ${product.name} në mur`}
                       >
                         <img
-                          src={product.image}
+                          src={posterThumb(product.image, 480)}
                           alt=""
                           loading="lazy"
                           width="1200"
@@ -1994,7 +1995,7 @@ export default function WallPlannerPage() {
                               />
                             ) : (
                               <img
-                                src={line.product.image}
+                                src={posterThumb(line.product.image, 480)}
                                 alt=""
                                 width="1200"
                                 height="1350"

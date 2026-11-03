@@ -27,11 +27,10 @@ test("Krejt shows separate sliders with working buttons and keyboard navigation"
   await expect(page.locator('[data-category="Llampa"]')).toHaveCount(0)
 })
 
-test("slider products keep favorites, quick view and cart actions", async ({ page }) => {
+test("slider products keep quick view and cart actions, with no favorites heart", async ({ page }) => {
   await page.goto("/shop")
   const card = page.locator("#shop-posters .cube-product-card").first()
-  await card.getByRole("button", { name: "Ruaj Forma — Blue", exact: true }).click()
-  await expect(card.getByRole("button", { name: "Largo Forma — Blue", exact: true })).toHaveAttribute("aria-pressed", "true")
+  await expect(card.getByRole("button", { name: /^(Ruaj|Largo) / })).toHaveCount(0)
   await card.getByRole("button", { name: "Shiko shpejt Forma — Blue", exact: true }).click()
   await expect(page.getByRole("dialog", { name: "Forma — Blue" })).toBeVisible()
   await page.keyboard.press("Escape")

@@ -15,6 +15,7 @@
     "media:posters": "node scripts/fetch-museum-posters.mjs",
     "media:archive": "node scripts/fetch-commons-posters.mjs",
     "media:bundles": "node scripts/build-bundle-images.mjs",
+    "media:thumbs": "node scripts/build-poster-thumbs.mjs",
     "print": "node scripts/print-files.mjs",
     "seo:indexnow": "node scripts/indexnow.mjs",
     "preview:worker": "wrangler dev --config dist/server/wrangler.json --port 4173",

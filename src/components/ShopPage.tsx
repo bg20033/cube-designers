@@ -7,6 +7,7 @@ import {
   sanitizeCart,
 } from "@/data/commerce"
 import { ProductOptions } from "@/components/store/ProductOptions"
+import { SizeFinishPicker, isPrintProduct } from "@/components/store/SizeFinishPicker"
 import { OrderEmail } from "@/components/store/OrderEmail"
 import { useOrderAvailability } from "@/components/shop/useOrderAvailability"
 import {
@@ -21,7 +22,6 @@ import {
   ArrowRight,
   Check,
   Frame,
-  Heart,
   Minus,
   PackageCheck,
   Plus,
@@ -90,7 +90,6 @@ export default function ShopPage() {
   const [search, setSearch] = useState("")
   const [sort, setSort] = useState("featured")
   const [maxPrice, setMaxPrice] = useState<number | null>(null)
-  const [savedOnly, setSavedOnly] = useState(false)
   const [filtersOpen, setFiltersOpen] = useState(false)
   const posterCategory = parentShopCategory(category) === "Postera"
   const [quickView, setQuickView] = useState<Product | null>(null)
@@ -109,16 +108,6 @@ export default function ShopPage() {
   })
   const [cart, setCart] = useState<CartItem[]>(() =>
     sanitizeCart(readStoredJson("cube-shop-cart-v1", [])),
-  )
-  const [favorites, setFavorites] = useState<string[]>(() =>
-    (() => {
-      const saved = readStoredJson<unknown>("cube-shop-favorites-v1", [])
-      return Array.isArray(saved)
-        ? saved
-            .filter((id): id is string => typeof id === "string")
-            .slice(0, 200)
-        : []
-    })(),
   )
   const initialQueryRead = useRef(false)
   const pendingAdd = useRef<{ id: string; variant?: string } | null>(null)
@@ -139,41 +128,67 @@ export default function ShopPage() {
     },
     [catalog],
   )
+  const categoryNavRef = useRef<HTMLElement>(null)
   useEffect(() => {
-    if (initialQueryRead.current) return
-    initialQueryRead.current = true
-    const params = new URLSearchParams(window.location.search)
-    // Old links still say "Maica".
-    const requested =
-      params.get("category") === "Maica" ? "Veshje" : params.get("category")
-    if (requested?.toLowerCase() === "smart glass") {
-      window.location.replace("/shop/smart-glass")
-      return
+    function readLocation(initial = false) {
+      const params = new URLSearchParams(window.location.search)
+      const requested = params.get("category") === "Maica" ? "Veshje" : params.get("category")
+      if (requested?.toLowerCase() === "smart glass") {
+        window.location.replace("/shop/smart-glass")
+        return
+      }
+      const nextCategory = categories.includes(requested as (typeof categories)[number])
+        ? requested! : productCategories.includes(requested as ProductCategory) ? BUSINESS : "Krejt"
+      setCategory(nextCategory)
+      setFilters(parentShopCategory(nextCategory) === "Postera" ? readFilters(params) : {})
+      setSearch(params.get("q") ?? "")
+      setSort(params.get("sort") ?? "featured")
+      const max = Number(params.get("max"))
+      setMaxPrice(params.has("max") && Number.isFinite(max) && max >= 0 ? max : null)
+      setFiltersOpen(false)
+      if (params.get("cart") === "1") setCartOpen(true)
+      if (initial) {
+        const id = params.get("add")
+        pendingAdd.current = id ? { id, variant: params.get("variant") ?? undefined } : null
+      }
+      setHydrated(true)
     }
-    if (categories.includes(requested as (typeof categories)[number]))
-      setCategory(requested!)
-    else if (productCategories.includes(requested as ProductCategory))
-      setCategory(BUSINESS)
-    if (requested && parentShopCategory(requested) === "Postera")
-      setFilters(readFilters(params))
-    setSearch(params.get("q") ?? "")
-    setSort(params.get("sort") ?? "featured")
-    setSavedOnly(params.get("saved") === "1")
-    const max = Number(params.get("max"))
-    if (params.has("max") && Number.isFinite(max) && max >= 0) setMaxPrice(max)
-    if (params.get("cart") === "1") setCartOpen(true)
-    if (params.has("category"))
-      requestAnimationFrame(() =>
-        document
-          .getElementById("catalog")
-          ?.scrollIntoView({ behavior: "instant" }),
-      )
-    const id = params.get("add")
-    pendingAdd.current = id
-      ? { id, variant: params.get("variant") ?? undefined }
-      : null
-    setHydrated(true)
-  }, [catalog])
+    if (!initialQueryRead.current) {
+      initialQueryRead.current = true
+      readLocation(true)
+    }
+    function navigate(event: MouseEvent) {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+      const link = (event.target as Element).closest<HTMLAnchorElement>("a[href]")
+      if (!link || link.hasAttribute("download") || (link.target && link.target !== "_self")) return
+      const url = new URL(link.href, window.location.href)
+      if (url.origin !== window.location.origin || url.pathname !== "/shop" || url.searchParams.has("add") || url.searchParams.has("cart")) return
+      event.preventDefault()
+      window.history.pushState(null, "", `${url.pathname}${url.search}${url.hash}`)
+      link.closest("details")?.removeAttribute("open")
+      readLocation()
+      window.requestAnimationFrame(() => document.getElementById("catalog")?.scrollIntoView({ behavior: "instant", block: "start" }))
+    }
+    const onPopState = () => readLocation()
+    document.addEventListener("click", navigate)
+    window.addEventListener("popstate", onPopState)
+    return () => {
+      document.removeEventListener("click", navigate)
+      window.removeEventListener("popstate", onPopState)
+    }
+  }, [])
+  useEffect(() => {
+    if (hydrated) document.documentElement.removeAttribute("data-shop-pending")
+  }, [hydrated])
+  useEffect(() => {
+    const nav = categoryNavRef.current
+    const selected = nav?.querySelector<HTMLElement>('[aria-pressed="true"]')
+    if (!nav || !selected || !window.matchMedia("(max-width: 600px)").matches) return
+    const bounds = nav.getBoundingClientRect()
+    const item = selected.getBoundingClientRect()
+    nav.scrollLeft += Math.max(0, item.right - bounds.right + 20) + Math.min(0, item.left - bounds.left - 20)
+  }, [category])
+
   useEffect(() => {
     const pending = pendingAdd.current
     const product = catalog.find((candidate) => candidate.id === pending?.id)
@@ -188,23 +203,19 @@ export default function ShopPage() {
     writeStoredJson("cube-shop-cart-v1", cart)
   }, [cart])
   useEffect(() => {
-    writeStoredJson("cube-shop-favorites-v1", favorites)
-  }, [favorites])
-  useEffect(() => {
     if (!hydrated) return
     const params = new URLSearchParams()
     if (category !== "Krejt") params.set("category", category)
     if (parentShopCategory(category) === "Postera") writeFilters(params, filters)
     if (search) params.set("q", search)
     if (sort !== "featured") params.set("sort", sort)
-    if (savedOnly) params.set("saved", "1")
     if (maxPrice !== null) params.set("max", String(maxPrice))
     window.history.replaceState(
       null,
       "",
       `/shop${params.size ? `?${params}` : ""}${window.location.hash}`,
     )
-  }, [category, filters, search, sort, savedOnly, maxPrice, hydrated])
+  }, [category, filters, search, sort, maxPrice, hydrated])
 
   const categoryProducts = useMemo(
     () => catalog.filter((product) => matchesCategory(product, category)),
@@ -214,7 +225,6 @@ export default function ShopPage() {
     categoryProducts.reduce((highest, product) => Math.max(highest, product.price), 0) / 5,
   ) * 5)
   const priceLimit = Math.min(maxPrice ?? priceCeiling, priceCeiling)
-  const savedCount = categoryProducts.filter((product) => favorites.includes(product.id)).length
   const searchPlaceholder = {
     Postera: "Kërko postera…",
     Paketa: "Kërko paketa…",
@@ -234,7 +244,6 @@ export default function ShopPage() {
           (product) =>
             (parentShopCategory(category) !== "Postera" || matchesFilters(product, filters)) &&
             product.price <= priceLimit &&
-            (!savedOnly || favorites.includes(product.id)) &&
             `${product.name} ${product.category} ${shopCategoryLabel(product.category)} ${product.description} ${product.material}`
               .toLowerCase()
               .includes(search.trim().toLowerCase()),
@@ -248,7 +257,7 @@ export default function ShopPage() {
                 ? a.name.localeCompare(b.name)
                 : Number(!!b.featured) - Number(!!a.featured),
         ),
-    [categoryProducts, category, filters, priceLimit, savedOnly, favorites, search, sort],
+    [categoryProducts, category, filters, priceLimit, search, sort],
   )
   // Any filter change starts again from the first page.
   const filterKey = [
@@ -257,7 +266,6 @@ export default function ShopPage() {
     search,
     sort,
     maxPrice,
-    savedOnly,
   ].join("|")
   const [paging, setPaging] = useState({ key: filterKey, shown: PAGE_SIZE })
   const shown = paging.key === filterKey ? paging.shown : PAGE_SIZE
@@ -308,9 +316,11 @@ export default function ShopPage() {
     setSearch("")
     setSort("featured")
     setMaxPrice(null)
-    setSavedOnly(false)
   }
   function selectCategory(nextCategory: string) {
+    const params = new URLSearchParams()
+    if (nextCategory !== "Krejt") params.set("category", nextCategory)
+    window.history.pushState(null, "", `/shop${params.size ? `?${params}` : ""}${window.location.hash}`)
     setCategory(nextCategory)
     resetFilters()
     setFiltersOpen(false)
@@ -331,28 +341,16 @@ export default function ShopPage() {
       <label><span>Çmimi maksimal <strong>{currency.format(priceLimit)}</strong></span>
         <input type="range" aria-label="Çmimi maksimal" min="0" max={priceCeiling} step="5" value={priceLimit} onChange={(event) => setMaxPrice(Number(event.target.value))} />
       </label>
-      <button type="button" aria-pressed={savedOnly} onClick={() => setSavedOnly(!savedOnly)}>
-        <Heart size={17} fill={savedOnly ? "currentColor" : "none"} /> Vetëm të ruajturat ({savedCount})
-      </button>
     </>
   }
   function renderProduct(product: Product, slider = false) {
     return <ShopProductCard
       key={product.id}
       product={product}
-      favorite={favorites.includes(product.id)}
-      onFavorite={() => toggleFavorite(product.id)}
       onQuickView={() => { setVariantId(product.defaultVariantId); setQuickView(product) }}
       onAdd={() => addToCart(product.id)}
       slider={slider}
     />
-  }
-  function toggleFavorite(id: string) {
-    setFavorites((current) =>
-      current.includes(id)
-        ? current.filter((item) => item !== id)
-        : [...current, id],
-    )
   }
   // Lines never drop below their option's minimum; the bin removes them.
   function changeQuantity(id: string, change: number, minimum = 1) {
@@ -415,7 +413,7 @@ export default function ShopPage() {
       )
   }
 
-  const overview = category === "Krejt" && !search && !savedOnly && maxPrice === null && sort === "featured"
+  const overview = category === "Krejt" && !search && maxPrice === null && sort === "featured"
 
   return (
     <>
@@ -428,6 +426,7 @@ export default function ShopPage() {
         >
           <h1 className="sr-only" id="catalog-title">Shop</h1>
           <nav
+            ref={categoryNavRef}
             className="cube-shop-categories"
             aria-label={`Kategoritë: ${shopCategoryLabel(parentShopCategory(category))}`}
           >
@@ -481,8 +480,8 @@ export default function ShopPage() {
                 groups={filterGroups}
                 value={filters}
                 onChange={setFilters}
-                extraActiveCount={Number(maxPrice !== null) + Number(savedOnly) + Number(sort !== "featured")}
-                onReset={() => { setFilters({}); setMaxPrice(null); setSavedOnly(false); setSort("featured") }}
+                extraActiveCount={Number(maxPrice !== null) + Number(sort !== "featured")}
+                onReset={() => { setFilters({}); setMaxPrice(null); setSort("featured") }}
               >
                 <div className="poster-menu-controls">
                   {renderSortControl(true)}
@@ -583,28 +582,35 @@ export default function ShopPage() {
           <div className="cube-quick-view">
             <div className="cube-quick-image">
               {quickView.image && (
-                <ResponsiveImage image={quickView.image} alt={quickView.name} />
+                <ResponsiveImage image={quickView.image} alt={quickView.name} sizes="(max-width: 700px) 90vw, 40vw" style={{ objectFit: "contain" }} />
               )}
             </div>
             <div className="cube-quick-copy">
               <span className="cube-eyebrow">{quickView.category}</span>
               <h2>{quickView.name}</h2>
               <p>{quickView.description}</p>
-              <dl>
-                <div>
-                  <dt>Formati</dt>
-                  <dd>{quickView.quantityLabel}</dd>
-                </div>
-                <div>
-                  <dt>Materiali</dt>
-                  <dd>{quickView.material}</dd>
-                </div>
-              </dl>
-              <ProductOptions
-                product={quickView}
-                value={variantId}
-                onChange={setVariantId}
-              />
+              {isPrintProduct(quickView) ? (
+                <SizeFinishPicker
+                  product={quickView}
+                  value={variantId}
+                  onChange={setVariantId}
+                  compact
+                />
+              ) : (
+                <>
+                  <dl>
+                    <div>
+                      <dt>Materiali</dt>
+                      <dd>{quickView.material}</dd>
+                    </div>
+                  </dl>
+                  <ProductOptions
+                    product={quickView}
+                    value={variantId}
+                    onChange={setVariantId}
+                  />
+                </>
+              )}
               <strong className="cube-detail-price">
                 {currency.format(getSelection(quickView, variantId).price)}
               </strong>

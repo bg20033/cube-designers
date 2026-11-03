@@ -1,3 +1,4 @@
+import { posterSrcSet } from "@/components/ResponsiveImage"
 import type { CSSProperties, HTMLAttributes, ReactNode } from "react"
 import { getFinish, type PhotoCrop } from "@/data/products"
 
@@ -73,7 +74,7 @@ export function PrintSurface({
             style={cropStyle(photo.src, photo.crop)}
           />
         ) : art ? (
-          <img src={art} alt="" draggable={false} />
+          <img src={art} srcSet={posterSrcSet(art)} sizes="(max-width: 700px) 60vw, 40vw" alt="" draggable={false} />
         ) : (
           <span className="print-surface-loading" />
         )}

@@ -51,6 +51,8 @@ const server = createServer(async (req, res) => {
     res.end(Buffer.from(await response.arrayBuffer()))
   } catch (error) { console.error(error); res.writeHead(500); res.end("Test server error") }
 })
+const { db } = await vite.ssrLoadModule("/api/_lib/db.ts")
+await db()
 server.listen(4178, "127.0.0.1", () => console.log("Isolated invitation test server: http://127.0.0.1:4178"))
 async function close() { server.close(); await vite.close(); process.exit() }
 process.on("SIGTERM", close)

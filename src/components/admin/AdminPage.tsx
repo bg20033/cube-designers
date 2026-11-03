@@ -162,11 +162,11 @@ export default function AdminPage() {
           ))}
         </nav>
         <div className="admin-topbar-actions">
-          <a className="admin-button is-ghost" href="/" target="_blank" rel="noreferrer">
+          <a className="admin-button is-ghost" href="/" target="_blank" rel="noreferrer" aria-label="Shiko faqen">
             <ExternalLink />
             <span>Faqja</span>
           </a>
-          <button className="admin-button is-ghost" type="button" onClick={logout}>
+          <button className="admin-button is-ghost" type="button" onClick={logout} aria-label="Dil nga admini">
             <LogOut />
             <span>Dil</span>
           </button>

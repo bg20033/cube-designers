@@ -945,7 +945,7 @@ html[data-intro-seen="true"] .lanyard-intro {
   position: absolute;
   inset: 0;
   height: 100%;
-  will-change: transform, opacity, filter;
+  will-change: transform, opacity;
 }
 
 .story-card-stack {
@@ -6821,3 +6821,7 @@ body.contact-printer-printing .agency-site :where(a, button):active {
   .about-service-groups { grid-template-columns: 1fr; }
 }
 @media (prefers-reduced-motion: reduce) { .about-service-group a,.about-service-group a svg { transition: none; } }
+
+.story-progress > span { height: 18px; opacity: .22; transition: opacity 180ms ease; }
+.story-progress > span.is-active { height: 42px; opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .story-progress > span { transition: none; } }
