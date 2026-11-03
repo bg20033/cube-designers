@@ -2,7 +2,6 @@ import { defineConfig, loadEnv, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { cloudflare } from '@cloudflare/vite-plugin'
-import { existsSync } from 'fs'
 import path from 'path'
 
 // Serves the Vercel functions in /api during `npm run dev`, using the same
@@ -16,22 +15,11 @@ function vercelApiDev(): Plugin {
         const url = new URL(req.url ?? '/', 'http://localhost')
         if (!url.pathname.startsWith('/api/')) return next()
 
-        const file = path.resolve(__dirname, `.${url.pathname}.ts`)
-        if (url.pathname.includes('/_') || !existsSync(file)) {
-          res.statusCode = 404
-          res.end('Not found')
-          return
-        }
-
         try {
-          const module = await server.ssrLoadModule(file)
+          // Same entry point as production: api/[...path].ts → api/_router.ts.
+          const { routeApi } = await server.ssrLoadModule(path.resolve(__dirname, 'api/_router.ts'))
           const method = req.method ?? 'GET'
-          const handler = module[method] as ((request: Request) => Promise<Response>) | undefined
-          if (!handler) {
-            res.statusCode = 405
-            res.end('Method not allowed')
-            return
-          }
+          const handler = routeApi as (request: Request) => Promise<Response>
 
           const chunks: Buffer[] = []
           for await (const chunk of req) chunks.push(chunk as Buffer)

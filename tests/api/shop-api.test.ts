@@ -12,9 +12,9 @@ vi.mock("../../api/_lib/db.js", () => ({
   getCatalog: mock.catalog,
   listProducts: mock.list,
 }))
-import { POST } from "../../api/orders"
-import { GET as getStatus } from "../../api/shop-status"
-import { GET as getProducts } from "../../api/products"
+import { POST } from "../../api/_handlers/orders"
+import { GET as getStatus } from "../../api/_handlers/shop-status"
+import { GET as getProducts } from "../../api/_handlers/products"
 
 const customer = {
   name: "Test CUBE",

@@ -1,7 +1,7 @@
 import { createHash, randomInt, randomUUID } from "node:crypto"
-import { prepareOrderItems } from "./_lib/order-items.js"
+import { prepareOrderItems } from "../_lib/order-items.js"
 
-import { db, getCatalog } from "./_lib/db.js"
+import { db, getCatalog } from "../_lib/db.js"
 import {
   handle,
   HttpError,
@@ -9,7 +9,7 @@ import {
   optionalEmail,
   readJson,
   text,
-} from "./_lib/http.js"
+} from "../_lib/http.js"
 
 function newReference() {
   return `CUBE-${randomInt(100_000, 1_000_000)}`

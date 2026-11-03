@@ -1,6 +1,6 @@
-import { requireAdmin } from "../_lib/auth.js"
-import { db, submissionStatuses } from "../_lib/db.js"
-import { handle, json, oneOf, positiveId, readJson, text } from "../_lib/http.js"
+import { requireAdmin } from "../../_lib/auth.js"
+import { db, submissionStatuses } from "../../_lib/db.js"
+import { handle, json, oneOf, positiveId, readJson, text } from "../../_lib/http.js"
 
 export const GET = handle(async (request) => {
   await requireAdmin(request)

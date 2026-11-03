@@ -1,7 +1,7 @@
-import { db } from "./_lib/db.js"
-import { limits, throttle } from "./_lib/throttle.js"
-import { handle, HttpError, json, readJson, text } from "./_lib/http.js"
-import { createOwnerSession, dashboard, ownerOrder, passwordInput, sessionCookie, sessionToken, tokenHash, verifyPassword } from "./_lib/invitations.js"
+import { db } from "../_lib/db.js"
+import { limits, throttle } from "../_lib/throttle.js"
+import { handle, HttpError, json, readJson, text } from "../_lib/http.js"
+import { createOwnerSession, dashboard, ownerOrder, passwordInput, sessionCookie, sessionToken, tokenHash, verifyPassword } from "../_lib/invitations.js"
 
 export const GET = handle(async (request) => {
   const { row, administrator } = await ownerOrder(request)

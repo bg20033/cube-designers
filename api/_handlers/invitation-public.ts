@@ -1,7 +1,7 @@
-import { limits, throttle } from "./_lib/throttle.js"
-import { handle, HttpError, json, readJson, text } from "./_lib/http.js"
-import { makeInvitation, makeGeneralInvitation, type Guest, type Wedding } from "../src/components/invitations/model.js"
-import { appendGeneralGuest, generalOrder, parseResponses, publicOrder, publicToken, randomToken, recordGuestResponses, requestKey, tokenHash } from "./_lib/invitations.js"
+import { limits, throttle } from "../_lib/throttle.js"
+import { handle, HttpError, json, readJson, text } from "../_lib/http.js"
+import { makeInvitation, makeGeneralInvitation, type Guest, type Wedding } from "../../src/components/invitations/model.js"
+import { appendGeneralGuest, generalOrder, parseResponses, publicOrder, publicToken, randomToken, recordGuestResponses, requestKey, tokenHash } from "../_lib/invitations.js"
 
 export const GET = handle(async (request) => {
   if (new URL(request.url).searchParams.has("general")) return json(makeGeneralInvitation((await generalOrder(publicToken(request))).document))

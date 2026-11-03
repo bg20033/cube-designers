@@ -97,7 +97,7 @@ test("catalog category row only shows options inside the selected category", asy
 test("smart glass has an offer request and lamps stay hidden in the catalog", async ({ page }) => {
   await page.goto("/shop?category=Smart%20glass")
   await expect(page).toHaveURL(/\/shop\/smart-glass$/)
-  await expect(page.locator("h1")).toContainText(/SMART\s*GLASS/)
+  await expect(page.locator("h1")).toContainText(/smart\s*glass/i)
   await expect(page.locator(".cube-shop-toolbar")).toHaveCount(0)
   await expect(page.getByRole("link", { name: "Kërko ofertë", exact: true })).toHaveAttribute("href", "/start-project?service=Smart%20Glass")
   await page.goto("/shop?q=Llampa")
@@ -238,12 +238,14 @@ test("the wall planner places posters and sends the wall to the cart", async ({
   const poster = page.getByRole("button", { name: /^Diëll,/ })
   const start = await poster.boundingBox()
   await poster.focus()
-  await page.keyboard.press("Shift+ArrowLeft")
+  // Plain arrows step 1 cm; Shift steps 5 cm, which here would overlap the neighbouring poster.
+  await page.keyboard.press("ArrowLeft")
   await expect
     .poll(async () => (await poster.boundingBox())!.x)
     .toBeLessThan(start!.x)
 
-  await page.getByRole("button", { name: /A3/ }).click()
+  // The size choice, not the posters (their labels also mention "A3").
+  await page.getByRole("button", { name: /^Madhësia A3/ }).click()
   await page.getByRole("tab", { name: /Shporta/ }).click()
   await expect(page.locator(".wall-summary")).toContainText("A3 · 29,7 × 42 cm")
   await page.getByRole("button", { name: /Shto krejt në shportë/ }).click()

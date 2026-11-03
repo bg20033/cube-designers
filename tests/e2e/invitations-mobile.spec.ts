@@ -86,6 +86,7 @@ test("QA-5: paying more than the price is flagged in the editor, the row and the
 })
 
 
-test.beforeEach(async ({ page }) => {
-  await page.route("**/api/admin/session", (route) => route.fulfill({ contentType: "application/json", body: JSON.stringify({ authenticated: true }) }))
+// The demo opens only for a signed-in admin; fake that for every page of the test's browser context.
+test.beforeEach(async ({ context }) => {
+  await context.route("**/api/admin/session", (route) => route.fulfill({ contentType: "application/json", body: JSON.stringify({ authenticated: true }) }))
 })

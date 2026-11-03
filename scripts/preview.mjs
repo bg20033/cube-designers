@@ -38,23 +38,9 @@ const server = createServer(async (req, res) => {
   try {
     const url = new URL(req.url ?? "/", "http://localhost")
     if (url.pathname.startsWith("/api/")) {
-      if (!/^\/api\/(?:admin\/)?[a-z-]+$/.test(url.pathname)) {
-        res.writeHead(404, { "content-type": "application/json" })
-        return res.end(JSON.stringify({ error: "Shërbimi nuk u gjet." }))
-      }
-      const file = path.resolve(`.${url.pathname}.ts`)
-      try {
-        await stat(file)
-      } catch {
-        res.writeHead(404, { "content-type": "application/json" })
-        return res.end(JSON.stringify({ error: "Shërbimi nuk u gjet." }))
-      }
-      const module = await loader.ssrLoadModule(file)
-      const handler = module[req.method ?? "GET"]
-      if (typeof handler !== "function") {
-        res.writeHead(405)
-        return res.end("Method not allowed")
-      }
+      // Same entry point as production: api/[...path].ts → api/_router.ts.
+      const { routeApi } = await loader.ssrLoadModule(path.resolve("api/_router.ts"))
+      const handler = routeApi
       const chunks = []
       let size = 0
       for await (const chunk of req) {

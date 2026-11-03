@@ -1,5 +1,5 @@
-import { db, listProducts } from "./_lib/db.js"
-import { handle, HttpError, json } from "./_lib/http.js"
+import { db, listProducts } from "../_lib/db.js"
+import { handle, HttpError, json } from "../_lib/http.js"
 
 // Public catalog. An empty list tells the shop to keep its static catalog.
 export const GET = handle(async () => {

@@ -1,5 +1,5 @@
-import { db } from "./_lib/db.js"
-import { email, handle, json, oneOf, readJson, text } from "./_lib/http.js"
+import { db } from "../_lib/db.js"
+import { email, handle, json, oneOf, readJson, text } from "../_lib/http.js"
 
 // Public endpoint for the contact form and the start-project brief.
 export const POST = handle(async (request) => {

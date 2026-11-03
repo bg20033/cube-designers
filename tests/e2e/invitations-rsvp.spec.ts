@@ -9,6 +9,8 @@ declare global {
 }
 
 async function markPage(page: Page) {
+  // Boot is async (admin check, then the invitation), so mark only the rendered invitation.
+  await expect(page.locator(".ftesa-page .ftesa-hero")).toBeVisible()
   await page.evaluate(() => {
     window.__qaMarker = "still-here"
     window.__qaRoot = document.querySelector(".ftesa-page")
@@ -197,6 +199,7 @@ test("personal link: the RSVP can be answered and confirmed with the keyboard on
 })
 
 
-test.beforeEach(async ({ page }) => {
-  await page.route("**/api/admin/session", (route) => route.fulfill({ contentType: "application/json", body: JSON.stringify({ authenticated: true }) }))
+// The demo opens only for a signed-in admin; fake that for every page of the test's browser context.
+test.beforeEach(async ({ context }) => {
+  await context.route("**/api/admin/session", (route) => route.fulfill({ contentType: "application/json", body: JSON.stringify({ authenticated: true }) }))
 })

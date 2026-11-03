@@ -60,6 +60,7 @@ test("personal link opens in a separate browser context without exposing the gue
   await page.getByRole("button", { name: "Kopjo linkun për Familja Krasniqi", exact: true }).click()
   const link = await page.evaluate(() => navigator.clipboard.readText())
   const guestContext = await browser.newContext({ viewport: page.viewportSize()! })
+  await guestContext.route("**/api/admin/session", (route) => route.fulfill({ contentType: "application/json", body: JSON.stringify({ authenticated: true }) }))
   try {
     const guestPage = await guestContext.newPage()
     await guestPage.goto(link)
@@ -288,6 +289,7 @@ test("dashboard numbers open the guests behind them", async ({ page }) => {
 })
 
 
-test.beforeEach(async ({ page }) => {
-  await page.route("**/api/admin/session", (route) => route.fulfill({ contentType: "application/json", body: JSON.stringify({ authenticated: true }) }))
+// The demo opens only for a signed-in admin; fake that for every page of the test's browser context.
+test.beforeEach(async ({ context }) => {
+  await context.route("**/api/admin/session", (route) => route.fulfill({ contentType: "application/json", body: JSON.stringify({ authenticated: true }) }))
 })

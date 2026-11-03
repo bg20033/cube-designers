@@ -1,6 +1,6 @@
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client"
 
-import { handle, HttpError, json, readJson } from "./_lib/http.js"
+import { handle, HttpError, json, readJson } from "../_lib/http.js"
 
 const MB = 1024 * 1024
 

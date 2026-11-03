@@ -1,8 +1,8 @@
 import { get } from "@vercel/blob"
 
-import { isPhotoUrl } from "../../src/data/commerce.js"
-import { requireAdmin } from "../_lib/auth.js"
-import { handle, HttpError } from "../_lib/http.js"
+import { isPhotoUrl } from "../../../src/data/commerce.js"
+import { requireAdmin } from "../../_lib/auth.js"
+import { handle, HttpError } from "../../_lib/http.js"
 
 // Streams a customer's private original upload to the admin for printing.
 export const GET = handle(async (request) => {

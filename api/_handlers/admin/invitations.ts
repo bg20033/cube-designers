@@ -1,7 +1,7 @@
-import { requireAdmin } from "../_lib/auth.js"
-import { db } from "../_lib/db.js"
-import { handle, HttpError, json, oneOf, positiveId, readJson, text } from "../_lib/http.js"
-import { hashPassword, newOrderId, newWedding, randomToken, tokenHash, uuid } from "../_lib/invitations.js"
+import { requireAdmin } from "../../_lib/auth.js"
+import { db } from "../../_lib/db.js"
+import { handle, HttpError, json, oneOf, positiveId, readJson, text } from "../../_lib/http.js"
+import { hashPassword, newOrderId, newWedding, randomToken, tokenHash, uuid } from "../../_lib/invitations.js"
 
 export const GET = handle(async (request) => {
   await requireAdmin(request)

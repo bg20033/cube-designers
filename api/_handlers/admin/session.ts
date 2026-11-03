@@ -3,8 +3,8 @@ import {
   clearSessionCookie,
   createSessionCookie,
   isAdmin,
-} from "../_lib/auth.js"
-import { handle, HttpError, json, readJson, text } from "../_lib/http.js"
+} from "../../_lib/auth.js"
+import { handle, HttpError, json, readJson, text } from "../../_lib/http.js"
 
 export const GET = handle(async (request) =>
   json({ authenticated: await isAdmin(request) }),

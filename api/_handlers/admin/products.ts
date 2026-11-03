@@ -1,8 +1,8 @@
-import { products as staticProducts } from "../../src/data/products.js"
-import { requireAdmin } from "../_lib/auth.js"
-import { db, listProducts } from "../_lib/db.js"
-import { handle, HttpError, json, readJson, text } from "../_lib/http.js"
-import { parseProduct } from "../_lib/products.js"
+import { products as staticProducts } from "../../../src/data/products.js"
+import { requireAdmin } from "../../_lib/auth.js"
+import { db, listProducts } from "../../_lib/db.js"
+import { handle, HttpError, json, readJson, text } from "../../_lib/http.js"
+import { parseProduct } from "../../_lib/products.js"
 
 export const GET = handle(async (request) => {
   await requireAdmin(request)
