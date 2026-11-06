@@ -7,7 +7,7 @@ const image = "public/media/collections/photo/alpine-example-v1.webp"
 test("custom dimensions follow the original photo and validate independently", async ({
   page,
 }) => {
-  await page.goto("/shop/foto")
+  await page.goto("/foto")
   await page.getByLabel("Zgjidh foton", { exact: true }).setInputFiles(image)
   await expect(page.locator(".photo-cropper-frame")).toBeVisible()
   await page
@@ -89,14 +89,14 @@ test("custom photo dimensions survive the cart and the saved wall", async ({
       JSON.stringify({ variant: item.variantId, photo }),
     )
   })
-  await page.goto("/shop?cart=1")
+  await page.goto("/?cart=1")
   await expect(page.locator(".cube-cart-items")).toContainText("45,5 × 30 cm")
   await expect(page.locator(".cube-cart-items")).toContainText("37")
   const ratio = await page
     .locator(".cube-cart-photo")
     .evaluate((el) => parseFloat(el.style.aspectRatio))
   expect(ratio).toBeCloseTo(45.5 / 30)
-  await page.goto("/shop/muri")
+  await page.goto("/muri")
   await expect(page.locator(".wall-poster")).toHaveCount(1)
   await expect(page.locator(".wall-poster")).toHaveClass(/frame-oak/)
   await page.getByRole("tab", { name: /Shporta/ }).click()

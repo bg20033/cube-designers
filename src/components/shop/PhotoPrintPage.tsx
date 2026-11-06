@@ -1,3 +1,4 @@
+import { shopHref } from "@/lib/site-links"
 import { useMemo, useRef, useState, type DragEvent } from "react"
 import {
   ArrowLeft,
@@ -208,7 +209,7 @@ export default function PhotoPrintPage() {
       )
       return
     }
-    window.location.href = "/shop/muri"
+    window.location.href = shopHref("/shop/muri")
   }
 
   return (
@@ -695,7 +696,7 @@ export default function PhotoPrintPage() {
                 {added ? (
                   <a
                     className="cube-button cube-button-dark"
-                    href="/shop?cart=1"
+                    href={shopHref("/shop?cart=1")}
                   >
                     <ShoppingBag size={17} /> Shiko shportën
                   </a>

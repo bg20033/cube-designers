@@ -4,6 +4,7 @@ import path from "path"
 
 export default defineConfig({
   plugins: [react()],
+  define: { "import.meta.env.VITE_APP_TARGET": JSON.stringify("shop") },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

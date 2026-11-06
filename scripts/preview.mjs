@@ -37,6 +37,13 @@ const mime = {
 const server = createServer(async (req, res) => {
   try {
     const url = new URL(req.url ?? "/", "http://localhost")
+    if (/^\/shop(?:\/|$)/.test(url.pathname)) {
+      const target = new URL("https://shop.cube-designers.com")
+      target.pathname = url.pathname.replace(/^\/shop/, "") || "/"
+      target.search = url.search
+      res.writeHead(308, { location: target.href })
+      return res.end()
+    }
     if (url.pathname.startsWith("/api/")) {
       // Same entry point as production: api/[...path].ts → api/_router.ts.
       const { routeApi } = await loader.ssrLoadModule(path.resolve("api/_router.ts"))

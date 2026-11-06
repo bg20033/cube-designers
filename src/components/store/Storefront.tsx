@@ -1,3 +1,4 @@
+import { shopHref, studioHref } from "@/lib/site-links"
 import { StoreFaq } from "./StoreFaq"
 import { FilmWall } from "./FilmWall"
 import { BundleShelf } from "./BundleShelf"
@@ -31,21 +32,21 @@ export default function Storefront({
         {!overview && <><section className="cube-explore" aria-label="Më shumë nga shopi">
           {[
             {
-              href: "/shop/muri",
+              href: shopHref("/shop/muri"),
               eyebrow: "Konfiguratori",
               title: "Provoji në mur",
               text: "Rregulloji posterat në murin tënd, në madhësi reale.",
               image: "/media/collections/bundles/set-hollywood-12-a3.webp",
             },
             {
-              href: "/shop/foto",
+              href: shopHref("/shop/foto"),
               eyebrow: "Foto jote",
               title: "Printo foton",
               text: "Nga telefoni në letër, pleksiglas, kanavacë ose kornizë.",
               image: "/media/collections/photo-print.svg",
             },
             {
-              href: "/shop?category=Veshje#catalog",
+              href: shopHref("/shop?category=Veshje#catalog"),
               eyebrow: "Me logon tënde",
               title: "Veshje",
               text: "Maica, polo, hoodie, jelekë dhe veshje pune.",
@@ -76,7 +77,7 @@ export default function Storefront({
           eyebrow="SETE GALERIE · 10–12 POSTERA"
           title="Një mur i tërë. Një çmim."
           link={{
-            href: "/shop?category=Paketa#catalog",
+            href: shopHref("/shop?category=Paketa#catalog"),
             label: `Shiko ${bundles.length} paketat dhe setet`,
           }}
         />
@@ -89,7 +90,7 @@ export default function Storefront({
               bashkë, nga dizajni deri te produkti.
             </p>
           </div>
-          <a className="cube-button cube-button-dark" href="/start-project">
+          <a className="cube-button cube-button-dark" href={studioHref("/start-project")}>
             Personalizo me ne <ArrowUpRight size={16} />
           </a>
         </section>

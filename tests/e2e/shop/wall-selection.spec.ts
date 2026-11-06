@@ -23,7 +23,7 @@ async function openWall(page: Page) {
       ),
     )
   })
-  await page.goto("/shop/muri")
+  await page.goto("/muri")
   await expect(page.locator(".wall-poster")).toHaveCount(3)
 }
 async function boxSelect(page: Page, reverse = false) {
@@ -131,7 +131,7 @@ test("selected prints share size and finish changes, duplicate, and delete toget
 test("print configuration uses compact size and material buttons", async ({
   page,
 }) => {
-  await page.goto("/shop/foto")
+  await page.goto("/foto")
   await page.getByRole("tab", { name: /Formati/ }).click()
   const size = await page.locator(".size-cards button").first().boundingBox()
   const finish = await page

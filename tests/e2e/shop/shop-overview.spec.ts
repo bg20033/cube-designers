@@ -7,7 +7,7 @@ test.beforeEach(async ({ page }) => {
 
 test("Krejt shows separate sliders with working buttons and keyboard navigation", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" })
-  await page.goto("/shop")
+  await page.goto("/")
   await expect(page.locator("h1")).toHaveText("Shop")
   await expect(page.locator(".shop-slider-heading h2")).toHaveText(["Postera", "Për biznese", "Smart Glass", "Ftesa online"])
   await expect(page.locator(".cube-shop-grid, .cube-shop-toolbar, .cube-film-wall, .cube-explore")).toHaveCount(0)
@@ -28,7 +28,7 @@ test("Krejt shows separate sliders with working buttons and keyboard navigation"
 })
 
 test("slider products keep quick view and cart actions, with no favorites heart", async ({ page }) => {
-  await page.goto("/shop")
+  await page.goto("/")
   const card = page.locator("#shop-posters .cube-product-card").first()
   await expect(card.getByRole("button", { name: /^(Ruaj|Largo) / })).toHaveCount(0)
   await card.getByRole("button", { name: "Shiko shpejt Forma — Blue", exact: true }).click()
@@ -40,23 +40,21 @@ test("slider products keep quick view and cart actions, with no favorites heart"
 })
 
 test("slider links open the category and the correct service previews", async ({ page }) => {
-  await page.goto("/shop")
+  await page.goto("/")
   await page.getByRole("link", { name: "Shiko posterat", exact: true }).click()
   await expect(page).toHaveURL(/category=Postera/)
   await expect(page.locator(".cube-shop-grid .cube-product-card")).toHaveCount(24)
   await expect(page.locator(".shop-overview")).toHaveCount(0)
-  await page.goto("/shop")
+  await page.goto("/")
   await page.getByRole("link", { name: "Zbulo Smart Glass", exact: true }).click()
-  await expect(page).toHaveURL(/\/shop\/smart-glass$/)
+  await expect(page).toHaveURL(/\/smart-glass$/)
   await expect(page.locator(".sg-viewer")).toBeVisible()
-  await page.goto("/shop")
-  await page.getByRole("link", { name: "Shiko modelin Perla", exact: true }).click()
-  await expect(page).toHaveURL(/design=rose/)
-  await expect(page.locator(".ftl-preview .inv-card")).toHaveClass(/inv-theme-rose/)
+  await page.goto("/")
+  await expect(page.getByRole("link", { name: "Shiko modelin Perla", exact: true })).toHaveAttribute("href", "https://www.cube-designers.com/ftesa?design=rose")
 })
 
 test("the slider overview has no serious accessibility issues", async ({ page }) => {
-  await page.goto("/shop")
+  await page.goto("/")
   const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze()
   expect(results.violations.filter((violation) => ["serious", "critical"].includes(violation.impact ?? ""))).toEqual([])
 })

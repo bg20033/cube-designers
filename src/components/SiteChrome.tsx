@@ -1,3 +1,4 @@
+import { shopHref } from "@/lib/site-links"
 import { useEffect, useRef } from "react"
 import { ArrowUpRight, Menu } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
@@ -6,8 +7,6 @@ import Noise from "@/components/Noise"
 import RotatingText, { type RotatingTextRef } from "@/components/RotatingText"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ShopNavigation } from "@/components/ShopNavigation"
-import { HeaderCart } from "@/components/HeaderCart"
 import {
   Sheet,
   SheetClose,
@@ -29,15 +28,13 @@ import {
 const headerTexts = ["CUBE DESIGNERS", "DESIGN", "PRINT", "DIGITAL"]
 
 const navItems = [
-  ...(SHOP_ENABLED ? [{ label: "Shop", href: "/shop", path: "/shop" }] : []),
+  ...(SHOP_ENABLED ? [{ label: "Shop", href: shopHref(), path: "/shop" }] : []),
   { label: "Puna", href: "/work", path: "/work" },
   { label: "Rreth nesh", href: "/about", path: "/about" },
 ]
 
 type SiteHeaderProps = {
   serviceLabel?: string | null
-  cartCount?: number
-  onCart?: () => void
 }
 
 export function SiteNoise() {
@@ -50,8 +47,6 @@ export function SiteNoise() {
 
 export function SiteHeader({
   serviceLabel = null,
-  cartCount,
-  onCart,
 }: SiteHeaderProps) {
   const headerTextRef = useRef<RotatingTextRef>(null)
   const currentPath = useRoutePath()
@@ -109,9 +104,7 @@ export function SiteHeader({
 
       <nav className="agency-nav" aria-label="Navigimi kryesor">
         {navItems.map((item) => (
-          item.path === "/shop" ? (
-            <ShopNavigation key={item.path} active={currentPath === "/shop" || currentPath.startsWith("/shop/") || currentPath === "/ftesa"} />
-          ) : <a
+          <a
             href={item.href}
             key={item.href}
             aria-current={
@@ -132,7 +125,6 @@ export function SiteHeader({
           Nis një projekt
           <ArrowUpRight data-icon="inline-end" />
         </Button>
-        {SHOP_ENABLED && <HeaderCart count={cartCount} onCart={onCart} />}
 
         <Sheet>
           <SheetTrigger
@@ -156,7 +148,7 @@ export function SiteHeader({
             </SheetHeader>
             <nav className="sheet-links">
               {navItems.map((item, index) => (
-                item.path === "/shop" ? <ShopNavigation mobile key={item.path} /> : <SheetClose key={item.href} render={<a href={item.href} />}>
+                <SheetClose key={item.href} render={<a href={item.href} />}>
                   <span>{String(index + 1).padStart(2, "0")}</span>
                   {item.label}
                   <ArrowUpRight />

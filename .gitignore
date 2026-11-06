@@ -30,3 +30,6 @@ print
 *.njsproj
 *.sln
 *.sw?
+
+.vercel
+.astro

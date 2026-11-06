@@ -1,0 +1,14 @@
+---
+import ShopLayout from '../layouts/ShopLayout.astro'
+import ShopPage from '@/components/ShopPage'
+import { shopRoutes } from '@/app/routes'
+import { storeFaqs } from '@/data/store-faqs'
+const seo = shopRoutes.find((route) => route.key === 'shop')!.seo
+const structuredData = [{
+  '@context': 'https://schema.org', '@type': 'FAQPage',
+  mainEntity: storeFaqs.map((faq) => ({ '@type': 'Question', name: faq.question, acceptedAnswer: { '@type': 'Answer', text: faq.answer } })),
+}]
+---
+<ShopLayout title={seo.title} description={seo.description} structuredData={structuredData}>
+  <ShopPage client:load />
+</ShopLayout>

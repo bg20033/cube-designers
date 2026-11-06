@@ -1,0 +1,9 @@
+---
+import ShopLayout from '../layouts/ShopLayout.astro'
+import Page from '@/components/shop/SmartGlassPage'
+import { shopRoutes } from '@/app/routes'
+const seo = shopRoutes.find((route) => route.key === 'smart-glass')!.seo
+---
+<ShopLayout title={seo.title} description={seo.description} image={seo.ogImage}>
+  <Page client:load />
+</ShopLayout>

@@ -1,3 +1,4 @@
+import { shopHref, studioHref } from "@/lib/site-links"
 import {
   addCartItem,
   cartLineKey,
@@ -106,9 +107,13 @@ export default function ShopPage() {
     address: "",
     notes: "",
   })
-  const [cart, setCart] = useState<CartItem[]>(() =>
-    sanitizeCart(readStoredJson("cube-shop-cart-v1", [])),
-  )
+  // The first client render matches Astro's HTML. Restore storage after hydration.
+  const [cart, setCart] = useState<CartItem[]>([])
+  const [cartLoaded, setCartLoaded] = useState(false)
+  useEffect(() => {
+    setCart(sanitizeCart(readStoredJson("cube-shop-cart-v1", [])))
+    setCartLoaded(true)
+  }, [])
   const initialQueryRead = useRef(false)
   const pendingAdd = useRef<{ id: string; variant?: string } | null>(null)
   const orderReference = useRef("")
@@ -134,7 +139,7 @@ export default function ShopPage() {
       const params = new URLSearchParams(window.location.search)
       const requested = params.get("category") === "Maica" ? "Veshje" : params.get("category")
       if (requested?.toLowerCase() === "smart glass") {
-        window.location.replace("/shop/smart-glass")
+        window.location.replace(shopHref("/shop/smart-glass"))
         return
       }
       const nextCategory = categories.includes(requested as (typeof categories)[number])
@@ -162,7 +167,7 @@ export default function ShopPage() {
       const link = (event.target as Element).closest<HTMLAnchorElement>("a[href]")
       if (!link || link.hasAttribute("download") || (link.target && link.target !== "_self")) return
       const url = new URL(link.href, window.location.href)
-      if (url.origin !== window.location.origin || url.pathname !== "/shop" || url.searchParams.has("add") || url.searchParams.has("cart")) return
+      if (url.origin !== window.location.origin || url.pathname !== shopHref("/shop") || url.searchParams.has("add") || url.searchParams.has("cart")) return
       event.preventDefault()
       window.history.pushState(null, "", `${url.pathname}${url.search}${url.hash}`)
       link.closest("details")?.removeAttribute("open")
@@ -190,6 +195,7 @@ export default function ShopPage() {
   }, [category])
 
   useEffect(() => {
+    if (!cartLoaded) return
     const pending = pendingAdd.current
     const product = catalog.find((candidate) => candidate.id === pending?.id)
     if (pending && product) {
@@ -198,10 +204,10 @@ export default function ShopPage() {
         return
       addToCart(pending.id, pending.variant)
     }
-  }, [catalog, addToCart])
+  }, [catalog, addToCart, cartLoaded])
   useEffect(() => {
-    writeStoredJson("cube-shop-cart-v1", cart)
-  }, [cart])
+    if (cartLoaded) writeStoredJson("cube-shop-cart-v1", cart)
+  }, [cart, cartLoaded])
   useEffect(() => {
     if (!hydrated) return
     const params = new URLSearchParams()
@@ -213,7 +219,7 @@ export default function ShopPage() {
     window.history.replaceState(
       null,
       "",
-      `/shop${params.size ? `?${params}` : ""}${window.location.hash}`,
+      shopHref(`/shop${params.size ? `?${params}` : ""}${window.location.hash}`),
     )
   }, [category, filters, search, sort, maxPrice, hydrated])
 
@@ -320,7 +326,7 @@ export default function ShopPage() {
   function selectCategory(nextCategory: string) {
     const params = new URLSearchParams()
     if (nextCategory !== "Krejt") params.set("category", nextCategory)
-    window.history.pushState(null, "", `/shop${params.size ? `?${params}` : ""}${window.location.hash}`)
+    window.history.pushState(null, "", shopHref(`/shop${params.size ? `?${params}` : ""}${window.location.hash}`))
     setCategory(nextCategory)
     resetFilters()
     setFiltersOpen(false)
@@ -570,7 +576,7 @@ export default function ShopPage() {
           )}
           <div className="cube-shop-help">
             <p>Ke një ide tjetër në mendje?</p>
-            <a className="cube-text-link" href="/start-project">
+            <a className="cube-text-link" href={studioHref("/start-project")}>
               Ta krijojmë bashkë <ArrowRight size={16} />
             </a>
           </div>
@@ -624,7 +630,7 @@ export default function ShopPage() {
               >
                 Shto në shportë <Plus size={17} />
               </button>
-              <a className="cube-text-link" href={`/shop/${quickView.id}`}>
+              <a className="cube-text-link" href={shopHref(`/shop/${quickView.id}`)}>
                 Shiko detajet <ArrowRight size={15} />
               </a>
             </div>
@@ -927,7 +933,7 @@ export default function ShopPage() {
                     Dërgesa dhe specifikat konfirmohen me ty.
                   </p>
                   {wallCount > 0 && (
-                    <a className="cube-cart-wall" href="/shop/muri?shporta=1">
+                    <a className="cube-cart-wall" href={shopHref("/shop/muri?shporta=1")}>
                       <Frame size={17} />
                       <span>
                         <strong>Shiko si duken në mur</strong>

@@ -1,3 +1,4 @@
+import { shopHref } from "@/lib/site-links"
 import { ArrowUpRight } from "lucide-react"
 import { ResponsiveImage } from "@/components/ResponsiveImage"
 import { posterSizes, type Product } from "@/data/products"
@@ -46,7 +47,7 @@ export function BundleShelf({
           const saving = single ? single - product.price : 0
           return (
             <article className="cube-product-card" key={product.id}>
-              <a className="cube-card-image" href={`/shop/${product.id}`}>
+              <a className="cube-card-image" href={shopHref(`/shop/${product.id}`)}>
                 {product.image && (
                   <ResponsiveImage
                     image={product.image}
@@ -59,7 +60,7 @@ export function BundleShelf({
                 <div>
                   <span>{product.series ?? product.category}</span>
                   <h3>
-                    <a href={`/shop/${product.id}`}>{product.name}</a>
+                    <a href={shopHref(`/shop/${product.id}`)}>{product.name}</a>
                   </h3>
                   <p>
                     Nga {product.price} €
@@ -68,7 +69,7 @@ export function BundleShelf({
                 </div>
                 <a
                   className="cube-card-add"
-                  href={`/shop/${product.id}`}
+                  href={shopHref(`/shop/${product.id}`)}
                   aria-label={`Shiko ${product.name}`}
                 >
                   <ArrowUpRight size={16} />

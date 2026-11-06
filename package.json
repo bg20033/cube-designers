@@ -19,7 +19,13 @@
     "print": "node scripts/print-files.mjs",
     "seo:indexnow": "node scripts/indexnow.mjs",
     "preview:worker": "wrangler dev --config dist/server/wrangler.json --port 4173",
-    "test:invitations:online": "npm run build && playwright test --config playwright.invitations.config.ts"
+    "test:invitations:online": "npm run build && playwright test --config playwright.invitations.config.ts",
+    "dev:shop": "npm run dev --workspace @cube-designers/shop",
+    "build:shop": "npm run build --workspace @cube-designers/shop",
+    "preview:shop": "npm run preview --workspace @cube-designers/shop",
+    "check:shop": "npm run check --workspace @cube-designers/shop",
+    "test:shop:e2e": "playwright test --config playwright.shop.config.ts",
+    "build:all": "npm run build && npm run build:shop"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
@@ -31,6 +37,7 @@
     "@react-three/fiber": "^9.6.1",
     "@react-three/rapier": "^2.2.0",
     "@tailwindcss/vite": "^4.3.3",
+    "@vercel/analytics": "^2.0.1",
     "@vercel/blob": "^2.8.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -63,5 +70,8 @@
     "typescript": "~6.0.2",
     "vite": "^8.1.1",
     "vitest": "^4.1.10"
-  }
+  },
+  "workspaces": [
+    "apps/shop"
+  ]
 }

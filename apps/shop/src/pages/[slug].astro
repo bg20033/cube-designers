@@ -1,0 +1,35 @@
+---
+import ShopLayout from '../layouts/ShopLayout.astro'
+import { ProductDetail } from '@/components/shop/ProductDetailPage'
+import NotFoundPage from '../components/ShopNotFound'
+import { getCatalog } from '../lib/catalog'
+
+export const prerender = false
+const { slug } = Astro.params
+if (slug === 'smart-film') return Astro.redirect('/smart-glass', 308)
+const catalog = await getCatalog()
+const product = catalog.find((item) => item.id === slug)
+if (!product) Astro.response.status = 404
+const related = catalog.filter((item) => item.id !== slug && item.category === product?.category).slice(0, 3)
+const included = product?.includes?.flatMap((id) => catalog.find((item) => item.id === id) ?? []) ?? []
+const structuredData = product ? [{
+  '@context': 'https://schema.org', '@type': 'Product', name: product.name,
+  description: product.description, sku: product.id, category: product.category,
+  brand: { '@type': 'Brand', name: 'CUBE DESIGNERS' },
+  url: `https://shop.cube-designers.com/${product.id}`,
+}, {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Shop', item: 'https://shop.cube-designers.com/' },
+    { '@type': 'ListItem', position: 2, name: product.name, item: `https://shop.cube-designers.com/${product.id}` },
+  ],
+}] : []
+---
+<ShopLayout
+  title={product ? `${product.name} | CUBE Shop` : 'Faqja nuk u gjet | CUBE Shop'}
+  description={product?.description ?? 'Faqja që kërkuat nuk ekziston ose është zhvendosur.'}
+  image={product?.image}
+  noindex={!product}
+  structuredData={structuredData}
+>
+  {product ? <ProductDetail product={product} related={related} included={included} client:load /> : <NotFoundPage client:load />}
+</ShopLayout>

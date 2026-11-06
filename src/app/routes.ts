@@ -171,9 +171,10 @@ const allRoutes: SiteRoute[] = [
   },
 ]
 
-export const siteRoutes = allRoutes.filter(
-  (route) => SHOP_ENABLED || !["shop", "wall", "photo", "smart-glass"].includes(route.key),
+export const shopRoutes = allRoutes.filter((route) =>
+  ["shop", "wall", "photo", "smart-glass"].includes(route.key),
 )
+export const siteRoutes = allRoutes.filter((route) => !shopRoutes.includes(route))
 
 export function normalizePathname(pathname: string) {
   const withoutQuery = pathname.split(/[?#]/, 1)[0] || "/"
@@ -198,15 +199,6 @@ export function matchRoute(pathname: string): RouteMatch | null {
     }
   }
 
-  const productMatch = normalized.match(/^\/shop\/([a-z0-9-]+)$/)
-  if (SHOP_ENABLED && productMatch) {
-    return {
-      key: "product",
-      pathname: normalized,
-      params: { slug: productMatch[1] },
-    }
-  }
-
   return null
 }
 
@@ -216,6 +208,6 @@ export function isAdminPath(pathname: string) {
   return normalized === "/admin" || normalized.startsWith("/admin/")
 }
 
-export function getRouteSeo(key: Exclude<RouteKey, ParamRouteKey>) {
+export function getRouteSeo(key: RouteKey) {
   return siteRoutes.find((route) => route.key === key)?.seo
 }

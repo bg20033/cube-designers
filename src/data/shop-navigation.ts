@@ -1,3 +1,4 @@
+import { shopHref, studioHref } from "@/lib/site-links"
 import type { Product, ProductCategory } from "./products"
 
 export const businessCategories: { value: ProductCategory; label: string }[] = [
@@ -10,21 +11,21 @@ export const businessCategories: { value: ProductCategory; label: string }[] = [
 ]
 
 export const shopNavigation = [
-  { label: "Krejt", value: "Krejt", href: "/shop#catalog" },
+  { label: "Krejt", value: "Krejt", href: shopHref("/shop#catalog") },
   {
     label: "Për biznese",
     value: "Biznes",
-    href: "/shop?category=Biznes",
+    href: shopHref("/shop?category=Biznes"),
   },
   {
     label: "Postera",
     value: "Postera",
-    href: "/shop?category=Postera",
+    href: shopHref("/shop?category=Postera"),
   },
-  { label: "Smart Glass", value: "Smart glass", href: "/shop/smart-glass" },
-  { label: "Ftesa online", value: "Ftesa online", href: "/ftesa" },
+  { label: "Smart Glass", value: "Smart glass", href: shopHref("/shop/smart-glass") },
+  { label: "Ftesa online", value: "Ftesa online", href: studioHref("/ftesa") },
   // Llampat janë të fshehura për momentin; produktet ruhen në katalog.
-  // { label: "Llampa", value: "Llampa", href: "/shop?category=Llampa" },
+  // { label: "Llampa", value: "Llampa", href: shopHref("/shop?category=Llampa") },
 ]
 
 export const LAMPS_ENABLED = false
@@ -63,8 +64,8 @@ export function getShopCategoryOptions(category: string): ShopCategoryOption[] {
     return [
       { label: "Krejt posterat", value: "Postera" },
       { label: "Paketa", value: "Paketa" },
-      { label: "Konfiguro murin", href: "/shop/muri" },
-      { label: "Printo foton", href: "/shop/foto" },
+      { label: "Konfiguro murin", href: shopHref("/shop/muri") },
+      { label: "Printo foton", href: shopHref("/shop/foto") },
     ]
   }
   if (parent === "Biznes") {

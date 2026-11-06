@@ -1,8 +1,8 @@
 import type { ReactNode } from "react"
-import { SiteHeader } from "@/components/SiteChrome"
+import { StoreHeader } from "./StoreHeader"
 import "./store.css"
 
-// The shop shares the studio header, including its navigation and cart.
+// Dedicated shop navigation. Studio pages use SiteChrome.
 export function StoreShell({
   className = "",
   children,
@@ -19,7 +19,7 @@ export function StoreShell({
       <a className="cube-skip" href="#main-content">
         Kalo te përmbajtja
       </a>
-      <SiteHeader cartCount={count} onCart={onCart} />
+      <StoreHeader count={count} onCart={onCart} />
       <div className={`cube-store ${className}`.trim()} id="top">
         {children}
       </div>

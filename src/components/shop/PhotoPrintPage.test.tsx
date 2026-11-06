@@ -70,7 +70,7 @@ describe("photo print checkout selection", () => {
     expect(screen.queryByRole("button", { name: "Shto në shportë" })).toBeNull()
     expect(
       screen.getByRole("link", { name: "Shiko shportën" }),
-    ).toHaveAttribute("href", "/shop?cart=1")
+    ).toHaveAttribute("href", "/?cart=1")
   })
   it("reports blocked storage instead of displaying a false success", () => {
     vi.spyOn(Storage.prototype, "setItem").mockImplementationOnce(() => {

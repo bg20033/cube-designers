@@ -6,7 +6,7 @@ test("photo workspace gives the preview most of the width, opens the picker, and
   page,
   isMobile,
 }) => {
-  await page.goto("/shop/foto")
+  await page.goto("/foto")
   const editor = await page.locator(".photo-editor").boundingBox()
   const panel = await page.locator(".photo-panel").boundingBox()
   expect(editor).not.toBeNull()
@@ -71,7 +71,7 @@ test("photo workspace gives the preview most of the width, opens the picker, and
 test("invalid replacements keep the selected photo and show a clear error", async ({
   page,
 }) => {
-  await page.goto("/shop/foto")
+  await page.goto("/foto")
   await page.getByLabel("Zgjidh foton", { exact: true }).setInputFiles(source)
   await expect(page.locator(".photo-cropper-frame")).toBeVisible()
   const before = await page
@@ -101,7 +101,7 @@ test("invalid replacements keep the selected photo and show a clear error", asyn
 test("the example renders a real room but cannot be ordered as a customer photo", async ({
   page,
 }) => {
-  await page.goto("/shop/foto")
+  await page.goto("/foto")
   await expect
     .poll(() =>
       page

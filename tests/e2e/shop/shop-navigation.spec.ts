@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test"
 test("shop category navigation keeps the document and supports back navigation", async ({ page, isMobile }) => {
   const errors: string[] = []
   page.on("pageerror", (error) => errors.push(error.message))
-  await page.goto("/shop?category=Postera")
+  await page.goto("/?category=Postera")
   await expect(page.locator(".cube-shop-categories .active")).toContainText("Krejt posterat")
   await page.locator(".agency-header").evaluate((element) => element.setAttribute("data-navigation-marker", "same-header"))
   if (isMobile) await page.getByRole("button", { name: "Hap menynë", exact: true }).click()
@@ -24,7 +24,7 @@ test("shop category navigation keeps the document and supports back navigation",
 
 test("mobile categories stay on one horizontally scrollable row", async ({ page, isMobile }) => {
   test.skip(!isMobile, "Phone layout only")
-  await page.goto("/shop?category=Biznes")
+  await page.goto("/?category=Biznes")
   const row = page.locator(".cube-shop-categories")
   await expect(row.getByRole("button")).toHaveCount(7)
   const layout = await row.evaluate((element) => ({

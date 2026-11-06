@@ -1,3 +1,4 @@
+import { shopHref } from "@/lib/site-links"
 import { posterThumb } from "@/components/ResponsiveImage"
 import {
   useEffect,
@@ -1101,11 +1102,11 @@ export default function WallPlannerPage() {
         }),
       ),
     )
-    window.location.href = "/shop?cart=1"
+    window.location.href = shopHref("/shop?cart=1")
   }
 
   async function shareWall() {
-    const url = `${window.location.origin}/shop/muri?muri=${encodeWall(wall)}`
+    const url = `${window.location.origin}${shopHref("/shop/muri")}?muri=${encodeWall(wall)}`
     try {
       await navigator.clipboard.writeText(url)
       setNotice("Linku i murit u kopjua.")
@@ -1822,7 +1823,7 @@ export default function WallPlannerPage() {
                       <Trash2 /> Hiqe
                     </button>
                     {!selected.photo && (
-                      <a href={`/shop/${selectedProduct.id}`}>
+                      <a href={shopHref(`/shop/${selectedProduct.id}`)}>
                         Produkti <ArrowUpRight />
                       </a>
                     )}

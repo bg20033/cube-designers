@@ -1,0 +1,58 @@
+---
+import '@/index.css'
+import '@/polish.css'
+import Analytics from '@vercel/analytics/astro'
+
+interface Props {
+  title: string
+  description: string
+  image?: string
+  noindex?: boolean
+  structuredData?: Record<string, unknown>[]
+}
+const { title, description, image = '/og.png', noindex = false, structuredData = [] } = Astro.props
+const site = new URL('https://shop.cube-designers.com')
+const canonical = new URL(Astro.url.pathname.replace(/\/+$/, '') || '/', site)
+const production = import.meta.env.SEO_DEPLOYMENT === 'production' || import.meta.env.VERCEL_ENV === 'production'
+const robots = noindex || !production ? 'noindex,follow' : 'index,follow,max-image-preview:large'
+const schema = [
+  { '@context': 'https://schema.org', '@type': 'WebSite', name: 'CUBE Shop', url: site.href, inLanguage: 'sq-XK' },
+  ...structuredData,
+]
+---
+<!doctype html>
+<html lang="sq">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      import { filterAnalyticsEvent } from '@/lib/analytics'
+      window.webAnalyticsBeforeSend = filterAnalyticsEvent
+    </script>
+    <Analytics />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b0b0d" />
+    <link rel="icon" href="/favicon.svg" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content={robots} />
+    {production && !noindex && <link rel="canonical" href={canonical} />}
+    <meta property="og:locale" content="sq_XK" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="CUBE Shop" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(image, site)} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL(image, site)} />
+    <script is:inline>
+      if (location.pathname === '/' && /[?&](category|q|saved|max|sort)=/.test(location.search)) {
+        document.documentElement.dataset.shopPending = 'true'
+      }
+    </script>
+    {schema.map((item) => <script type="application/ld+json" set:html={JSON.stringify(item).replaceAll('<', '\\u003c')} />)}
+  </head>
+  <body><slot /></body>
+</html>

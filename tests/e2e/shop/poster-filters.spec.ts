@@ -2,7 +2,7 @@ import AxeBuilder from "@axe-core/playwright"
 import { expect, test } from "@playwright/test"
 
 test("Seria contains poster facets, sorting and price in one popup, without favorites", async ({ page }) => {
-  await page.goto("/shop?category=Postera")
+  await page.goto("/?category=Postera")
   const toolbar = page.locator(".cube-shop-toolbar")
   const trigger = toolbar.getByRole("button", { name: /^Seria/ })
   await expect(toolbar.getByRole("button")).toHaveCount(1)
@@ -39,7 +39,7 @@ test("Seria contains poster facets, sorting and price in one popup, without favo
 })
 
 test("poster grids load the light copies, and quick view shows the whole poster with a size and finish picker", async ({ page }) => {
-  await page.goto("/shop?category=Postera")
+  await page.goto("/?category=Postera")
   const card = page.locator('.cube-shop-grid .cube-product-card:has(img[srcset*="/media/collections/w480/"])').first()
   const image = card.locator("img")
   await expect(image).toBeVisible()

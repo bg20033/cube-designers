@@ -1,9 +1,10 @@
+import { studioHref } from "@/lib/site-links"
 import { useState } from "react"
 import { ArrowRight, ChevronDown, Play, Radio, Ruler, Wrench } from "lucide-react"
 import { StoreShell } from "@/components/store/StoreChrome"
 import "./smart-glass.css"
 
-const quoteHref = "/start-project?service=Smart%20Glass"
+const quoteHref = studioHref("/start-project?service=Smart%20Glass")
 const media = "/media/collections/blanks/"
 const applications = ["Zyra", "Salla takimesh", "Klinika", "Banjo"]
 const installation = [

@@ -30,33 +30,17 @@ const HomePage = lazyPage(() => import("@/components/HomePage"))
 const AboutPage = lazyPage(() => import("@/components/AboutPage"))
 const WorkPage = lazyPage(() => import("@/components/WorkPage"))
 const ProjectBriefPage = lazyPage(() => import("@/components/ProjectBriefPage"))
-const ShopPage = lazyPage(() => import("@/components/ShopPage"))
-const SmartGlassPage = lazyPage(() => import("@/components/shop/SmartGlassPage"))
 const InvitationsPage = lazyPage(() => import("@/components/invitations/OnlineInvitationsPage"))
-const PhotoPrintPage = lazyPage(
-  () => import("@/components/shop/PhotoPrintPage"),
-)
-const WallPlannerPage = lazyPage(
-  () => import("@/components/shop/WallPlannerPage"),
-)
-const ProductDetailPage = lazyPage(
-  () => import("@/components/shop/ProductDetailPage"),
-)
 const NotFoundPage = lazyPage(() => import("@/components/NotFoundPage"))
 const AdminPage = lazyPage(() => import("@/components/admin/AdminPage"))
 const ServicePage = lazyPage(() => import("@/components/services/ServicePage"))
 
-const routePages: Record<RouteKey, { preload: () => Promise<unknown> }> = {
+const routePages: Partial<Record<RouteKey, { preload: () => Promise<unknown> }>> = {
   home: HomePage,
   about: AboutPage,
   services: AboutPage,
   work: WorkPage,
-  shop: ShopPage,
-  "smart-glass": SmartGlassPage,
   invitations: InvitationsPage,
-  wall: WallPlannerPage,
-  photo: PhotoPrintPage,
-  product: ProductDetailPage,
   "start-project": ProjectBriefPage,
   service: ServicePage,
 }
@@ -64,7 +48,7 @@ const routePages: Record<RouteKey, { preload: () => Promise<unknown> }> = {
 export function preloadPage(pathname: string) {
   if (isAdminPath(pathname)) return AdminPage.preload()
   const route = matchRoute(pathname)
-  return (route ? routePages[route.key] : NotFoundPage).preload()
+  return (route ? routePages[route.key] ?? NotFoundPage : NotFoundPage).preload()
 }
 
 function PageFallback() {
@@ -174,14 +158,7 @@ function SiteApp({ currentPath }: { currentPath: string }) {
           )}
           {route?.key === "about" && <AboutPage />}
           {route?.key === "work" && <WorkPage />}
-          {route?.key === "shop" && <ShopPage />}
-          {route?.key === "smart-glass" && <SmartGlassPage />}
           {route?.key === "invitations" && <InvitationsPage />}
-          {route?.key === "wall" && <WallPlannerPage />}
-          {route?.key === "photo" && <PhotoPrintPage />}
-          {route?.key === "product" && (
-            <ProductDetailPage slug={route.params.slug} />
-          )}
           {route?.key === "start-project" && <ProjectBriefPage />}
           {route?.key === "services" && <MovedTo href="/about#sherbimet" />}
           {route?.key === "service" && <ServicePage slug={route.params.slug} />}

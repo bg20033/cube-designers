@@ -1,3 +1,4 @@
+import { shopHref } from "@/lib/site-links"
 import { Eye, Plus } from "lucide-react"
 import { ResponsiveImage } from "@/components/ResponsiveImage"
 import type { Product } from "@/data/products"
@@ -11,7 +12,7 @@ export function ShopProductCard({ product, onQuickView, onAdd, slider = false }:
   onAdd: () => void
   slider?: boolean
 }) {
-  const href = product.id === "smart-film" ? "/shop/smart-glass" : `/shop/${product.id}`
+  const href = product.id === "smart-film" ? shopHref("/shop/smart-glass") : shopHref(`/shop/${product.id}`)
   const Heading = slider ? "h3" : "h2"
   return (
     <article className="cube-product-card" data-category={product.category}>

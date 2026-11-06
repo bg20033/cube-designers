@@ -1,3 +1,4 @@
+import { shopHref } from "@/lib/site-links"
 import { ArrowUpRight } from "lucide-react"
 import { ResponsiveImage } from "@/components/ResponsiveImage"
 import type { Product } from "@/data/products"
@@ -13,7 +14,7 @@ export function RelatedProducts({ products }: { products: Product[] }) {
         </div>
         <a
           className="cube-text-link"
-          href={`/shop?category=${products[0].category}`}
+          href={shopHref(`/shop?category=${products[0].category}`)}
         >
           Shiko koleksionin <ArrowUpRight size={16} />
         </a>
@@ -21,7 +22,7 @@ export function RelatedProducts({ products }: { products: Product[] }) {
       <div className="cube-featured-grid">
         {products.map((product) => (
           <article className="cube-product-card" key={product.id}>
-            <a className="cube-card-image" href={`/shop/${product.id}`}>
+            <a className="cube-card-image" href={shopHref(`/shop/${product.id}`)}>
               {product.image && (
                 <ResponsiveImage
                   image={product.image}
@@ -34,13 +35,13 @@ export function RelatedProducts({ products }: { products: Product[] }) {
               <div>
                 <span>{product.category}</span>
                 <h3>
-                  <a href={`/shop/${product.id}`}>{product.name}</a>
+                  <a href={shopHref(`/shop/${product.id}`)}>{product.name}</a>
                 </h3>
                 <p>Nga {product.price} €</p>
               </div>
               <a
                 className="cube-card-add"
-                href={`/shop/${product.id}`}
+                href={shopHref(`/shop/${product.id}`)}
                 aria-label={`Shiko ${product.name}`}
               >
                 <ArrowUpRight size={16} />

@@ -1,3 +1,4 @@
+import { shopHref } from "@/lib/site-links"
 import { useState } from "react"
 import { ArrowRight } from "lucide-react"
 import { archiveSpotlight, collectionProducts } from "@/data/products"
@@ -39,7 +40,7 @@ export function FilmWall() {
         <div className="cube-film-actions">
           <a
             className="cube-button"
-            href="/shop?category=Postera&seria=Kinema#catalog"
+            href={shopHref("/shop?category=Postera&seria=Kinema#catalog")}
           >
             Shiko {kinemaCount} posterat <ArrowRight size={16} />
           </a>
@@ -76,7 +77,7 @@ export function FilmWall() {
         <ul className="cube-film-posters">
           {filmPosters.map((poster) => (
             <li key={poster.id}>
-              <a href={`/shop/${poster.id}`}>
+              <a href={shopHref(`/shop/${poster.id}`)}>
                 <img
                   src={`/media/collections/film-wall/${poster.id}.webp`}
                   alt={`Poster i filmit ${poster.name}`}

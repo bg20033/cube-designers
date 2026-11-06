@@ -4,7 +4,6 @@ import {
   getRouteSeo,
   matchRoute,
   normalizePathname,
-  SHOP_ENABLED,
   siteRoutes,
 } from "@/app/routes"
 
@@ -21,17 +20,10 @@ describe("site route manifest", () => {
     }
   })
 
-  it("matches product slugs only while the shop is enabled", () => {
-    expect(matchRoute("/shop/business-cards")).toEqual(
-      SHOP_ENABLED
-        ? {
-            key: "product",
-            pathname: "/shop/business-cards",
-            params: { slug: "business-cards" },
-          }
-        : null,
-    )
-    expect(matchRoute("/shop")?.key ?? null).toBe(SHOP_ENABLED ? "shop" : null)
+  it("keeps storefront routes out of the studio", () => {
+    expect(matchRoute("/shop")).toBeNull()
+    expect(matchRoute("/shop/business-cards")).toBeNull()
+    expect(siteRoutes.some((route) => route.path.startsWith("/shop"))).toBe(false)
   })
 
   it("matches service landing pages", () => {

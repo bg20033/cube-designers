@@ -1,6 +1,8 @@
 # CUBE DESIGNERS
 
-React storefront and creative studio site. The studio homepage and other studio views retain their original design. The new storefront design is confined to `/shop` and its product pages. Posters are the main shop collection, with shirts, lamps and the existing print catalog. Product concepts and prices require studio approval before commercial launch.
+The studio site is a React/Vite application at `www.cube-designers.com`. The storefront is a separate Astro application in [`apps/shop`](apps/shop/README.md), deployed independently at `shop.cube-designers.com`. The studio exposes one direct Shop link; catalog, cart, checkout, photo prints and the wall planner belong to the shop. Existing `/shop/...` addresses redirect to the matching subdomain route.
+
+Both projects share commerce validation, the product catalog, media and the existing studio admin. See [shop setup and deployment](apps/shop/README.md).
 
 ## Run locally
 
@@ -60,6 +62,9 @@ npm run lint
 npm test
 npm run build
 npm run test:e2e
+npm run check:shop
+npm run build:shop
+npm run test:shop:e2e
 ```
 
 Unit tests cover cart validation, variants, server prices, order request retries and API failures. Browser tests cover desktop/mobile routes, cart persistence, checkout success/failure, email preparation, product options and accessibility. Saved-order success tests use a mocked database/API; the preview API is also tested directly in its unconfigured state.

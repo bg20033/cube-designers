@@ -8,11 +8,6 @@ const routes = [
   "/about",
   "/work",
   "/start-project",
-  "/shop",
-  "/shop/smart-glass",
-  "/shop/forma-blue",
-  "/shop/tshirts",
-  "/shop/opal-dome-lamp",
   "/sherbime/printim-kartvizita",
   "/sherbime/menaxhim-rrjete-sociale",
 ]
@@ -46,3 +41,6 @@ if (!notFound.includes("noindex,follow") || !notFound.includes("ERROR / 404")) {
 for (const file of ["robots.txt", "sitemap.xml"]) {
   await readFile(path.join(client, file), "utf8")
 }
+
+const sitemap = await readFile(path.join(client, "sitemap.xml"), "utf8")
+if (sitemap.includes("/shop")) throw new Error("Studio sitemap still contains shop pages")

@@ -1,3 +1,4 @@
+import { shopHref } from "@/lib/site-links"
 import { useEffect, useState } from "react"
 import { addCartItem, getSelection, sanitizeCart } from "@/data/commerce"
 import { readStoredJson, writeStoredJson } from "@/components/shop/persistence"
@@ -89,7 +90,7 @@ export function ProductDetail({
       <main className="cube-detail-main" id="main-content">
         <a
           className="cube-detail-back"
-          href={`/shop?category=${encodeURIComponent(product.category)}#catalog`}
+          href={shopHref(`/shop?category=${encodeURIComponent(product.category)}#catalog`)}
           aria-label={`Kthehu te koleksioni: ${shopCategoryLabel(product.category)}`}
         >
           <ArrowLeft size={16} aria-hidden="true" /> Koleksioni
@@ -217,7 +218,7 @@ export function ProductDetail({
             </div>
             <div className="cube-detail-links">
               {onWall && (
-                <a href={`/shop/muri?add=${product.id}`}>
+                <a href={shopHref(`/shop/muri?add=${product.id}`)}>
                   <Frame size={15} /> Provoje në murin tënd
                 </a>
               )}
@@ -282,7 +283,7 @@ export function ProductDetail({
             <button type="button" onClick={() => setAdded(undefined)}>
               Vazhdo blerjen
             </button>
-            <a className="cube-button cube-button-dark" href="/shop?cart=1">
+            <a className="cube-button cube-button-dark" href={shopHref("/shop?cart=1")}>
               Shiko shportën <ArrowRight size={16} />
             </a>
           </div>

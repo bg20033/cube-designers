@@ -3,6 +3,8 @@
 @import "@fontsource-variable/inter";
 @import "@fontsource-variable/roboto";
 
+@source ".";
+
 @custom-variant dark (&:is(.dark *));
 
 :root {

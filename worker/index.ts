@@ -39,6 +39,13 @@ export default {
 
     const pathname = normalizePathname(url.pathname)
 
+    if (/^\/shop(?:\/|$)/.test(pathname)) {
+      const target = new URL("https://shop.cube-designers.com")
+      target.pathname = pathname.replace(/^\/shop/, "") || "/"
+      target.search = url.search
+      return Response.redirect(target, 308)
+    }
+
     if (isAdminPath(pathname)) {
       const response = await env.ASSETS.fetch(assetRequest(request, "/index.html"))
       const headers = new Headers(response.headers)

@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test"
 
 test("business subcategories filter independently and keep shareable URLs", async ({ page }) => {
-  await page.goto("/shop?category=Biznes")
+  await page.goto("/?category=Biznes")
   const cases = [
     { label: "Printime", category: "Print" },
     { label: "Veshje", category: "Veshje" },

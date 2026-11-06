@@ -1,5 +1,3 @@
-import { storeFaqs } from "@/data/store-faqs"
-import { matchesShopCategory } from "@/data/shop-navigation"
 import { renderToString } from "react-dom/server"
 
 import App, { preloadPage } from "@/App"
@@ -7,12 +5,10 @@ import { socialProfiles } from "@/data/site"
 import {
   getRouteSeo,
   matchRoute,
-  SHOP_ENABLED,
   siteRoutes,
   type RouteKey,
   type RouteSeo,
 } from "@/app/routes"
-import { getProductBySlug, products } from "@/data/products"
 import { getServiceBySlug, serviceCategories, services } from "@/data/services"
 
 type StructuredData = Record<string, unknown>
@@ -36,10 +32,6 @@ const notFoundSeo: RouteSeo = {
 const breadcrumbNames: Record<string, string> = {
   "/about": "Rreth nesh",
   "/work": "Projektet",
-  "/shop": "Shop",
-  "/shop/smart-glass": "Smart Glass",
-  "/shop/muri": "Konfiguro murin",
-  "/shop/foto": "Printo foton tënde",
   "/start-project": "Fillo një projekt",
   "/sherbime": "Shërbimet",
 }
@@ -52,25 +44,6 @@ function routeMeta(pathname: string): {
 
   if (!route) {
     return { seo: notFoundSeo, status: 404 }
-  }
-
-  if (route.key === "product") {
-    const product = getProductBySlug(route.params.slug)
-    if (!product) {
-      return { seo: notFoundSeo, status: 404 }
-    }
-
-    return {
-      seo: {
-        title: `${product.name} | CUBE DESIGNERS Shop`,
-        description: `${product.description} ${product.quantityLabel}, material ${product.material}. Kërko ofertë nga CUBE DESIGNERS.`,
-        canonicalPath: product.id === "smart-film" ? "/shop/smart-glass" : `/shop/${product.id}`,
-        index: true,
-        sitemap: true,
-        ogImage: "/og.png",
-      },
-      status: 200,
-    }
   }
 
   if (route.key === "service") {
@@ -151,40 +124,10 @@ function buildStructuredData(
     return data
   }
 
-  if (route?.key === "shop") {
-    data.push({
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: storeFaqs.map((faq) => ({
-        "@type": "Question",
-        name: faq.question,
-        acceptedAnswer: { "@type": "Answer", text: faq.answer },
-      })),
-    })
-    data.push({
-      "@context": "https://schema.org",
-      "@type": "ItemList",
-      name: "Postera dhe produkte të personalizuara CUBE",
-      // The first page of the collection; every product page is in the
-      // sitemap, so listing all ~2,000 here only bloats the HTML.
-      itemListElement: products
-        .filter((product) => matchesShopCategory(product, "Krejt"))
-        .slice(0, 30)
-        .map((product, index) => ({
-          "@type": "ListItem",
-          position: index + 1,
-          name: product.name,
-          url: `${normalizedSiteUrl}/shop/${product.id}`,
-        })),
-    })
-  }
-
   if (!route) return data
 
   const breadcrumbLabel =
-    route.key === "product"
-      ? getProductBySlug(route.params.slug)?.name
-      : route.key === "service"
+    route.key === "service"
         ? getServiceBySlug(route.params.slug)?.name
         : breadcrumbNames[route.pathname]
 
@@ -197,15 +140,6 @@ function buildStructuredData(
         item: normalizedSiteUrl,
       },
     ]
-
-    if (["product", "wall", "photo"].includes(route.key)) {
-      items.push({
-        "@type": "ListItem",
-        position: 2,
-        name: "Shop",
-        item: `${normalizedSiteUrl}/shop`,
-      })
-    }
 
     if (route.key === "service") {
       items.push({
@@ -228,26 +162,6 @@ function buildStructuredData(
       "@type": "BreadcrumbList",
       itemListElement: items,
     })
-  }
-
-  if (route.key === "product") {
-    const product = getProductBySlug(route.params.slug)
-    if (product) {
-      data.push({
-        "@context": "https://schema.org",
-        "@type": "Product",
-        name: product.name,
-        description: product.description,
-        sku: product.id,
-        category: product.category,
-        material: product.material,
-        brand: {
-          "@type": "Brand",
-          name: "CUBE DESIGNERS",
-        },
-        url: `${normalizedSiteUrl}/shop/${product.id}`,
-      })
-    }
   }
 
   if (route.key === "service") {
@@ -303,16 +217,11 @@ function buildStructuredData(
 // Source module of each page, as keyed in the client build manifest. The
 // prerenderer links its CSS and preloads its JS so the HTML is styled on
 // first paint instead of after the page chunk loads.
-const pageSources: Record<RouteKey | "not-found", string> = {
+const pageSources: Partial<Record<RouteKey | "not-found", string>> = {
   home: "src/components/HomePage.tsx",
   about: "src/components/AboutPage.tsx",
   work: "src/components/WorkPage.tsx",
-  shop: "src/components/ShopPage.tsx",
-  "smart-glass": "src/components/shop/SmartGlassPage.tsx",
   invitations: "src/components/invitations/OnlineInvitationsPage.tsx",
-  wall: "src/components/shop/WallPlannerPage.tsx",
-  photo: "src/components/shop/PhotoPrintPage.tsx",
-  product: "src/components/shop/ProductDetailPage.tsx",
   "start-project": "src/components/ProjectBriefPage.tsx",
   services: "src/components/services/ServicesPage.tsx",
   service: "src/components/services/ServicePage.tsx",
@@ -320,7 +229,7 @@ const pageSources: Record<RouteKey | "not-found", string> = {
 }
 
 export function getPageSource(pathname: string) {
-  return pageSources[matchRoute(pathname)?.key ?? "not-found"]
+  return pageSources[matchRoute(pathname)?.key ?? "not-found"] ?? pageSources["not-found"]
 }
 
 // Renders the same tree the browser hydrates (App), with the page module
@@ -353,7 +262,7 @@ export function getLlmsTxt(siteUrl: string) {
     "## Faqet kryesore",
     "",
     `- [Ballina](${base}/): Prezantimi i studios dhe shërbimeve`,
-    `- [Shop](${base}/shop): Koleksioni i parë dhe katalogu i printit; çmime orientuese`,
+    `- [Shop](https://shop.cube-designers.com/): Koleksioni i parë dhe katalogu i printit; çmime orientuese`,
     `- [Shërbimet](${base}/sherbime): Katalogu i plotë i shërbimeve`,
     `- [Projektet](${base}/work): Punë të zgjedhura`,
     `- [Rreth nesh](${base}/about): Kush jemi dhe ku ndodhemi`,
@@ -372,8 +281,7 @@ export function getLlmsTxt(siteUrl: string) {
   return `${lines.join("\n")}\n`
 }
 
-// The photo product's page is the photo editor (/shop/foto), so it appears
-// once even though it is also in the catalog.
+// Only studio pages belong in the studio sitemap.
 export function getPrerenderPaths() {
   return [
     ...new Set([
@@ -381,7 +289,6 @@ export function getPrerenderPaths() {
         .filter((route) => route.seo.sitemap)
         .map((route) => route.path),
       ...services.map((service) => `/sherbime/${service.slug}`),
-      ...(SHOP_ENABLED ? products.map((product) => `/shop/${product.id}`) : []),
     ]),
   ]
 }
