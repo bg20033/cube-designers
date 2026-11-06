@@ -3,12 +3,15 @@ import { createRoot, hydrateRoot } from 'react-dom/client'
 import './index.css'
 import './polish.css'
 import App, { preloadPage } from './App.tsx'
+import { Analytics } from '@vercel/analytics/react'
+import { filterAnalyticsEvent } from './lib/analytics'
 import { isAdminPath } from './app/routes'
 
 const root = document.getElementById('root')!
 const app = (
   <StrictMode>
     <App pathname={window.location.pathname} />
+    <Analytics beforeSend={filterAnalyticsEvent} />
   </StrictMode>
 )
 
